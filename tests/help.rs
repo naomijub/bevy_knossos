@@ -28,6 +28,8 @@ Options:
           Maze generation algorithm [default: recursive-backtracking] [possible values: aldous-broder, binary-tree, eller, growing-tree, hunt-and-kill, kruskal, prim, recursive-backtracking, recursive-division, sidewinder]
   -H, --height <HEIGHT>
           Grid height in a number of cells [default: 10]
+  -S, --seed <SEED>
+          Seed value for deterministic generation (must be a valid u64)
   -W, --width <WIDTH>
           Grid width in a number of cells [default: 10]
   -C, --start-coords <START_COORDS>
@@ -61,6 +63,9 @@ Options:
           Grid height in a number of cells
           
           [default: 10]
+
+  -S, --seed <SEED>
+          Seed value for deterministic generation (must be a valid u64)
 
   -W, --width <WIDTH>
           Grid width in a number of cells

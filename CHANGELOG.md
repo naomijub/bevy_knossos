@@ -7,6 +7,22 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 
 ## [Unreleased]
 
+## [0.7.0] - 2025-03-05: Keep compatibility with `knossos` crate where possible.
+
+### Added
+
+- Library: Implement optional random seeding for maze algorithms to enable deterministic outputs.
+- New method to format maze without saving to file.
+- CLI: Introduce an optional `--seed` argument for reproducible maze generation.
+
+### Breaking Changes
+
+- Maze builder now enforces positive width and height values.
+- Image formatter now enforces positive passage and wall values.
+
+### Fixed
+
+- Resolve margin(0) and right shift bugs in maze rendering.
 
 ## [0.6.3] - 2025-03-02
 
@@ -130,7 +146,8 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 - Orthogonal maze builder with 10 optional generation algorithms.
 - Ascii, game map and image formatters to save the generated maze to files.
 
-[unreleased]: https://github.com/unrenamed/knossos/compare/v0.5.1...HEAD
+[unreleased]: https://github.com/unrenamed/knossos/compare/v0.6.3...HEAD
+[0.6.3]: https://github.com/unrenamed/knossos/compare/v0.5.1...v0.6.3
 [0.5.1]: https://github.com/unrenamed/knossos/compare/v0.4.0...v0.5.1
 [0.4.0]: https://github.com/unrenamed/knossos/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/unrenamed/knossos/compare/v0.2.0...v0.3.0

@@ -1,6 +1,6 @@
 [package]
 name = "bevy_knossos"
-version = "0.6.3"
+version = "0.7.0"
 authors = [
     "Julia Naomi <jnboeira@outlook.com>",
     "unrenamed <renkonazbka@gmail.com>",
@@ -36,6 +36,7 @@ assert_fs = "1.1"
 criterion = { version = "0.5", features = ["html_reports"] }
 bevy-inspector-egui = "0.29.1"
 bevy_ecs_tilemap = "0.15"
+difference = { git = "https://github.com/johannhof/difference.rs" }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }

@@ -32,6 +32,19 @@ fn build_valid_maze_with_custom_params() {
 }
 
 #[test]
+fn build_valid_maze_with_seed_value() {
+    let maze = OrthogonalMazeBuilder::new().seed(Some(40)).build().unwrap();
+    assert!(maze.is_valid());
+}
+
+#[test]
+fn build_identical_mazes_with_same_seed() {
+    let old = OrthogonalMazeBuilder::new().seed(Some(40)).build().unwrap();
+    let new = OrthogonalMazeBuilder::new().seed(Some(40)).build().unwrap();
+    assert_eq!(old.to_string(), new.to_string());
+}
+
+#[test]
 fn build_valid_maze_with_custom_params_and_start_position() {
     let maze = OrthogonalMazeBuilder::new()
         .height(10)
@@ -209,4 +222,31 @@ fn save_maze_as_png() {
 fn save_maze_as_png_returns_error() {
     let expected = "The image format could not be determined".to_string();
     assert_save_maze_error!("this is not valid path/", Image::new(), expected);
+}
+
+#[test]
+fn format_maze() {
+    let ascii = OrthogonalMazeBuilder::new()
+        .width(5)
+        .height(5)
+        .seed(Some(10))
+        .build()
+        .unwrap()
+        .format(AsciiBroad)
+        .into_inner();
+
+    let mut expected = String::new();
+    expected.push_str("+---+---+---+---+---+\n");
+    expected.push_str("|       |           |\n");
+    expected.push_str("+---+   +---+   +   +\n");
+    expected.push_str("|   |       |   |   |\n");
+    expected.push_str("+   +---+   +   +---+\n");
+    expected.push_str("|   |       |       |\n");
+    expected.push_str("+   +   +---+---+   +\n");
+    expected.push_str("|   |   |       |   |\n");
+    expected.push_str("+   +   +   +   +   +\n");
+    expected.push_str("|           |       |\n");
+    expected.push_str("+---+---+---+---+---+\n");
+
+    assert_eq!(expected, ascii);
 }
