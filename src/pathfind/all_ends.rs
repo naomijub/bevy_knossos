@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use pathfinding::prelude::astar;
 use crate::{
-    maze::{Cell, OrthogonalMaze},
+    maze::Cell,
     pathfind::{MazePath, Cost},
     Coords, CoordsComponent, Start,
 };
@@ -15,6 +15,16 @@ pub struct MazeEndsPaths {
     pub paths: HashMap<(Coords, Coords), (Vec<CoordsComponent>, u32)>,
 }
 
+impl MazeEndsPaths {
+    /// Checks if a `path_coord` ([`Coords`]) is contained in the path from [`Start`] to [`MazeEnd`]
+    pub fn contains_path_to_end(&self, goal: Coords, path_coord: Coords) -> bool {
+        self.paths
+            .iter()
+            .find(|((_start, end), (_path, _cost))| end == &goal)
+            .is_some_and(|((_start, _end), (path, _cost))| path.contains(&(path_coord.into())))
+    }
+}
+
 /// Component that signals that the cell is a Maze End.
 #[derive(Debug, Clone, PartialEq, Eq, Component, Default, Reflect)]
 pub struct MazeEnd;
@@ -26,21 +36,22 @@ pub struct MazeEnd;
 /// This operation is quite slow for large mazes, as it needs to pathfind over all ends.
 /// issue
 #[cfg(not(tarpaulin_include))]
+#[cfg(not(feature = "single_end"))]
 pub fn find_maze_ends_paths(
     mut commands: Commands,
     start: Query<&CoordsComponent, (With<Cell>, With<Start>)>,
     cells: Query<(Entity, &CoordsComponent, &Cell, Option<&Cost>)>,
-    maze: Res<OrthogonalMaze>,
 ) {
     let Ok(start) = start.get_single().cloned() else {
         return;
     };
 
-    let ends = maze.ends();
+    let mut ends: Vec<((usize, usize), &Cell)> = Vec::default();
 
-    for (entity, coords, ..) in &cells {
-        if ends.iter().any(|x| x.0 == coords.xy()) {
+    for (entity, coords, cell, ..) in &cells {
+        if cell.is_end() {
             commands.entity(entity).insert(MazeEnd);
+            ends.push((coords.coord, cell));
         }
     }
 

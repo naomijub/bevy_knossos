@@ -119,6 +119,11 @@ impl Plugin for KnossosPlugin {
                 .init_resource::<pathfind::MazePath>()
                 .init_resource::<pathfind::MazeEndsPaths>()
                 .add_systems(Update, pathfind::find_path);
+
+            #[cfg(not(feature = "single_end"))]
+            {
+                app.add_systems(Update, pathfind::find_maze_ends_paths);
+            }
         }
     }
 }

@@ -42,6 +42,11 @@ impl Cell {
     pub const fn walls_count(&self) -> u8 {
         self.bits().count_zeros().saturating_sub(4) as u8
     }
+
+    /// Checks if [`Cell`] has 3 walls (*Dead End*)
+    pub const fn is_end(&self) -> bool {
+        self.walls_count() == 3
+    }
 }
 
 impl fmt::Display for Cell {
@@ -247,5 +252,19 @@ mod tests {
         assert_eq!((Cell::SOUTH | Cell::NORTH | Cell::WEST).walls_count(), 1);
         assert_eq!((Cell::EAST | Cell::NORTH | Cell::WEST).walls_count(), 1);
         assert_eq!(Cell::all().walls_count(), 0);
+    }
+
+    #[test]
+    fn get_all_is_end() {
+        assert!(!Cell::empty().is_end());
+        assert!(Cell::SOUTH.is_end());
+        assert!(Cell::NORTH.is_end());
+        assert!(Cell::WEST.is_end());
+        assert!(Cell::EAST.is_end());
+        assert!(!(Cell::SOUTH | Cell::NORTH).is_end());
+        assert!(!(Cell::EAST | Cell::WEST).is_end());
+        assert!(!(Cell::SOUTH | Cell::NORTH | Cell::WEST).is_end());
+        assert!(!(Cell::EAST | Cell::NORTH | Cell::WEST).is_end());
+        assert!(!Cell::all().is_end());
     }
 }
