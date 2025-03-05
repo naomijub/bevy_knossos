@@ -3,9 +3,11 @@ use bevy_ecs_tilemap::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_knossos::{
     maze::{self, Cell},
-    pathfind::{MazeEndsPaths, MazePath},
+    pathfind::MazePath,
     CellSize, Coords, CoordsComponent, Goal, KnossosPlugin, Start,
 };
+#[cfg(not(feature = "single_end"))]
+use bevy_knossos::pathfind::MazeEndsPaths;
 
 #[derive(Debug, Component)]
 pub struct CoolEnd;
@@ -21,13 +23,14 @@ fn main() {
         .build()
         .unwrap();
 
-    App::new()
-        .insert_resource(maze)
+    let mut app = App::new();
+    app.insert_resource(maze)
         .add_plugins((DefaultPlugins, TilemapPlugin))
         .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
-        .add_systems(Startup, (setup, setup_cool_ends.after(setup)))
-        .add_systems(Update, draw_path)
-        .run();
+        .add_systems(Startup, (setup, setup_cool_ends.after(setup)));
+    #[cfg(not(feature = "single_end"))]
+    app.add_systems(Update, draw_path);
+    app.run();
 }
 
 fn setup_cool_ends(
@@ -296,6 +299,7 @@ fn cell_to_index(
     )
 }
 
+#[cfg(not(feature = "single_end"))]
 pub(crate) fn draw_path(
     start: Query<&CoordsComponent, (With<Cell>, With<Start>)>,
     goal: Query<&CoordsComponent, (With<Cell>, With<Goal>)>,
@@ -330,6 +334,7 @@ pub(crate) fn draw_path(
     }
 }
 
+#[cfg(not(feature = "single_end"))]
 pub fn contains_path_to_end(maze_ends: &MazeEndsPaths, goal: Coords, path_coord: Coords) -> bool {
     maze_ends
         .paths
