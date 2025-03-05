@@ -56,6 +56,13 @@ impl OrthogonalMaze {
             index: 0,
         }
     }
+
+    /// Returns all cells that have 3 walls, means maze ends.
+    pub fn ends(&self) -> Vec<((usize, usize), &Cell)> {
+        self.iter()
+            .filter(|maze_cell| maze_cell.1.walls_count() == 3)
+            .collect()
+    }
 }
 
 impl std::ops::Index<Coords> for OrthogonalMaze {
@@ -228,6 +235,24 @@ mod tests {
             assert_eq!(idx, coord.1 * width + coord.0);
             assert!(!cell.is_empty())
         });
+    }
+
+    #[test]
+    fn maze_ends() {
+        let grid = generate_valid_maze();
+        let maze = OrthogonalMaze { grid };
+
+        let ends = maze.ends();
+
+        assert_eq!(
+            ends,
+            vec![
+                ((0, 0), &Cell::SOUTH),
+                ((1, 0), &Cell::EAST),
+                ((2, 1), &Cell::WEST),
+                ((3, 3), &Cell::WEST)
+            ]
+        );
     }
 
     fn generate_valid_maze() -> Grid {
