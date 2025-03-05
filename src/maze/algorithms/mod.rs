@@ -22,6 +22,7 @@ pub use recursive_backtracking::RecursiveBacktracking;
 pub use recursive_division::RecursiveDivision;
 pub use sidewinder::Sidewinder;
 
+use rand::rngs::StdRng;
 use crate::{maze::grid::Grid, utils::types::Coords};
 
 pub(super) const BOOL_TRUE_PROBABILITY: f64 = 0.5;
@@ -30,7 +31,7 @@ pub(super) const BOOL_TRUE_PROBABILITY: f64 = 0.5;
 pub trait Algorithm {
     /// Runs algorithm through the given Grid object, thus mutating the grid and generating a new
     /// maze.
-    fn generate(&mut self, grid: &mut Grid, start_coords: Option<Coords>);
+    fn generate(&mut self, grid: &mut Grid, start_coords: Option<Coords>, rng: &mut StdRng);
 
     /// Verifies if algorithm supports start coords
     fn has_start_coords(&self) -> bool;

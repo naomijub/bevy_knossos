@@ -7,13 +7,13 @@
 //! # Installation
 //! Run the following Cargo command in your project directory:
 //! ```no_test
-//! cargo add knossos
+//! cargo add bevy_knossos
 //! ```
 //!
 //! Or add the following line to your `Cargo.toml`:
 //! ```no_test
 //! [dependencies]
-//! knossos = "0.4.0"
+//! bevy_knossos = "0.7.0"
 //! ```
 //!
 //! # Usage
@@ -21,14 +21,14 @@
 //! This crate is designed to be super easy to use. Here are some usage examples of how to generate,
 //! display and save mazes:
 //!
-//! ## Generate with default parameters
+//! ## Generate with Default Parameters
 //! ```rust,no_run
 //! use bevy_knossos::maze::*;
 //!
 //! let maze = OrthogonalMazeBuilder::new().build();
 //! ```
 //!
-//! ## Generate with custom parameters
+//! ## Generate with Custom Parameters
 //! ```rust,no_run
 //! use bevy_knossos::maze::*;
 //!
@@ -41,7 +41,7 @@
 //!
 //! Read more about [maze builder API](maze::OrthogonalMazeBuilder)
 //!
-//! ## Display
+//! ## Display Maze
 //! ```rust,no_run
 //! use bevy_knossos::maze::*;
 //!
@@ -49,13 +49,13 @@
 //! println!("{}", &maze);
 //! ```
 //!
-//! ## Save to file
+//! ## Save to File
 //! ```rust,no_run
 //! use bevy_knossos::maze::*;
 //!
 //! let maze = OrthogonalMazeBuilder::new().build().unwrap();
 //!
-//! // Save as ascii
+//! // Save as ASCII text
 //! maze.save("output/maze.txt", AsciiNarrow).unwrap();
 //! // Save as a game map
 //! maze.save("output/maze_game_map.txt", GameMap::new().span(3)).unwrap();
@@ -64,6 +64,22 @@
 //! ```
 //!
 //! Read more about [maze formatters](maze::formatters)
+//!
+
+//! ## Seeding for Deterministic Mazes
+//!
+//! By default, each generated maze is randomized, producing a different layout every time. However,
+//! you can use a seed value to ensure that the same maze is generated consistently across runs.
+//! This is useful for debugging, testing, or sharing the exact same maze with others.
+//!
+//! ```rust,no_run
+//! use bevy_knossos::maze::*;
+//!
+//! // Generate a maze with a fixed seed
+//! let maze = OrthogonalMazeBuilder::new().seed(Some(40)).build();
+//! ```
+//!
+//! Passing `None` as the seed (or omitting the `.seed()` method) will result in a random maze each time.
 //!
 //! # Algorithms
 //!

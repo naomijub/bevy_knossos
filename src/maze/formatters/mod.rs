@@ -32,7 +32,14 @@ pub trait Saveable {
 }
 
 /// A custom wrapper over [RgbImage] for converting a maze to an image
-pub struct ImageWrapper(pub RgbImage);
+pub struct ImageWrapper(RgbImage);
+
+impl ImageWrapper {
+    /// Consumes `self` and returns the inner `RgbImage`.
+    pub fn into_inner(self) -> RgbImage {
+        self.0
+    }
+}
 
 /// An implementation of [Saveable] for saving a maze image into a file
 impl Saveable for ImageWrapper {
@@ -48,9 +55,16 @@ impl Saveable for ImageWrapper {
     }
 }
 
-/// A custom wrapper over [std::string::String](std::string::String) for converting a maze into
+/// A custom wrapper over [std::string::String] for converting a maze into
 /// string characters
 pub struct StringWrapper(pub String);
+
+impl StringWrapper {
+    /// Consumes `self` and returns the inner `String`.
+    pub fn into_inner(self) -> String {
+        self.0
+    }
+}
 
 /// An implementation of [Saveable] for saving a maze string into a text file
 impl Saveable for StringWrapper {
@@ -83,5 +97,28 @@ impl Saveable for StringWrapper {
                 path.display()
             )),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use ::image::Rgb;
+    use super::*;
+
+    #[test]
+    fn into_inner_returns_inner_string() {
+        let wrapper = StringWrapper(String::from("Hello, Rust!"));
+        let inner = wrapper.into_inner();
+        assert_eq!(inner, "Hello, Rust!");
+    }
+
+    #[test]
+    fn into_inner_returns_inner_image() {
+        let img = RgbImage::from_pixel(2, 2, Rgb([255, 0, 0])); // 2x2 red image
+        let wrapper = ImageWrapper(img.clone());
+        let inner = wrapper.into_inner();
+
+        assert_eq!(inner.dimensions(), (2, 2));
+        assert_eq!(inner.get_pixel(0, 0), &Rgb([255, 0, 0]));
     }
 }

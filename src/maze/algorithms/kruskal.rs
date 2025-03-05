@@ -1,4 +1,4 @@
-use rand::prelude::SliceRandom;
+use rand::prelude::*;
 
 use super::Algorithm;
 use crate::maze::grid::cell::Cell;
@@ -32,13 +32,13 @@ pub struct Kruskal;
 ///
 /// The `generate` function will warn in case a start_coords is passed.
 impl Algorithm for Kruskal {
-    fn generate(&mut self, grid: &mut Grid, _c: Option<Coords>) {
+    fn generate(&mut self, grid: &mut Grid, _c: Option<Coords>, rng: &mut StdRng) {
         if _c.is_some() {
             eprintln!("Algorithm `{}` doesn't suppoer `start_coords`", self.name())
         }
         let mut arena = populate_arena(grid);
         let mut edges: Edges = populate_edges(grid);
-        edges.shuffle(&mut rand::rng());
+        edges.shuffle(rng);
 
         while !edges.is_empty() {
             let edge: Option<Edge> = edges.pop();

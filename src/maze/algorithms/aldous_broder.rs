@@ -26,8 +26,8 @@ impl AldousBroder {}
 ///
 /// 3. Repeats step 2 until all vertices have been visited.
 impl Algorithm for AldousBroder {
-    fn generate(&mut self, grid: &mut Grid, start_coords: Option<Coords>) {
-        let (mut x, mut y) = start_coords.unwrap_or_else(|| get_start_coords(grid));
+    fn generate(&mut self, grid: &mut Grid, start_coords: Option<Coords>, rng: &mut StdRng) {
+        let (mut x, mut y) = start_coords.unwrap_or_else(|| get_start_coords(grid, rng));
 
         let mut remaining = grid.width() * grid.height() - 1; // the number of remaining unvisited cells
 
@@ -63,8 +63,7 @@ impl Algorithm for AldousBroder {
     }
 }
 
-fn get_start_coords(grid: &Grid) -> Coords {
-    let mut rng = rand::rng();
+fn get_start_coords(grid: &Grid, rng: &mut impl rand::Rng) -> Coords {
     let y = rng.random_range(0..grid.height());
     let x = rng.random_range(0..grid.width());
     (x, y)

@@ -108,9 +108,13 @@ pub struct Eller;
 
 impl Eller {
     /// Randomly joins adjacent cells, but only if they are not in the same set
-    fn connect_disjoint_sets(&self, state: &mut State, grid: &mut Grid, is_last_row: bool) {
-        let mut rng = rand::rng();
-
+    fn connect_disjoint_sets(
+        &self,
+        state: &mut State,
+        grid: &mut Grid,
+        is_last_row: bool,
+        rng: &mut impl Rng,
+    ) {
         for c in 1..state.width {
             let cell_id = CellId(c);
             let next_cell_id = CellId(c + 1);
@@ -133,6 +137,7 @@ impl Eller {
         state: &mut State,
         grid: &mut Grid,
         is_last_row: bool,
+        rng: &mut impl Rng,
     ) -> State {
         let mut next_state = state.next();
 
@@ -141,7 +146,7 @@ impl Eller {
         }
 
         for (set_id, cells) in state.sets() {
-            for cell_id in self.cells_to_connect(cells) {
+            for cell_id in self.cells_to_connect(cells, rng) {
                 let (x, y) = state.get_cell_coords(cell_id);
                 grid.carve_passage((x, y), GridCell::SOUTH).unwrap();
                 next_state.add(cell_id, set_id, (x, y + 1));
@@ -152,11 +157,9 @@ impl Eller {
     }
 
     /// Selects random cells to carve vertical passages from
-    fn cells_to_connect(&self, cells: Vec<CellId>) -> Vec<CellId> {
-        let mut rng = rand::rng();
-
+    fn cells_to_connect(&self, cells: Vec<CellId>, rng: &mut impl Rng) -> Vec<CellId> {
         let mut cells = cells;
-        cells.shuffle(&mut rng);
+        cells.shuffle(rng);
 
         let connect_count = if cells.len() >= 2 {
             rng.random_range(1..cells.len())
@@ -198,7 +201,7 @@ impl Eller {
 ///
 /// The `generate` function will warn in case a start_coords is passed.
 impl Algorithm for Eller {
-    fn generate(&mut self, grid: &mut Grid, _c: Option<Coords>) {
+    fn generate(&mut self, grid: &mut Grid, _c: Option<Coords>, rng: &mut StdRng) {
         if _c.is_some() {
             eprintln!("Algorithm `{}` doesn't suppoer `start_coords`", self.name())
         }
@@ -206,8 +209,8 @@ impl Algorithm for Eller {
 
         for row in 0..grid.height() {
             let is_last_row = row == grid.height() - 1;
-            self.connect_disjoint_sets(&mut state, grid, is_last_row);
-            state = self.add_vertical_connections(&mut state, grid, is_last_row);
+            self.connect_disjoint_sets(&mut state, grid, is_last_row, rng);
+            state = self.add_vertical_connections(&mut state, grid, is_last_row, rng);
         }
     }
 

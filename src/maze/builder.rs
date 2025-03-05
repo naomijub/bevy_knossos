@@ -1,3 +1,6 @@
+use rand::rngs::StdRng;
+use rand::SeedableRng;
+
 use crate::maze::algorithms::{Algorithm, RecursiveBacktracking};
 use crate::maze::OrthogonalMaze;
 use crate::utils::types::Coords;
@@ -10,6 +13,7 @@ pub struct OrthogonalMazeBuilder {
     height: usize,
     algorithm: Box<dyn Algorithm>,
     start_coords: Option<Coords>,
+    seed: Option<u64>,
 }
 
 impl OrthogonalMazeBuilder {
@@ -20,7 +24,14 @@ impl OrthogonalMazeBuilder {
             height: 10,
             algorithm: Box::new(RecursiveBacktracking),
             start_coords: None,
+            seed: None,
         }
+    }
+
+    /// Sets a seed value for deterministic generation and returns itself
+    pub const fn seed(mut self, seed: Option<u64>) -> Self {
+        self.seed = seed;
+        self
     }
 
     /// Sets a maze width and returns itself
@@ -50,11 +61,14 @@ impl OrthogonalMazeBuilder {
     /// Builds a maze and returns a resulting object of the generated orthogonal maze
     pub fn build(mut self) -> Result<OrthogonalMaze, BuildError> {
         let mut maze = OrthogonalMaze::new(self.width, self.height);
+        let mut rng = self
+            .seed
+            .map_or_else(StdRng::from_os_rng, StdRng::seed_from_u64);
         if self.start_coords.is_some() && !self.algorithm.has_start_coords() {
             Err(BuildError::reason(self.algorithm.name()))
         } else {
             self.algorithm
-                .generate(maze.get_grid_mut(), self.start_coords);
+                .generate(maze.get_grid_mut(), self.start_coords, &mut rng);
             Ok(maze)
         }
     }

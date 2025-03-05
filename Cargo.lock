@@ -1015,7 +1015,7 @@ dependencies = [
 
 [[package]]
 name = "bevy_knossos"
-version = "0.6.3"
+version = "0.7.0"
 dependencies = [
  "assert_cmd",
  "assert_fs",
@@ -1025,6 +1025,7 @@ dependencies = [
  "bitflags 2.9.0",
  "clap",
  "criterion",
+ "difference",
  "image",
  "pathfinding",
  "rand 0.9.0",
@@ -2232,6 +2233,11 @@ dependencies = [
  "syn",
  "unicode-xid",
 ]
+
+[[package]]
+name = "difference"
+version = "2.0.0"
+source = "git+https://github.com/johannhof/difference.rs#54bdfa25092ebc2a1b3d86e640cf517e7dcdcb96"
 
 [[package]]
 name = "difflib"

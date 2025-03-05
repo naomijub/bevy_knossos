@@ -22,9 +22,9 @@ impl HuntAndKill {
         }
     }
 
-    fn walk(&self, coords: Coords, grid: &mut Grid) -> Option<Coords> {
+    fn walk(&self, coords: Coords, grid: &mut Grid, rng: &mut impl Rng) -> Option<Coords> {
         let mut directions = [Cell::NORTH, Cell::SOUTH, Cell::WEST, Cell::EAST];
-        directions.shuffle(&mut rand::rng());
+        directions.shuffle(rng);
 
         for dir in directions {
             if let Ok(next_coords) = grid.get_next_cell_coords(coords, dir) {
@@ -99,11 +99,11 @@ impl Default for HuntAndKill {
 /// candidate cell, this implementation has a simple optimization that speeds up the later stages of
 /// the algorithm. Thus, this algorithm is still pretty fast
 impl Algorithm for HuntAndKill {
-    fn generate(&mut self, grid: &mut Grid, start_coords: Option<Coords>) {
-        let (mut x, mut y) = start_coords.unwrap_or_else(|| get_start_coords(grid));
+    fn generate(&mut self, grid: &mut Grid, start_coords: Option<Coords>, rng: &mut StdRng) {
+        let (mut x, mut y) = start_coords.unwrap_or_else(|| get_start_coords(grid, rng));
 
         loop {
-            if let Some((nx, ny)) = self.walk((x, y), grid) {
+            if let Some((nx, ny)) = self.walk((x, y), grid, rng) {
                 x = nx;
                 y = ny;
             } else if let Some((nx, ny)) = self.hunt(grid) {
@@ -124,9 +124,19 @@ impl Algorithm for HuntAndKill {
     }
 }
 
-fn get_start_coords(grid: &Grid) -> Coords {
-    let mut rng = rand::rng();
+fn get_start_coords(grid: &Grid, rng: &mut impl Rng) -> Coords {
     let y = rng.random_range(0..grid.height());
     let x = rng.random_range(0..grid.width());
     (x, y)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_call() {
+        let algo = HuntAndKill::default();
+        assert_eq!(0, algo.hunt_start_index);
+    }
 }

@@ -75,6 +75,10 @@ enum Commands {
         #[arg(short = 'H', long, default_value_t = 10)]
         height: usize,
 
+        /// Seed value for deterministic generation (must be a valid u64)
+        #[arg(short = 'S', long)]
+        seed: Option<u64>,
+
         #[arg(short = 'W', long, default_value_t = 10)]
         /// Grid width in a number of cells
         width: usize,
@@ -187,6 +191,7 @@ fn main() -> Result<(), maze::MazeSaveError> {
             algorithm,
             height,
             width,
+            seed,
             bias,
             growing_method,
             start_coords,
@@ -210,6 +215,7 @@ fn main() -> Result<(), maze::MazeSaveError> {
                 })
                 .height(height)
                 .width(width)
+                .seed(seed)
                 .algorithm(algorithm)
                 .build()
                 .map_err(|err| MazeSaveError::reason(err.to_string()))?;

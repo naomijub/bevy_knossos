@@ -39,7 +39,7 @@ enum Orientation {
 pub struct RecursiveDivision;
 
 impl RecursiveDivision {
-    fn divide(grid: &mut Grid, x: usize, y: usize, ax: usize, ay: usize) {
+    fn divide(grid: &mut Grid, x: usize, y: usize, ax: usize, ay: usize, rng: &mut impl Rng) {
         // Calculate subfield width
         let w = ax - x + 1;
         // Calculate subfield height
@@ -60,10 +60,8 @@ impl RecursiveDivision {
             return;
         }
 
-        let mut rng = rand::rng();
-
         // Which way a subfield with the given dimensions ought to be bisected
-        let orientation = choose_orientation(w, h);
+        let orientation = choose_orientation(w, h, rng);
 
         // Get X and Y coordinates of a cell where a passage will be carved
         let px = rng.random_range(x..ax);
@@ -82,15 +80,15 @@ impl RecursiveDivision {
         match orientation {
             Orientation::Horizontal => {
                 // Top subfield
-                RecursiveDivision::divide(grid, x, y, ax, py);
+                RecursiveDivision::divide(grid, x, y, ax, py, rng);
                 // Bottom subfield
-                RecursiveDivision::divide(grid, x, ny, ax, ay);
+                RecursiveDivision::divide(grid, x, ny, ax, ay, rng);
             }
             Orientation::Vertical => {
                 // Left subfield
-                RecursiveDivision::divide(grid, x, y, px, ay);
+                RecursiveDivision::divide(grid, x, y, px, ay, rng);
                 // Right subfield
-                RecursiveDivision::divide(grid, nx, y, ax, ay);
+                RecursiveDivision::divide(grid, nx, y, ax, ay, rng);
             }
         }
     }
@@ -115,13 +113,13 @@ impl RecursiveDivision {
 ///
 /// The `generate` function will warn in case a start_coords is passed.
 impl Algorithm for RecursiveDivision {
-    fn generate(&mut self, grid: &mut Grid, _c: Option<Coords>) {
+    fn generate(&mut self, grid: &mut Grid, _c: Option<Coords>, rng: &mut StdRng) {
         if _c.is_some() {
             eprintln!("Algorithm `{}` doesn't suppoer `start_coords`", self.name())
         }
         let width = grid.width();
         let height = grid.height();
-        RecursiveDivision::divide(grid, 0, 0, width - 1, height - 1);
+        RecursiveDivision::divide(grid, 0, 0, width - 1, height - 1, rng);
     }
 
     fn has_start_coords(&self) -> bool {
@@ -133,7 +131,7 @@ impl Algorithm for RecursiveDivision {
     }
 }
 
-fn choose_orientation(width: usize, height: usize) -> Orientation {
+fn choose_orientation(width: usize, height: usize, rng: &mut impl Rng) -> Orientation {
     if width < height {
         return Orientation::Horizontal;
     }
@@ -142,7 +140,6 @@ fn choose_orientation(width: usize, height: usize) -> Orientation {
         return Orientation::Vertical;
     }
 
-    let mut rng = rand::rng();
     if !rng.random_bool(BOOL_TRUE_PROBABILITY) {
         Orientation::Horizontal
     } else {

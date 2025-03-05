@@ -100,14 +100,14 @@ impl BinaryTree {
 ///
 /// The `generate` function will warn in case a start_coords is passed.
 impl Algorithm for BinaryTree {
-    fn generate(&mut self, grid: &mut Grid, _c: Option<Coords>) {
+    fn generate(&mut self, grid: &mut Grid, _c: Option<Coords>, rng: &mut StdRng) {
         if _c.is_some() {
             eprintln!("Algorithm `{}` doesn't suppoer `start_coords`", self.name())
         }
         for y in 0..grid.height() {
             for x in 0..grid.width() {
                 let dirs = self.populate_dirs((x, y), grid);
-                if let Some(dir) = dirs.choose(&mut rand::rng()) {
+                if let Some(dir) = dirs.choose(rng) {
                     grid.carve_passage((x, y), *dir).ok();
                 }
             }

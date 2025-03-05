@@ -11,7 +11,7 @@ env:
 
 jobs:
   typos:
-    name: Spell Check with Typos
+    name: Spell Check
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Actions Repository
@@ -20,14 +20,16 @@ jobs:
       uses: crate-ci/typos@master
       
   fmt:
+    name: Format
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
-    - name: format
+    - name: Format
       run: cargo fmt -- --check
 
   clippy:
+    name: Clippy
     runs-on: ubuntu-latest
 
     steps:
@@ -39,10 +41,11 @@ jobs:
     - uses: Swatinem/rust-cache@v2
     - name: Install Dependencies
       run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
-    - name: clippy
+    - name: Run Clippy
       run: cargo clippy --locked --all-features
 
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,6 +54,7 @@ jobs:
         run: cargo check --locked
 
   test:
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -61,6 +65,7 @@ jobs:
         run: cargo test --locked --all-features
 
   coverage:
+    name: Coverage
     runs-on: ubuntu-latest
     # container:
     #   image: xd009642/tarpaulin:develop-nightly
