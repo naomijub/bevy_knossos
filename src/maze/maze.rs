@@ -237,6 +237,24 @@ mod tests {
         });
     }
 
+    #[test]
+    fn maze_ends() {
+        let grid = generate_valid_maze();
+        let maze = OrthogonalMaze { grid };
+
+        let ends = maze.ends();
+
+        assert_eq!(
+            ends,
+            vec![
+                ((0, 0), &Cell::SOUTH),
+                ((1, 0), &Cell::EAST),
+                ((2, 1), &Cell::WEST),
+                ((3, 3), &Cell::WEST)
+            ]
+        );
+    }
+
     fn generate_valid_maze() -> Grid {
         let mut grid = Grid::new(4, 4);
 

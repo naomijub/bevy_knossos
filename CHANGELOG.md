@@ -15,6 +15,7 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 - Added `OrthogonalMaze::ends`, a way to get all maze ends.
 - Added `MazeEndsPaths` resource and `find_maze_ends_paths` in `pathfinding` feature so that you can pathfind all Maze Ends by cost. This can be opt-out with the feature `single_end`.
 - Added `MazeEnd` component for Maze cells that have 3 walls.
+- Added example `bevy_multiple_ends` with pathfinding the secondary ends.
 
 ## [0.6.2] - 2025-02-28
 
