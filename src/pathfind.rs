@@ -6,8 +6,10 @@ use crate::{
 };
 use std::collections::HashMap;
 
+#[cfg(not(feature = "single_end"))]
 pub(crate) mod all_ends;
 
+#[cfg(not(feature = "single_end"))]
 pub use all_ends::{MazeEndsPaths, find_maze_ends_paths, MazeEnd};
 
 /// Associated cost to the path [`Cell`]. Default is 1

@@ -112,17 +112,17 @@ impl Plugin for KnossosPlugin {
             use bevy::app::Update;
 
             app.register_type::<pathfind::MazePath>()
-                .register_type::<pathfind::MazeEndsPaths>()
-                .register_type::<pathfind::MazeEnd>()
                 .register_type::<pathfind::Algorithm>()
                 .init_resource::<pathfind::Algorithm>()
                 .init_resource::<pathfind::MazePath>()
-                .init_resource::<pathfind::MazeEndsPaths>()
                 .add_systems(Update, pathfind::find_path);
 
             #[cfg(not(feature = "single_end"))]
             {
-                app.add_systems(Update, pathfind::find_maze_ends_paths);
+                app.register_type::<pathfind::MazeEndsPaths>()
+                    .register_type::<pathfind::MazeEnd>()
+                    .init_resource::<pathfind::MazeEndsPaths>()
+                    .add_systems(Update, pathfind::find_maze_ends_paths);
             }
         }
     }

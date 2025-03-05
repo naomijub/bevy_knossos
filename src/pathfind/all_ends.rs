@@ -17,11 +17,10 @@ pub struct MazeEndsPaths {
 
 impl MazeEndsPaths {
     /// Checks if a `path_coord` ([`Coords`]) is contained in the path from [`Start`] to [`MazeEnd`]
-    pub fn contains_path_to_end(&self, goal: Coords, path_coord: Coords) -> bool {
+    pub fn contains_coord_path_end(&self, start: Coords, goal: Coords, path_coord: Coords) -> bool {
         self.paths
-            .iter()
-            .find(|((_start, end), (_path, _cost))| end == &goal)
-            .is_some_and(|((_start, _end), (path, _cost))| path.contains(&(path_coord.into())))
+            .get(&(start, goal))
+            .is_some_and(|(path, _cost)| path.contains(&(path_coord.into())))
     }
 }
 
@@ -36,7 +35,6 @@ pub struct MazeEnd;
 /// This operation is quite slow for large mazes, as it needs to pathfind over all ends.
 /// issue
 #[cfg(not(tarpaulin_include))]
-#[cfg(not(feature = "single_end"))]
 pub fn find_maze_ends_paths(
     mut commands: Commands,
     start: Query<&CoordsComponent, (With<Cell>, With<Start>)>,
