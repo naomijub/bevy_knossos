@@ -1,6 +1,6 @@
 [![Latest Version](https://img.shields.io/crates/v/bevy_knossos)](https://crates.io/crates/bevy_knossos)
 [![License:Apache](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Build Status](https://github.com/naomijub/bevy_knossos/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/naomijub/bevy_knossos/actions/workflows/build.yml)
+[![Build Status](https://github.com/naomijub/bevy_knossos/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/naomijub/bevy_knossos/actions/workflows/rust.yml)
 [![Coverage Status](https://coveralls.io/repos/github/naomijub/bevy_knossos/badge.svg)](https://coveralls.io/github/naomijub/bevy_knossos)
 
 <p align="center">
@@ -53,7 +53,7 @@ cargo add bevy_knossos
 Or add the following line to your `Cargo.toml`:
 ```no_test
 [dependencies]
-bevy_knossos = "0.6"
+bevy_knossos = "0.7"
 ```
 
 ## Usage
@@ -68,7 +68,7 @@ For information on knossos CLI usage, check the original repository [#Cli](https
 
 | bevy | bevy_knossos |
 | ---- | ------------ |
-| 0.15 | 0.5 - 0.6    |
+| 0.15 | 0.5 - 0.7    |
 
 ## Features
 
