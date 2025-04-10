@@ -157,7 +157,7 @@ impl GameMap<WithStartGoal> {
         map: &[char],
         cols: usize,
         rows: usize,
-    ) -> impl Iterator<Item = Coords> {
+    ) -> impl Iterator<Item = Coords> + use<> {
         let mut coords = Vec::new();
 
         if map.is_empty() {

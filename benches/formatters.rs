@@ -1,7 +1,7 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 
 macro_rules! maze {
-    ($width:expr, $height:expr) => {
+    ($width:expr_2021, $height:expr_2021) => {
         OrthogonalMazeBuilder::new()
             .height($height)
             .width($width)

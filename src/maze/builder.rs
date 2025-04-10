@@ -99,6 +99,9 @@ mod tests {
             .algorithm(Box::new(RecursiveDivision {}))
             .build()
             .unwrap_err();
-        assert_eq!(maze_err.to_string(), "Cannot build maze. Reason: Algorithm `RecursiveDivision` doesn't support `start_coords`");
+        assert_eq!(
+            maze_err.to_string(),
+            "Cannot build maze. Reason: Algorithm `RecursiveDivision` doesn't support `start_coords`"
+        );
     }
 }

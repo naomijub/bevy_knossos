@@ -2,7 +2,7 @@ use bevy_knossos::maze::*;
 use assert_fs::fixture::TempDir;
 
 macro_rules! maze {
-    ($algo:expr) => {
+    ($algo:expr_2021) => {
         OrthogonalMazeBuilder::new()
             .algorithm(Box::new($algo))
             .build()
@@ -81,15 +81,21 @@ fn build_valid_maze_with_growing_tree_algorithm() {
     assert!(maze!(GrowingTree::new(Method::Oldest)).unwrap().is_valid());
     assert!(maze!(GrowingTree::new(Method::Middle)).unwrap().is_valid());
     assert!(maze!(GrowingTree::new(Method::Random)).unwrap().is_valid());
-    assert!(maze!(GrowingTree::new(Method::Newest25Random75))
-        .unwrap()
-        .is_valid());
-    assert!(maze!(GrowingTree::new(Method::Newest50Random50))
-        .unwrap()
-        .is_valid());
-    assert!(maze!(GrowingTree::new(Method::Newest75Random25))
-        .unwrap()
-        .is_valid());
+    assert!(
+        maze!(GrowingTree::new(Method::Newest25Random75))
+            .unwrap()
+            .is_valid()
+    );
+    assert!(
+        maze!(GrowingTree::new(Method::Newest50Random50))
+            .unwrap()
+            .is_valid()
+    );
+    assert!(
+        maze!(GrowingTree::new(Method::Newest75Random25))
+            .unwrap()
+            .is_valid()
+    );
 }
 
 #[test]
@@ -123,13 +129,13 @@ fn build_valid_maze_with_sidewinder_algorithm() {
 }
 
 macro_rules! to_absolute_path {
-    ($path:expr) => {
+    ($path:expr_2021) => {
         std::env::current_dir().unwrap().join($path).display()
     };
 }
 
 macro_rules! assert_save_maze {
-    ($path:expr, $formatter:expr, $expected:expr) => {
+    ($path:expr_2021, $formatter:expr_2021, $expected:expr_2021) => {
         let maze = maze!().unwrap();
         let result = maze.save($path, $formatter);
         assert_eq!($expected, result.unwrap());
@@ -137,7 +143,7 @@ macro_rules! assert_save_maze {
 }
 
 macro_rules! assert_save_maze_error {
-    ($path:expr, $formatter:expr, $expected:expr) => {
+    ($path:expr_2021, $formatter:expr_2021, $expected:expr_2021) => {
         let maze = maze!().unwrap();
         let result = maze.save($path, $formatter);
         assert_eq!($expected, result.unwrap_err().reason);

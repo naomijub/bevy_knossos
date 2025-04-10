@@ -74,7 +74,7 @@ impl Saveable for StringWrapper {
             Err(why) => {
                 return Err(MazeSaveError {
                     reason: format!("Couldn't find path to current dir: {}", why),
-                })
+                });
             }
             Ok(dir) => dir.join(path),
         };
@@ -83,7 +83,7 @@ impl Saveable for StringWrapper {
             Err(why) => {
                 return Err(MazeSaveError {
                     reason: format!("Couldn't create {}: {}", path.display(), why),
-                })
+                });
             }
             Ok(file) => file,
         };

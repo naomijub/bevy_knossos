@@ -319,7 +319,7 @@ impl std::fmt::Display for ParseHexError {
                 "Expected a 6 character color value in hex, but got: {:?}",
                 e
             ),
-            ParseHexError::IntError(ref e) => e.fmt(f),
+            ParseHexError::IntError(e) => e.fmt(f),
         }
     }
 }

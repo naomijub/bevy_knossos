@@ -6,7 +6,7 @@ authors = [
     "unrenamed <renkonazbka@gmail.com>",
 ]
 description = "Rust library for generating and rendering mazes"
-edition = "2021"
+edition = "2024"
 readme = "README.md"
 license = "Apache-2.0"
 homepage = "https://github.com/naomijub/bevy_knossos"
