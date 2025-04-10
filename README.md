@@ -66,10 +66,10 @@ For information on knossos CLI usage, check the original repository [#Cli](https
 
 ## Bevy support table
 
-| bevy | bevy_knossos |
-| ---- | ------------ |
-| 0.16 | 0.8          |
-| 0.15 | 0.5 - 0.7    |
+| bevy | bevy_knossos | edition |
+| ---- | ------------ | ------- |
+| 0.16 | 0.8          |  2024   |
+| 0.15 | 0.5 - 0.7    |  2021   |
 
 ## Features
 
