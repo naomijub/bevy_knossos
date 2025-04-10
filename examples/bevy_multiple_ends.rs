@@ -1,6 +1,6 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::{prelude::*, platform_support::collections::HashMap};
 use bevy_ecs_tilemap::prelude::*;
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+// use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_knossos::{
     maze::{self, Cell},
     pathfind::MazePath,
@@ -26,7 +26,8 @@ fn main() {
     let mut app = App::new();
     app.insert_resource(maze)
         .add_plugins((DefaultPlugins, TilemapPlugin))
-        .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
+        .add_plugins(KnossosPlugin,)
+        // .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
         .add_systems(Startup, (setup, setup_cool_ends.after(setup)));
     #[cfg(not(feature = "single_end"))]
     app.add_systems(Update, draw_path);
@@ -62,13 +63,13 @@ fn setup_cool_ends(
 fn setup(mut commands: Commands, maze: Res<maze::OrthogonalMaze>, asset_server: Res<AssetServer>) {
     commands.spawn((
         Camera2d,
-        OrthographicProjection {
+        Projection::Orthographic(OrthographicProjection {
             scaling_mode: bevy::render::camera::ScalingMode::AutoMin {
                 min_width: CELL_SIZE * MAZE_SIZE as f32,
                 min_height: CELL_SIZE * MAZE_SIZE as f32,
             },
             ..OrthographicProjection::default_2d()
-        },
+        }),
         Name::new("Camera"),
     ));
 
@@ -141,7 +142,7 @@ fn setup(mut commands: Commands, maze: Res<maze::OrthogonalMaze>, asset_server: 
         storage: tile_storage,
         texture: TilemapTexture::Single(texture_handle),
         tile_size,
-        transform: get_tilemap_center_transform(&map_size, &grid_size, &map_type, 0.0),
+        anchor: TilemapAnchor::Center,
         ..default()
     });
 }
@@ -307,10 +308,10 @@ pub(crate) fn draw_path(
     path: Res<MazePath>,
     path_ends: Res<MazeEndsPaths>,
 ) {
-    let Ok(_start) = start.get_single().cloned() else {
+    let Ok(_start) = start.single().cloned() else {
         return;
     };
-    let Ok(_goal) = goal.get_single().cloned() else {
+    let Ok(_goal) = goal.single().cloned() else {
         return;
     };
 

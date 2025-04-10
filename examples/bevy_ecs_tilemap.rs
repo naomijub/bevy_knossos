@@ -1,6 +1,6 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::{prelude::*, platform_support::collections::HashMap};
 use bevy_ecs_tilemap::prelude::*;
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+// use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_knossos::{
     maze::{self, Cell},
     KnossosPlugin,
@@ -18,7 +18,8 @@ fn main() {
     App::new()
         .insert_resource(maze)
         .add_plugins((DefaultPlugins, TilemapPlugin))
-        .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
+        .add_plugins(KnossosPlugin,)
+        // .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
         .add_systems(Startup, setup)
         .run();
 }
@@ -26,13 +27,13 @@ fn main() {
 fn setup(mut commands: Commands, maze: Res<maze::OrthogonalMaze>, asset_server: Res<AssetServer>) {
     commands.spawn((
         Camera2d,
-        OrthographicProjection {
+        Projection::Orthographic(OrthographicProjection {
             scaling_mode: bevy::render::camera::ScalingMode::AutoMin {
                 min_width: 64. * MAZE_SIZE as f32,
                 min_height: 64. * MAZE_SIZE as f32,
             },
             ..OrthographicProjection::default_2d()
-        },
+        }),
         Name::new("Camera"),
     ));
 
@@ -90,7 +91,7 @@ fn setup(mut commands: Commands, maze: Res<maze::OrthogonalMaze>, asset_server: 
         storage: tile_storage,
         texture: TilemapTexture::Single(texture_handle),
         tile_size,
-        transform: get_tilemap_center_transform(&map_size, &grid_size, &map_type, 0.0),
+        anchor: TilemapAnchor::Center,
         ..default()
     });
 }

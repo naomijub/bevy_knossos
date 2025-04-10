@@ -90,10 +90,10 @@ pub(crate) fn find_path(
     cells: Query<(&CoordsComponent, &Cell, Option<&Cost>)>,
     _algorithm: Res<Algorithm>,
 ) {
-    let Ok(start) = start.get_single().cloned() else {
+    let Ok(start) = start.single().cloned() else {
         return;
     };
-    let Ok(goal) = goal.get_single().cloned() else {
+    let Ok(goal) = goal.single().cloned() else {
         return;
     };
     let cells: HashMap<&CoordsComponent, (&Cell, Option<&Cost>)> =

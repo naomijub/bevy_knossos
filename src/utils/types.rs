@@ -1,7 +1,7 @@
 use std::fmt;
 
 use bevy::{
-    ecs::{component::Component, system::Resource},
+    ecs::{component::Component, resource::Resource},
     math::{U64Vec2, U8Vec2},
     reflect::Reflect,
 };

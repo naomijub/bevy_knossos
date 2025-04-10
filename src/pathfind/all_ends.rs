@@ -41,7 +41,7 @@ pub fn find_maze_ends_paths(
     start: Query<&CoordsComponent, (With<Cell>, With<Start>)>,
     cells: Query<(Entity, &CoordsComponent, &Cell, Option<&Cost>)>,
 ) {
-    let Ok(start) = start.get_single().cloned() else {
+    let Ok(start) = start.single().cloned() else {
         return;
     };
 

@@ -81,11 +81,11 @@ impl CellStatus {
         self.marked
     }
 
-    pub fn visit(&mut self) {
+    pub const fn visit(&mut self) {
         self.visited = true;
     }
 
-    pub fn mark(&mut self) {
+    pub const fn mark(&mut self) {
         self.marked = true;
     }
 }

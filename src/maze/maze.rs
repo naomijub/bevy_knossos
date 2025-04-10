@@ -1,4 +1,4 @@
-use bevy::ecs::system::Resource;
+use bevy::ecs::resource::Resource;
 
 use crate::utils::types::Coords;
 
@@ -28,7 +28,7 @@ impl OrthogonalMaze {
     }
 
     /// Returns a mutable ref to a grid
-    pub fn get_grid_mut(&mut self) -> &mut Grid {
+    pub const fn get_grid_mut(&mut self) -> &mut Grid {
         &mut self.grid
     }
 
