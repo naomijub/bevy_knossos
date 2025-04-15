@@ -1,4 +1,4 @@
-use bevy::{prelude::*, platform_support::collections::HashMap};
+use bevy::{prelude::*, platform::collections::HashMap};
 use bevy_knossos::{maze::*, Coords, CoordsComponent, KnossosPlugin};
 // use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
