@@ -30,12 +30,12 @@ bevy = { version = "0.16.0", default-features = false }
 pathfinding = { version = "4.14", optional = true }
 
 [dev-dependencies]
-bevy = "0.16.0 "
+bevy = "0.16.0"
 assert_cmd = "2.0.16"
 assert_fs = "1.1"
 criterion = { version = "0.5", features = ["html_reports"] }
 # bevy-inspector-egui = "0.29.1"
-bevy_ecs_tilemap = {git = "https://github.com/StarArawn/bevy_ecs_tilemap"}
+bevy_ecs_tilemap = "0.16.0-rc.2"
 difference = { git = "https://github.com/johannhof/difference.rs" }
 
 [lints.rust]

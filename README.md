@@ -68,8 +68,10 @@ For information on knossos CLI usage, check the original repository [#Cli](https
 
 | bevy | bevy_knossos | edition |
 | ---- | ------------ | ------- |
-| 0.16 | main         |  2024   |
+| 0.16 | main `*`     |  2024   |
 | 0.15 | 0.5 - 0.7    |  2021   |
+
+> `*` Some functionalities might be broken because of other crates not updating to bevy `0.16.0`.
 
 ## Features
 
