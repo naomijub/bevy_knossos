@@ -42,6 +42,6 @@ mod tests {
         assert_eq!(
             error.to_string(),
             "Cannot move to a cell. Reason: It's a fake reason. Coords: x = 0, y = 0"
-        )
+        );
     }
 }

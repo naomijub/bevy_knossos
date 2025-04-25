@@ -7,6 +7,14 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 
 ## [Unreleased]
 
+## [0.8.0] - 2025-04-xx: Update to Bevy 0.16 and Edition 2024
+
+### Breaking Changes
+
+- Bevy version 0.16
+- Rust Edition 2024
+- Apply `#[must_use]` to functions that return values that are must use.
+
 ## [0.7.0] - 2025-03-05: Keep compatibility with `knossos` crate where possible.
 
 ### Added

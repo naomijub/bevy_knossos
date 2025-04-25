@@ -18,6 +18,7 @@ pub struct OrthogonalMazeBuilder {
 
 impl OrthogonalMazeBuilder {
     /// Returns a new instance of a builder with the default width, height and algorithm
+    #[must_use]
     pub fn new() -> Self {
         OrthogonalMazeBuilder {
             width: 10,
@@ -29,36 +30,44 @@ impl OrthogonalMazeBuilder {
     }
 
     /// Sets a seed value for deterministic generation and returns itself
+    #[must_use]
     pub const fn seed(mut self, seed: Option<u64>) -> Self {
         self.seed = seed;
         self
     }
 
     /// Sets a maze width and returns itself
+    #[must_use]
     pub const fn width(mut self, width: usize) -> Self {
         self.width = width;
         self
     }
 
     /// Sets a maze height and returns itself
+    #[must_use]
     pub const fn height(mut self, height: usize) -> Self {
         self.height = height;
         self
     }
 
     /// Sets an algorithm for generating a maze and returns itself
+    #[must_use]
     pub fn algorithm(mut self, algorithm: Box<dyn Algorithm>) -> Self {
         self.algorithm = algorithm;
         self
     }
 
     /// Sets start coords for arguments that allow start coords
+    #[must_use]
     pub fn start_coords(mut self, coord: impl Into<Coords>) -> Self {
         self.start_coords = Some(coord.into());
         self
     }
 
     /// Builds a maze and returns a resulting object of the generated orthogonal maze
+    ///
+    /// # Errors
+    /// Returns a [`BuildError`] if the algorithm does not support start coords
     pub fn build(mut self) -> Result<OrthogonalMaze, BuildError> {
         let mut maze = OrthogonalMaze::new(self.width, self.height);
         let mut rng = self
@@ -99,6 +108,9 @@ mod tests {
             .algorithm(Box::new(RecursiveDivision {}))
             .build()
             .unwrap_err();
-        assert_eq!(maze_err.to_string(), "Cannot build maze. Reason: Algorithm `RecursiveDivision` doesn't support `start_coords`");
+        assert_eq!(
+            maze_err.to_string(),
+            "Cannot build maze. Reason: Algorithm `RecursiveDivision` doesn't support `start_coords`"
+        );
     }
 }

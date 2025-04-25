@@ -1,4 +1,4 @@
-use bevy::ecs::system::Resource;
+use bevy::ecs::resource::Resource;
 
 use crate::utils::types::Coords;
 
@@ -21,6 +21,7 @@ pub struct OrthogonalMaze {
 
 impl OrthogonalMaze {
     /// Returns a new instance of an orthogonal maze with a given width and height
+    #[must_use]
     pub fn new(width: usize, height: usize) -> OrthogonalMaze {
         OrthogonalMaze {
             grid: Grid::new(width, height),
@@ -28,11 +29,12 @@ impl OrthogonalMaze {
     }
 
     /// Returns a mutable ref to a grid
-    pub fn get_grid_mut(&mut self) -> &mut Grid {
+    pub const fn get_grid_mut(&mut self) -> &mut Grid {
         &mut self.grid
     }
 
     /// Returns `true` if a maze is valid. Otherwise, returns `false`
+    #[must_use]
     pub fn is_valid(&self) -> bool {
         validate(&self.grid)
     }
@@ -65,6 +67,8 @@ impl OrthogonalMaze {
     /// Returns an iterator over the maze where `index == y * Maze::width + x`.
     ///
     /// The iterator yields all items, `(Coords, Cell)`, from start to end.
+    #[must_use]
+    #[expect(clippy::iter_without_into_iter)] // Implemented elsewhere
     pub const fn iter(&self) -> OrthogonalMazeIterator {
         OrthogonalMazeIterator {
             maze: self,
@@ -73,6 +77,7 @@ impl OrthogonalMaze {
     }
 
     /// Returns all cells that have 3 walls, means maze ends.
+    #[must_use]
     pub fn ends(&self) -> Vec<((usize, usize), &Cell)> {
         self.iter()
             .filter(|maze_cell| maze_cell.1.walls_count() == 3)
@@ -262,7 +267,7 @@ mod tests {
             .enumerate()
             .for_each(|(idx, (coord, cell))| {
                 assert_eq!(idx, coord.1 * width + coord.0);
-                assert!(!cell.is_empty())
+                assert!(!cell.is_empty());
             });
     }
 
@@ -274,7 +279,7 @@ mod tests {
 
         maze.iter().enumerate().for_each(|(idx, (coord, cell))| {
             assert_eq!(idx, coord.1 * width + coord.0);
-            assert!(!cell.is_empty())
+            assert!(!cell.is_empty());
         });
     }
 

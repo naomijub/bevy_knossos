@@ -21,6 +21,7 @@ pub struct Prim {
 
 impl Prim {
     /// Create a new instance of the algorithm with an empty set of the frontier cells
+    #[must_use]
     pub const fn new() -> Prim {
         Prim { frontiers: vec![] }
     }
@@ -49,23 +50,24 @@ impl Prim {
         }
     }
 
+    #[expect(clippy::unused_self)]
     fn neighbours(&self, (x, y): Coords, grid: &mut Grid) -> Vec<Coords> {
         let mut neighbours = vec![];
 
         if x > 0 && grid.is_cell_marked((x - 1, y)) {
-            neighbours.push((x - 1, y))
+            neighbours.push((x - 1, y));
         }
 
         if x + 1 < grid.width() && grid.is_cell_marked((x + 1, y)) {
-            neighbours.push((x + 1, y))
+            neighbours.push((x + 1, y));
         }
 
         if y > 0 && grid.is_cell_marked((x, y - 1)) {
-            neighbours.push((x, y - 1))
+            neighbours.push((x, y - 1));
         }
 
         if y + 1 < grid.height() && grid.is_cell_marked((x, y + 1)) {
-            neighbours.push((x, y + 1))
+            neighbours.push((x, y + 1));
         }
 
         neighbours
@@ -114,10 +116,9 @@ impl Algorithm for Prim {
 
             let (x, y) = coords;
 
-            if let Some(dir) = direction(x, y, nx, ny) {
-                grid.carve_passage(coords, dir).unwrap();
-                self.mark(coords, grid);
-            }
+            let dir = direction(x, y, nx, ny);
+            grid.carve_passage(coords, dir).unwrap();
+            self.mark(coords, grid);
         }
     }
 
@@ -136,18 +137,18 @@ fn get_rand_coords(grid: &Grid, rng: &mut impl Rng) -> Coords {
     (x, y)
 }
 
-fn direction(x: usize, y: usize, nx: usize, ny: usize) -> Option<Cell> {
+fn direction(x: usize, y: usize, nx: usize, ny: usize) -> Cell {
     if x < nx {
-        return Some(Cell::EAST);
+        return Cell::EAST;
     }
     if x > nx {
-        return Some(Cell::WEST);
+        return Cell::WEST;
     }
     if y < ny {
-        return Some(Cell::SOUTH);
+        return Cell::SOUTH;
     }
     if y > ny {
-        return Some(Cell::NORTH);
+        return Cell::NORTH;
     }
 
     unreachable!("The x and y coordinates are never equal to nx and ny")

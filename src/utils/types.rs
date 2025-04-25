@@ -1,7 +1,7 @@
 use std::fmt;
 
 use bevy::{
-    ecs::{component::Component, system::Resource},
+    ecs::{component::Component, resource::Resource},
     math::{U64Vec2, U8Vec2},
     reflect::Reflect,
 };
@@ -25,11 +25,13 @@ impl fmt::Display for CoordsComponent {
 
 impl CoordsComponent {
     /// Creates new [`CoordsComponent`]
+    #[must_use]
     pub const fn new(x: usize, y: usize) -> Self {
         Self { coord: (x, y) }
     }
 
     /// Returns `x` and `y` values for [`CoordsComponent`]
+    #[must_use]
     pub const fn xy(&self) -> (usize, usize) {
         (self.coord.0, self.coord.1)
     }
@@ -87,7 +89,7 @@ mod tests {
         assert_eq!(component, expected);
 
         assert_eq!(component.xy(), (42, 42));
-        assert_eq!(component.to_string(), "(42,42)")
+        assert_eq!(component.to_string(), "(42,42)");
     }
 
     #[test]

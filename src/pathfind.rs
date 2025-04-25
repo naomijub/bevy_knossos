@@ -39,11 +39,13 @@ pub struct MazePath {
 
 impl MazePath {
     /// Heuristic distance function to maze [`Goal`]
+    #[must_use]
     pub const fn distance(coords: &CoordsComponent, other: &CoordsComponent) -> u32 {
         (coords.coord.0.abs_diff(other.coord.0) + coords.coord.1.abs_diff(other.coord.1)) as u32
     }
 
     /// Successor function of maze position
+    #[must_use]
     pub fn successors(
         current: &CoordsComponent,
         cells: &HashMap<&CoordsComponent, (&Cell, Option<&Cost>)>,
@@ -90,10 +92,10 @@ pub(crate) fn find_path(
     cells: Query<(&CoordsComponent, &Cell, Option<&Cost>)>,
     _algorithm: Res<Algorithm>,
 ) {
-    let Ok(start) = start.get_single().cloned() else {
+    let Ok(start) = start.single().cloned() else {
         return;
     };
-    let Ok(goal) = goal.get_single().cloned() else {
+    let Ok(goal) = goal.single().cloned() else {
         return;
     };
     let cells: HashMap<&CoordsComponent, (&Cell, Option<&Cost>)> =

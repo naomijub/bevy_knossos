@@ -1,6 +1,6 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::{prelude::*, platform::collections::HashMap};
 use bevy_ecs_tilemap::prelude::*;
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+// use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_knossos::{
     maze::{self, Cell},
     KnossosPlugin,
@@ -18,7 +18,8 @@ fn main() {
     App::new()
         .insert_resource(maze)
         .add_plugins((DefaultPlugins, TilemapPlugin))
-        .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
+        .add_plugins(KnossosPlugin,)
+        // .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
         .add_systems(Startup, setup)
         .run();
 }
@@ -26,13 +27,13 @@ fn main() {
 fn setup(mut commands: Commands, maze: Res<maze::OrthogonalMaze>, asset_server: Res<AssetServer>) {
     commands.spawn((
         Camera2d,
-        OrthographicProjection {
+        Projection::Orthographic(OrthographicProjection {
             scaling_mode: bevy::render::camera::ScalingMode::AutoMin {
                 min_width: 64. * MAZE_SIZE as f32,
                 min_height: 64. * MAZE_SIZE as f32,
             },
             ..OrthographicProjection::default_2d()
-        },
+        }),
         Name::new("Camera"),
     ));
 
@@ -90,7 +91,7 @@ fn setup(mut commands: Commands, maze: Res<maze::OrthogonalMaze>, asset_server: 
         storage: tile_storage,
         texture: TilemapTexture::Single(texture_handle),
         tile_size,
-        transform: get_tilemap_center_transform(&map_size, &grid_size, &map_type, 0.0),
+        anchor: TilemapAnchor::Center,
         ..default()
     });
 }
@@ -146,19 +147,11 @@ fn cell_to_index(
             0b0100 => 313,
             0b0101 => {
                 let has_ne_corner = check_corner(position, IVec2::new(1, -1), cache);
-                if has_ne_corner {
-                    307
-                } else {
-                    314
-                }
+                if has_ne_corner { 307 } else { 314 }
             }
             0b0110 => {
                 let has_se_corner = check_corner(position, IVec2::new(1, 1), cache);
-                if has_se_corner {
-                    280
-                } else {
-                    287
-                }
+                if has_se_corner { 280 } else { 287 }
             }
             0b0111 => {
                 let has_ne_corner = check_corner(position, IVec2::new(1, -1), cache);
@@ -173,19 +166,11 @@ fn cell_to_index(
             0b1000 => 285,
             0b1001 => {
                 let has_nw_corner = check_corner(position, IVec2::new(-1, -1), cache);
-                if has_nw_corner {
-                    308
-                } else {
-                    315
-                }
+                if has_nw_corner { 308 } else { 315 }
             }
             0b1010 => {
                 let has_sw_corner = check_corner(position, IVec2::new(-1, 1), cache);
-                if has_sw_corner {
-                    281
-                } else {
-                    288
-                }
+                if has_sw_corner { 281 } else { 288 }
             }
             0b1011 => {
                 let has_nw_corner = check_corner(position, IVec2::new(-1, -1), cache);

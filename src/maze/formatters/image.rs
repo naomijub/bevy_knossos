@@ -17,6 +17,7 @@ pub struct Image {
 
 impl Image {
     /// Returns a new instance of an [Image] formatter with a default settings
+    #[must_use]
     pub const fn new() -> Image {
         Image {
             wall_width: 40,
@@ -28,30 +29,35 @@ impl Image {
     }
 
     /// Sets a wall width and returns itself
+    #[must_use]
     pub const fn wall(mut self, width: usize) -> Self {
         self.wall_width = width;
         self
     }
 
     /// Sets a passage width and returns itself
+    #[must_use]
     pub const fn passage(mut self, width: usize) -> Self {
         self.passage_width = width;
         self
     }
 
     /// Sets a background color and returns itself
+    #[must_use]
     pub const fn background(mut self, color: Color) -> Self {
         self.background_color = color;
         self
     }
 
     /// Sets a maze (foreground) color and returns itself
+    #[must_use]
     pub const fn foreground(mut self, color: Color) -> Self {
         self.foreground_color = color;
         self
     }
 
     /// Sets a margin (a distance between a maze and the image borders) and returns itself
+    #[must_use]
     pub const fn margin(mut self, value: usize) -> Self {
         self.margin = value;
         self
@@ -235,7 +241,7 @@ impl Default for Image {
 
 /// An implementation of a formatter
 impl Formatter<ImageWrapper> for Image {
-    /// Converts a given grid into an image and returns an [ImageWrapper] over that image
+    /// Converts a given grid into an image and returns an [`ImageWrapper`] over that image
     fn format(&self, grid: &Grid) -> ImageWrapper {
         let (width, height) = self.sizes(grid);
         let mut image: RgbImage = ImageBuffer::new(width as u32, height as u32);

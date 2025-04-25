@@ -111,11 +111,11 @@ impl RecursiveDivision {
 ///  
 /// # Warn
 ///
-/// The `generate` function will warn in case a start_coords is passed.
+/// The `generate` function will warn in case a [`start_coords`] is passed.
 impl Algorithm for RecursiveDivision {
-    fn generate(&mut self, grid: &mut Grid, _c: Option<Coords>, rng: &mut StdRng) {
-        if _c.is_some() {
-            eprintln!("Algorithm `{}` doesn't suppoer `start_coords`", self.name())
+    fn generate(&mut self, grid: &mut Grid, c: Option<Coords>, rng: &mut StdRng) {
+        if c.is_some() {
+            eprintln!("Algorithm `{}` doesn't suppoer `start_coords`", self.name());
         }
         let width = grid.width();
         let height = grid.height();
@@ -140,9 +140,9 @@ fn choose_orientation(width: usize, height: usize, rng: &mut impl Rng) -> Orient
         return Orientation::Vertical;
     }
 
-    if !rng.random_bool(BOOL_TRUE_PROBABILITY) {
-        Orientation::Horizontal
-    } else {
+    if rng.random_bool(BOOL_TRUE_PROBABILITY) {
         Orientation::Vertical
+    } else {
+        Orientation::Horizontal
     }
 }

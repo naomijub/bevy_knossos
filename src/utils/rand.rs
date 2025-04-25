@@ -14,7 +14,7 @@ impl RandPositions {
 
     #[cfg(test)]
     #[cfg(not(tarpaulin_include))]
-    pub fn rand(positions: &mut Vec<Coords>) -> &mut Vec<Coords> {
+    pub const fn rand(positions: &mut Vec<Coords>) -> &mut Vec<Coords> {
         positions
     }
 }

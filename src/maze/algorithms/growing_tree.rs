@@ -58,6 +58,7 @@ impl GrowingTree {
     ///
     /// let algorithm = GrowingTree::new(Method::Newest);
     /// ```
+    #[must_use]
     pub const fn new(method: Method) -> GrowingTree {
         GrowingTree { method }
     }
@@ -123,9 +124,8 @@ impl Algorithm for GrowingTree {
 
             directions.shuffle(rng);
             for dir in directions {
-                let next = match grid.get_next_cell_coords(coords, dir) {
-                    Ok(next) => next,
-                    Err(_) => continue,
+                let Ok(next) = grid.get_next_cell_coords(coords, dir) else {
+                    continue;
                 };
 
                 if grid.is_cell_visited(next) {

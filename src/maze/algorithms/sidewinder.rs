@@ -34,11 +34,11 @@ pub struct Sidewinder;
 ///
 /// # Warn
 ///
-/// The `generate` function will warn in case a start_coords is passed.
+/// The `generate` function will warn in case a [`start_coords`] is passed.
 impl Algorithm for Sidewinder {
-    fn generate(&mut self, grid: &mut Grid, _c: Option<Coords>, rng: &mut StdRng) {
-        if _c.is_some() {
-            eprintln!("Algorithm `{}` doesn't suppoer `start_coords`", self.name())
+    fn generate(&mut self, grid: &mut Grid, c: Option<Coords>, rng: &mut StdRng) {
+        if c.is_some() {
+            eprintln!("Algorithm `{}` doesn't suppoer `start_coords`", self.name());
         }
 
         for y in 0..grid.height() {

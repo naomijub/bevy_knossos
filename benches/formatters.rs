@@ -1,7 +1,7 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 
 macro_rules! maze {
-    ($width:expr, $height:expr) => {
+    ($width:expr_2021, $height:expr_2021) => {
         OrthogonalMazeBuilder::new()
             .height($height)
             .width($width)
@@ -36,7 +36,7 @@ mod image {
                 let file_path = format!("{}/maze.png", output_dir.path().display());
                 let maze = maze!(10, 10).unwrap();
                 maze.save(&file_path, Image::new())
-            })
+            });
         });
     }
 
@@ -47,7 +47,7 @@ mod image {
                 let file_path = format!("{}/maze.png", output_dir.path().display());
                 let maze = maze!(50, 50).unwrap();
                 maze.save(&file_path, Image::new())
-            })
+            });
         });
     }
 }
@@ -62,7 +62,7 @@ mod ascii_narrow {
                 let file_path = format!("{}/maze.txt", output_dir.path().display());
                 let maze = maze!(10, 10).unwrap();
                 maze.save(&file_path, AsciiNarrow)
-            })
+            });
         });
     }
 
@@ -73,7 +73,7 @@ mod ascii_narrow {
                 let file_path = format!("{}/maze.txt", output_dir.path().display());
                 let maze = maze!(100, 100).unwrap();
                 maze.save(&file_path, AsciiNarrow)
-            })
+            });
         });
     }
 }
@@ -88,7 +88,7 @@ mod ascii_broad {
                 let file_path = format!("{}/maze.txt", output_dir.path().display());
                 let maze = maze!(10, 10).unwrap();
                 maze.save(&file_path, AsciiBroad)
-            })
+            });
         });
     }
 
@@ -99,7 +99,7 @@ mod ascii_broad {
                 let file_path = format!("{}/maze.txt", output_dir.path().display());
                 let maze = maze!(100, 100).unwrap();
                 maze.save(&file_path, AsciiBroad)
-            })
+            });
         });
     }
 }
@@ -114,7 +114,7 @@ mod game_map {
                 let file_path = format!("{}/maze.txt", output_dir.path().display());
                 let maze = maze!(10, 10).unwrap();
                 maze.save(&file_path, GameMap::new().span(5))
-            })
+            });
         });
     }
 
@@ -125,7 +125,7 @@ mod game_map {
                 let file_path = format!("{}/maze.txt", output_dir.path().display());
                 let maze = maze!(100, 100).unwrap();
                 maze.save(&file_path, GameMap::new().span(5))
-            })
+            });
         });
     }
 }
