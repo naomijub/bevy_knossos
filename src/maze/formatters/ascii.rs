@@ -36,13 +36,13 @@ pub struct AsciiBroad;
 
 /// An implementation of a narrow ASCII formatter
 impl Formatter<StringWrapper> for AsciiNarrow {
-    /// Converts a given grid into ASCII characters and returns an [StringWrapper] over that image
+    /// Converts a given grid into ASCII characters and returns an [`StringWrapper`] over that image
     fn format(&self, grid: &Grid) -> StringWrapper {
         let mut result = String::new();
 
         let top_border = "_".repeat(grid.width() * 2 - 1);
 
-        writeln!(result, " {} ", top_border).unwrap();
+        writeln!(result, " {top_border} ").unwrap();
 
         for y in 0..grid.height() {
             write!(result, "|").unwrap();
@@ -76,7 +76,7 @@ impl Formatter<StringWrapper> for AsciiNarrow {
 
 /// An implementation of an broad ASCII formatter
 impl Formatter<StringWrapper> for AsciiBroad {
-    /// Converts a given grid into ASCII characters and returns an [StringWrapper] over that image
+    /// Converts a given grid into ASCII characters and returns an [`StringWrapper`] over that image
     fn format(&self, grid: &Grid) -> StringWrapper {
         let mut output = format!("+{}\n", "---+".to_string().repeat(grid.width()));
 

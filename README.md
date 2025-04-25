@@ -68,7 +68,7 @@ For information on knossos CLI usage, check the original repository [#Cli](https
 
 | bevy | bevy_knossos | edition |
 | ---- | ------------ | ------- |
-| 0.16 | 0.8          |  2024   |
+| 0.16 | main         |  2024   |
 | 0.15 | 0.5 - 0.7    |  2021   |
 
 ## Features

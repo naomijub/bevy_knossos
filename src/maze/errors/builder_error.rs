@@ -42,6 +42,6 @@ mod tests {
         assert_eq!(
             error.to_string(),
             "Cannot build maze. Reason: Algorithm `It's a fake reason` doesn't support `start_coords`"
-        )
+        );
     }
 }

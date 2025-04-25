@@ -45,7 +45,7 @@ mod aldous_broder {
                     .algorithm(Box::new(AldousBroder))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -58,7 +58,7 @@ mod aldous_broder {
                     .algorithm(Box::new(AldousBroder))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }
@@ -75,7 +75,7 @@ mod binary_tree {
                     .algorithm(Box::new(BinaryTree::new(Bias::NorthEast)))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -88,7 +88,7 @@ mod binary_tree {
                     .algorithm(Box::new(BinaryTree::new(Bias::NorthEast)))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }
@@ -105,7 +105,7 @@ mod eller {
                     .algorithm(Box::new(Eller))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -118,7 +118,7 @@ mod eller {
                     .algorithm(Box::new(Eller))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }
@@ -135,7 +135,7 @@ mod growing_tree_method_random {
                     .algorithm(Box::new(GrowingTree::new(Method::Random)))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -148,7 +148,7 @@ mod growing_tree_method_random {
                     .algorithm(Box::new(GrowingTree::new(Method::Random)))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }
@@ -165,7 +165,7 @@ mod growing_tree_method_oldest {
                     .algorithm(Box::new(GrowingTree::new(Method::Oldest)))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -178,7 +178,7 @@ mod growing_tree_method_oldest {
                     .algorithm(Box::new(GrowingTree::new(Method::Oldest)))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }
@@ -195,7 +195,7 @@ mod growing_tree_method_newest {
                     .algorithm(Box::new(GrowingTree::new(Method::Newest)))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -208,7 +208,7 @@ mod growing_tree_method_newest {
                     .algorithm(Box::new(GrowingTree::new(Method::Newest)))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }
@@ -225,7 +225,7 @@ mod growing_tree_method_middle {
                     .algorithm(Box::new(GrowingTree::new(Method::Middle)))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -238,7 +238,7 @@ mod growing_tree_method_middle {
                     .algorithm(Box::new(GrowingTree::new(Method::Middle)))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }
@@ -255,7 +255,7 @@ mod hunt_and_kill {
                     .algorithm(Box::new(HuntAndKill::new()))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -268,7 +268,7 @@ mod hunt_and_kill {
                     .algorithm(Box::new(HuntAndKill::new()))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }
@@ -285,7 +285,7 @@ mod kruskal {
                     .algorithm(Box::new(Kruskal))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -298,7 +298,7 @@ mod kruskal {
                     .algorithm(Box::new(Kruskal))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }
@@ -315,7 +315,7 @@ mod prim {
                     .algorithm(Box::new(Prim::new()))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -328,7 +328,7 @@ mod prim {
                     .algorithm(Box::new(Prim::new()))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }
@@ -345,7 +345,7 @@ mod recursive_backtracking {
                     .algorithm(Box::new(RecursiveBacktracking))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -358,7 +358,7 @@ mod recursive_backtracking {
                     .algorithm(Box::new(RecursiveBacktracking))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }
@@ -375,7 +375,7 @@ mod recursive_division {
                     .algorithm(Box::new(RecursiveDivision))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -388,7 +388,7 @@ mod recursive_division {
                     .algorithm(Box::new(RecursiveDivision))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }
@@ -405,7 +405,7 @@ mod sidewinder {
                     .algorithm(Box::new(Sidewinder))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 
@@ -418,7 +418,7 @@ mod sidewinder {
                     .algorithm(Box::new(Sidewinder))
                     .build()
                     .unwrap();
-            })
+            });
         });
     }
 }

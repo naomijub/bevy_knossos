@@ -47,11 +47,9 @@ fn carve_passages_from(coords: Coords, grid: &mut Grid, rng: &mut impl Rng) {
     dirs.shuffle(rng);
 
     for dir in dirs {
-        let next = match grid.get_next_cell_coords(coords, dir) {
-            Ok(next) => next,
-            Err(_) => continue,
+        let Ok(next) = grid.get_next_cell_coords(coords, dir) else {
+            continue;
         };
-
         if grid.is_cell_visited(next) {
             continue;
         }

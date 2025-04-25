@@ -226,16 +226,14 @@ fn main() -> Result<(), maze::MazeSaveError> {
                 OutputCommands::Ascii {
                     output_path,
                     output_type,
-                } => {
-                    match output_type {
-                        AsciiOutputType::Narrow => {
-                            result = maze.save(output_path.as_str(), formatters::AsciiNarrow)
-                        }
-                        AsciiOutputType::Broad => {
-                            result = maze.save(output_path.as_str(), formatters::AsciiBroad)
-                        }
-                    };
-                }
+                } => match output_type {
+                    AsciiOutputType::Narrow => {
+                        result = maze.save(output_path.as_str(), formatters::AsciiNarrow);
+                    }
+                    AsciiOutputType::Broad => {
+                        result = maze.save(output_path.as_str(), formatters::AsciiBroad);
+                    }
+                },
                 OutputCommands::GameMap {
                     output_path,
                     span,
@@ -243,19 +241,20 @@ fn main() -> Result<(), maze::MazeSaveError> {
                     wall,
                     with_start_goal,
                 } => {
-                    result = match with_start_goal {
-                        true => maze.save(
+                    result = if with_start_goal {
+                        maze.save(
                             output_path.as_str(),
                             maze::GameMap::new()
                                 .span(span)
                                 .passage(passage)
                                 .wall(wall)
                                 .with_start_goal(),
-                        ),
-                        false => maze.save(
+                        )
+                    } else {
+                        maze.save(
                             output_path.as_str(),
                             maze::GameMap::new().span(span).passage(passage).wall(wall),
-                        ),
+                        )
                     };
                 }
                 OutputCommands::Image {
@@ -276,11 +275,11 @@ fn main() -> Result<(), maze::MazeSaveError> {
                             .foreground(wall_color),
                     );
                 }
-            };
+            }
 
             match result {
                 Ok(msg) => {
-                    println!("{}", msg);
+                    println!("{msg}");
                     Ok(())
                 }
                 Err(err) => Err(err),
@@ -316,8 +315,7 @@ impl std::fmt::Display for ParseHexError {
         match self {
             ParseHexError::Length(e) => write!(
                 f,
-                "Expected a 6 character color value in hex, but got: {:?}",
-                e
+                "Expected a 6 character color value in hex, but got: {e:?}"
             ),
             ParseHexError::IntError(e) => e.fmt(f),
         }
@@ -337,6 +335,6 @@ mod tests {
     #[test]
     fn verify_cli() {
         use clap::CommandFactory;
-        Cli::command().debug_assert()
+        Cli::command().debug_assert();
     }
 }

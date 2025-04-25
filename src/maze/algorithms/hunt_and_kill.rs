@@ -16,12 +16,14 @@ pub struct HuntAndKill {
 
 impl HuntAndKill {
     /// Create a new instance of the algorithm with a default settings for the "hunt" phase
+    #[must_use]
     pub const fn new() -> HuntAndKill {
         HuntAndKill {
             hunt_start_index: 0,
         }
     }
 
+    #[expect(clippy::unused_self)]
     fn walk(&self, coords: Coords, grid: &mut Grid, rng: &mut impl Rng) -> Option<Coords> {
         let mut directions = [Cell::NORTH, Cell::SOUTH, Cell::WEST, Cell::EAST];
         directions.shuffle(rng);
@@ -46,9 +48,8 @@ impl HuntAndKill {
             for x in 0..grid.width() {
                 if grid.is_cell_visited((x, y)) {
                     continue;
-                } else {
-                    unvisited_cells_count += 1;
                 }
+                unvisited_cells_count += 1;
 
                 for dir in directions {
                     if let Ok(next_coords) = grid.get_next_cell_coords((x, y), dir) {

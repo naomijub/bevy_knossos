@@ -19,11 +19,9 @@ fn visit(coords: Coords, grid: &Grid, visited: &mut Vec<Coords>) {
     dirs.shuffle(&mut rand::rng());
 
     for dir in dirs {
-        let next = match grid.get_next_cell_coords(coords, dir) {
-            Ok(next) => next,
-            Err(_) => continue,
+        let Ok(next) = grid.get_next_cell_coords(coords, dir) else {
+            continue;
         };
-
         if visited.contains(&next) {
             continue;
         }

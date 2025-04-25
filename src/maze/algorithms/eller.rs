@@ -56,13 +56,13 @@ impl State {
         self
     }
 
-    fn add(&mut self, _id: CellId, set_id: SetId, coords: Coords) {
+    fn add(&mut self, id: CellId, set_id: SetId, coords: Coords) {
         let cell = Cell {
-            _id,
+            _id: id,
             set_id,
             coords,
         };
-        self.cells.insert(_id, RefCell::new(cell));
+        self.cells.insert(id, RefCell::new(cell));
     }
 
     fn connect(&mut self, sink_id: CellId, target_id: CellId) {
@@ -108,6 +108,7 @@ pub struct Eller;
 
 impl Eller {
     /// Randomly joins adjacent cells, but only if they are not in the same set
+    #[expect(clippy::unused_self)]
     fn connect_disjoint_sets(
         &self,
         state: &mut State,
@@ -157,6 +158,7 @@ impl Eller {
     }
 
     /// Selects random cells to carve vertical passages from
+    #[expect(clippy::unused_self)]
     fn cells_to_connect(&self, cells: Vec<CellId>, rng: &mut impl Rng) -> Vec<CellId> {
         let mut cells = cells;
         cells.shuffle(rng);
@@ -170,7 +172,7 @@ impl Eller {
         cells
             .iter()
             .take(connect_count)
-            .cloned()
+            .copied()
             .collect::<Vec<CellId>>()
     }
 }
@@ -199,11 +201,11 @@ impl Eller {
 ///  
 /// # Warn
 ///
-/// The `generate` function will warn in case a start_coords is passed.
+/// The `generate` function will warn in case a [`start_coords`] is passed.
 impl Algorithm for Eller {
-    fn generate(&mut self, grid: &mut Grid, _c: Option<Coords>, rng: &mut StdRng) {
-        if _c.is_some() {
-            eprintln!("Algorithm `{}` doesn't suppoer `start_coords`", self.name())
+    fn generate(&mut self, grid: &mut Grid, c: Option<Coords>, rng: &mut StdRng) {
+        if c.is_some() {
+            eprintln!("Algorithm `{}` doesn't suppoer `start_coords`", self.name());
         }
         let mut state = State::new(0, None, grid.width()).populate();
 

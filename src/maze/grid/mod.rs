@@ -35,7 +35,7 @@ impl Grid {
     }
 
     pub fn mark_cell(&mut self, coords: Coords) {
-        self.get_cell_status_mut(coords).mark()
+        self.get_cell_status_mut(coords).mark();
     }
 
     pub fn is_cell_visited(&self, coords: Coords) -> bool {
@@ -101,7 +101,7 @@ impl Grid {
     }
 
     fn visit_cell(&mut self, coords: Coords) {
-        self.get_cell_status_mut(coords).visit()
+        self.get_cell_status_mut(coords).visit();
     }
 
     fn get_cell_status_mut(&mut self, coords: Coords) -> &mut CellStatus {
@@ -146,7 +146,7 @@ impl fmt::Display for Grid {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let top_border = "_".repeat(self.width * 2 - 1);
 
-        writeln!(f, " {} ", top_border)?;
+        writeln!(f, " {top_border} ")?;
 
         for y in 0..self.height {
             write!(f, "|")?; // display left border

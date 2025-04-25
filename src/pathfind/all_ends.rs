@@ -18,6 +18,7 @@ pub struct MazeEndsPaths {
 impl MazeEndsPaths {
     /// Checks if a `path_coord` ([`Coords`]) is contained in the path from [`Start`] to [`MazeEnd`]
     #[cfg(not(tarpaulin_include))]
+    #[must_use]
     pub fn contains_coord_path_end(&self, start: Coords, goal: Coords, path_coord: Coords) -> bool {
         self.paths
             .get(&(start, goal))

@@ -13,6 +13,7 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 
 - Bevy version 0.16
 - Rust Edition 2024
+- Apply `#[must_use]` to functions that return values that are must use.
 
 ## [0.7.0] - 2025-03-05: Keep compatibility with `knossos` crate where possible.
 

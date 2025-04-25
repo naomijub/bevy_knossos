@@ -19,7 +19,7 @@ pub struct WithStartGoal {
 impl ExtraState for NoStartGoal {}
 impl ExtraState for WithStartGoal {}
 
-/// A GameMap formatter for a generated maze
+/// A [`GameMap`] formatter for a generated maze
 ///
 /// This formatter is designed for generating game maps suitable for pseudo-3D games utilizing the ray-casting
 /// algorithm for map modeling and rendering.
@@ -70,7 +70,8 @@ struct GameMapState {
 
 /// An implementation of a formatter without predefined start and exit points
 impl GameMap<NoStartGoal> {
-    /// Returns a new instance of a [GameMap] formatter with a default settings
+    /// Returns a new instance of a [`GameMap`] formatter with a default settings
+    #[must_use]
     pub fn new() -> GameMap<NoStartGoal> {
         GameMap {
             state: Box::new(GameMapState {
@@ -82,7 +83,8 @@ impl GameMap<NoStartGoal> {
         }
     }
 
-    /// Returns a new instance of a [GameMap] formatter of a new type with an option to randonly spawn the start and goal characters on the borders of a map
+    /// Returns a new instance of a [`GameMap`] formatter of a new type with an option to randonly spawn the start and goal characters on the borders of a map
+    #[must_use]
     pub fn with_start_goal(self) -> GameMap<WithStartGoal> {
         GameMap {
             state: self.state,
@@ -94,18 +96,21 @@ impl GameMap<NoStartGoal> {
     }
 
     /// Sets a span (a distance between two walls) and returns itself
+    #[must_use]
     pub fn span(mut self, span: usize) -> Self {
         self.state.span = span;
         self
     }
 
     /// Sets a wall and returns itself
+    #[must_use]
     pub fn wall(mut self, wall: char) -> Self {
         self.state.wall = wall;
         self
     }
 
     /// Sets a passage and returns itself
+    #[must_use]
     pub fn passage(mut self, passage: char) -> Self {
         self.state.passage = passage;
         self
@@ -115,12 +120,14 @@ impl GameMap<NoStartGoal> {
 /// An implementation of a formatter with the predefined start and goal points randomly placed along the map borders
 impl GameMap<WithStartGoal> {
     /// Sets a goal character and returns itself
+    #[must_use]
     pub const fn goal(mut self, goal: char) -> Self {
         self.extra.goal = goal;
         self
     }
 
     /// Sets a start character and returns itself
+    #[must_use]
     pub const fn start(mut self, start: char) -> Self {
         self.extra.start = start;
         self
@@ -194,7 +201,7 @@ impl Default for GameMap<NoStartGoal> {
 
 /// An implementation of a formatter
 impl Formatter<StringWrapper> for GameMap<NoStartGoal> {
-    /// Converts a given grid into the map characters and returns an [StringWrapper] over that image
+    /// Converts a given grid into the map characters and returns an [`StringWrapper`] over that image
     fn format(&self, grid: &Grid) -> StringWrapper {
         let mut map = vec![];
 
@@ -263,7 +270,7 @@ impl Formatter<StringWrapper> for GameMap<NoStartGoal> {
 
 /// An implementation of a formatter
 impl Formatter<StringWrapper> for GameMap<WithStartGoal> {
-    /// Converts a given grid into the map characters and returns an [StringWrapper] over that image
+    /// Converts a given grid into the map characters and returns an [`StringWrapper`] over that image
     fn format(&self, grid: &Grid) -> StringWrapper {
         let mut map = vec![];
 
@@ -347,7 +354,7 @@ fn bottom_right_neighbour_exists(cx: usize, cy: usize, grid: &Grid) -> bool {
 fn write_map(map: &[char], cols: usize) -> String {
     let mut ascii_map: String = String::new();
     for (i, ch) in map.iter().enumerate() {
-        write!(ascii_map, "{}", ch).unwrap();
+        write!(ascii_map, "{ch}").unwrap();
         if (i + 1) % cols == 0 {
             writeln!(ascii_map).unwrap();
         }

@@ -43,6 +43,7 @@ impl BinaryTree {
     ///
     /// let algorithm = BinaryTree::new(Bias::NorthWest);
     /// ```
+    #[must_use]
     pub const fn new(bias: Bias) -> BinaryTree {
         BinaryTree { bias }
     }
@@ -54,34 +55,34 @@ impl BinaryTree {
         match self.bias {
             Bias::NorthWest => {
                 if y > 0 {
-                    dirs.push(Cell::NORTH)
+                    dirs.push(Cell::NORTH);
                 }
                 if x > 0 {
-                    dirs.push(Cell::WEST)
+                    dirs.push(Cell::WEST);
                 }
             }
             Bias::NorthEast => {
                 if y > 0 {
-                    dirs.push(Cell::NORTH)
+                    dirs.push(Cell::NORTH);
                 }
                 if x + 1 < grid.width() {
-                    dirs.push(Cell::EAST)
+                    dirs.push(Cell::EAST);
                 }
             }
             Bias::SouthWest => {
                 if y + 1 < grid.height() {
-                    dirs.push(Cell::SOUTH)
+                    dirs.push(Cell::SOUTH);
                 }
                 if x > 0 {
-                    dirs.push(Cell::WEST)
+                    dirs.push(Cell::WEST);
                 }
             }
             Bias::SouthEast => {
                 if y + 1 < grid.height() {
-                    dirs.push(Cell::SOUTH)
+                    dirs.push(Cell::SOUTH);
                 }
                 if x + 1 < grid.width() {
-                    dirs.push(Cell::EAST)
+                    dirs.push(Cell::EAST);
                 }
             }
         }
@@ -98,11 +99,11 @@ impl BinaryTree {
 ///  
 /// # Warn
 ///
-/// The `generate` function will warn in case a start_coords is passed.
+/// The `generate` function will warn in case a [`start_coords`] is passed.
 impl Algorithm for BinaryTree {
-    fn generate(&mut self, grid: &mut Grid, _c: Option<Coords>, rng: &mut StdRng) {
-        if _c.is_some() {
-            eprintln!("Algorithm `{}` doesn't suppoer `start_coords`", self.name())
+    fn generate(&mut self, grid: &mut Grid, c: Option<Coords>, rng: &mut StdRng) {
+        if c.is_some() {
+            eprintln!("Algorithm `{}` doesn't suppoer `start_coords`", self.name());
         }
         for y in 0..grid.height() {
             for x in 0..grid.width() {

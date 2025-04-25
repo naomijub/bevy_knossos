@@ -27,15 +27,19 @@ pub trait Saveable {
     /// Saves a given object into a file
     ///
     /// In case of success, returns the string with a success message.
-    /// Otherwise, returns a [MazeSaveError] with a custom reason message.
+    /// Otherwise, returns a [`MazeSaveError`] with a custom reason message.
+    ///
+    /// # Errors
+    /// Returns a [`MazeSaveError`] if the file could not be written
     fn save(&self, path: &str) -> Result<String, MazeSaveError>;
 }
 
-/// A custom wrapper over [RgbImage] for converting a maze to an image
+/// A custom wrapper over [`RgbImage`] for converting a maze to an image
 pub struct ImageWrapper(RgbImage);
 
 impl ImageWrapper {
-    /// Consumes `self` and returns the inner `RgbImage`.
+    /// Consumes `self` and returns the inner [`RgbImage`].
+    #[must_use]
     pub fn into_inner(self) -> RgbImage {
         self.0
     }
@@ -51,16 +55,17 @@ impl Saveable for ImageWrapper {
             });
         }
 
-        Ok(format!("Maze was successfully saved as an image: {}", path))
+        Ok(format!("Maze was successfully saved as an image: {path}"))
     }
 }
 
-/// A custom wrapper over [std::string::String] for converting a maze into
+/// A custom wrapper over [`std::string::String`] for converting a maze into
 /// string characters
 pub struct StringWrapper(pub String);
 
 impl StringWrapper {
     /// Consumes `self` and returns the inner `String`.
+    #[must_use]
     pub fn into_inner(self) -> String {
         self.0
     }
@@ -73,7 +78,7 @@ impl Saveable for StringWrapper {
         let path = match std::env::current_dir() {
             Err(why) => {
                 return Err(MazeSaveError {
-                    reason: format!("Couldn't find path to current dir: {}", why),
+                    reason: format!("Couldn't find path to current dir: {why}"),
                 });
             }
             Ok(dir) => dir.join(path),
@@ -92,7 +97,7 @@ impl Saveable for StringWrapper {
             Err(why) => Err(MazeSaveError {
                 reason: format!("Couldn't write to {}: {}", path.display(), why),
             }),
-            Ok(_) => Ok(format!(
+            Ok(()) => Ok(format!(
                 "Maze was successfully written to a file: {}",
                 path.display()
             )),

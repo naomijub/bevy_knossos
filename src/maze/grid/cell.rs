@@ -22,28 +22,33 @@ bitflags! {
 impl Cell {
     /// Returns bits &str representation.
     ///  > use `to_bits_string` for string value
+    #[must_use]
     pub fn to_bits_str(&self) -> &'static str {
         let bits = format!("{:0>4b}", self.bits());
         bits.leak()
     }
 
     /// Returns bits string representation.
+    #[must_use]
     pub fn to_bits_string(&self) -> String {
         format!("{:0>4b}", self.bits())
     }
 
     /// Returns bits u8 representation.
     /// > analogous to `bits`.
+    #[must_use]
     pub const fn to_bits(&self) -> u8 {
         self.bits()
     }
 
     /// Amount of walls present: [0..=4].
+    #[must_use]
     pub const fn walls_count(&self) -> u8 {
         self.bits().count_zeros().saturating_sub(4) as u8
     }
 
     /// Checks if [`Cell`] has 3 walls (*Dead End*)
+    #[must_use]
     pub const fn is_end(&self) -> bool {
         self.walls_count() == 3
     }
@@ -61,7 +66,7 @@ impl fmt::Display for Cell {
         } else {
             names.join("")
         };
-        write!(f, "{}", names)?;
+        write!(f, "{names}")?;
         Ok(())
     }
 }
@@ -73,11 +78,11 @@ pub struct CellStatus {
 }
 
 impl CellStatus {
-    pub const fn visited(&self) -> bool {
+    pub const fn visited(self) -> bool {
         self.visited
     }
 
-    pub const fn marked(&self) -> bool {
+    pub const fn marked(self) -> bool {
         self.marked
     }
 
@@ -97,126 +102,126 @@ mod tests {
     fn empty_is_0000_str() {
         let zero = Cell::empty();
 
-        assert_eq!(zero.to_bits_str(), "0000")
+        assert_eq!(zero.to_bits_str(), "0000");
     }
 
     #[test]
     fn all_is_1111_str() {
         let zero = Cell::all();
 
-        assert_eq!(zero.to_bits_str(), "1111")
+        assert_eq!(zero.to_bits_str(), "1111");
     }
 
     #[test]
     fn north_is_0001_str() {
         let zero = Cell::NORTH;
 
-        assert_eq!(zero.to_bits_str(), "0001")
+        assert_eq!(zero.to_bits_str(), "0001");
     }
 
     #[test]
     fn south_is_0010_str() {
         let zero = Cell::SOUTH;
 
-        assert_eq!(zero.to_bits_str(), "0010")
+        assert_eq!(zero.to_bits_str(), "0010");
     }
 
     #[test]
     fn east_is_0100_str() {
         let zero = Cell::EAST;
 
-        assert_eq!(zero.to_bits_str(), "0100")
+        assert_eq!(zero.to_bits_str(), "0100");
     }
 
     #[test]
     fn west_is_1000_str() {
         let zero = Cell::WEST;
 
-        assert_eq!(zero.to_bits_str(), "1000")
+        assert_eq!(zero.to_bits_str(), "1000");
     }
 
     #[test]
     fn empty_is_0000_bits() {
         let zero = Cell::empty();
 
-        assert_eq!(zero.to_bits(), 0b0000)
+        assert_eq!(zero.to_bits(), 0b0000);
     }
 
     #[test]
     fn all_is_1111_bits() {
         let zero = Cell::all();
 
-        assert_eq!(zero.to_bits(), 0b1111)
+        assert_eq!(zero.to_bits(), 0b1111);
     }
 
     #[test]
     fn north_is_0001_bits() {
         let zero = Cell::NORTH;
 
-        assert_eq!(zero.to_bits(), 0b0001)
+        assert_eq!(zero.to_bits(), 0b0001);
     }
 
     #[test]
     fn south_is_0010_bits() {
         let zero = Cell::SOUTH;
 
-        assert_eq!(zero.to_bits(), 0b0010)
+        assert_eq!(zero.to_bits(), 0b0010);
     }
 
     #[test]
     fn east_is_0100_bits() {
         let zero = Cell::EAST;
 
-        assert_eq!(zero.to_bits(), 0b0100)
+        assert_eq!(zero.to_bits(), 0b0100);
     }
 
     #[test]
     fn west_is_1000_bits() {
         let zero = Cell::WEST;
 
-        assert_eq!(zero.to_bits(), 0b1000)
+        assert_eq!(zero.to_bits(), 0b1000);
     }
 
     #[test]
     fn empty_is_0000() {
         let zero = Cell::empty();
 
-        assert_eq!(zero.to_bits_string(), "0000")
+        assert_eq!(zero.to_bits_string(), "0000");
     }
 
     #[test]
     fn all_is_1111() {
         let zero = Cell::all();
 
-        assert_eq!(zero.to_bits_string(), "1111")
+        assert_eq!(zero.to_bits_string(), "1111");
     }
 
     #[test]
     fn north_is_0001() {
         let zero = Cell::NORTH;
 
-        assert_eq!(zero.to_bits_string(), "0001")
+        assert_eq!(zero.to_bits_string(), "0001");
     }
 
     #[test]
     fn south_is_0010() {
         let zero = Cell::SOUTH;
 
-        assert_eq!(zero.to_bits_string(), "0010")
+        assert_eq!(zero.to_bits_string(), "0010");
     }
 
     #[test]
     fn east_is_0100() {
         let zero = Cell::EAST;
 
-        assert_eq!(zero.to_bits_string(), "0100")
+        assert_eq!(zero.to_bits_string(), "0100");
     }
 
     #[test]
     fn west_is_1000() {
         let zero = Cell::WEST;
 
-        assert_eq!(zero.to_bits_string(), "1000")
+        assert_eq!(zero.to_bits_string(), "1000");
     }
 
     #[test]

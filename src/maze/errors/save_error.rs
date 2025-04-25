@@ -38,6 +38,6 @@ mod tests {
         assert_eq!(
             error.to_string(),
             "Cannot save maze to file. Reason: It's a fake reason"
-        )
+        );
     }
 }
