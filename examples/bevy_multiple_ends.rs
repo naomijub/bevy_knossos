@@ -320,7 +320,7 @@ pub(crate) fn draw_path(
 }
 
 #[cfg(not(feature = "single_end"))]
-#[must_use] 
+#[must_use]
 pub fn contains_path_to_end(maze_ends: &MazeEndsPaths, goal: Coords, path_coord: Coords) -> bool {
     maze_ends
         .paths
