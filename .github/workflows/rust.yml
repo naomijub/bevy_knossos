@@ -42,7 +42,7 @@ jobs:
     - name: Install Dependencies
       run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
     - name: Run Clippy
-      run: cargo clippy --locked --all-features
+      run: cargo clippy --locked --all-features --all-targets
 
   build:
     name: Build
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
       - name: check
-        run: cargo check --locked
+        run: cargo check --locked --all-features
 
   test:
     name: Tests
