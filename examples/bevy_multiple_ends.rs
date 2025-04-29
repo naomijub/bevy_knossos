@@ -1,6 +1,6 @@
 use bevy::{prelude::*, platform::collections::HashMap};
 use bevy_ecs_tilemap::prelude::*;
-// use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_knossos::{
     maze::{self, Cell},
     pathfind::MazePath,
@@ -26,8 +26,7 @@ fn main() {
     let mut app = App::new();
     app.insert_resource(maze)
         .add_plugins((DefaultPlugins, TilemapPlugin))
-        .add_plugins(KnossosPlugin,)
-        // .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
+        .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
         .add_systems(Startup, (setup, setup_cool_ends.after(setup)));
     #[cfg(not(feature = "single_end"))]
     app.add_systems(Update, draw_path);
@@ -55,7 +54,7 @@ fn setup_cool_ends(
             *tile_pos,
             Transform::from_xyz(x, y, 0.1).with_scale(Vec3::splat(0.1)),
             Visibility::Visible,
-            Name::new(format!("Cool End on {}", entity)),
+            Name::new(format!("Cool End on {entity}")),
         ));
     }
 }
@@ -306,7 +305,7 @@ pub(crate) fn draw_path(
         .collect::<Vec<_>>();
 
     if let (true, Some((path, _cost))) = (path.is_changed() || path.is_added(), &path.path) {
-        for (cell, mut index, _) in cells.iter_mut() {
+        for (cell, mut index, _) in &mut cells {
             if path.contains(cell) {
                 index.0 -= 162;
             } else if ends
@@ -320,6 +319,7 @@ pub(crate) fn draw_path(
 }
 
 #[cfg(not(feature = "single_end"))]
+#[must_use] 
 pub fn contains_path_to_end(maze_ends: &MazeEndsPaths, goal: Coords, path_coord: Coords) -> bool {
     maze_ends
         .paths

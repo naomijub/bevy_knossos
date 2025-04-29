@@ -34,9 +34,9 @@ bevy = "0.16.0"
 assert_cmd = "2.0.16"
 assert_fs = "1.1"
 criterion = { version = "0.5", features = ["html_reports"] }
-# bevy-inspector-egui = "0.29.1"
+bevy-inspector-egui = "0.31"
 bevy_ecs_tilemap = "0.16.0-rc.2"
-difference = { git = "https://github.com/johannhof/difference.rs" }
+difference = "2.0"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
@@ -44,6 +44,7 @@ unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
 [lints.clippy]
 pedantic = { level = "warn", priority = 5 }
 # nursery = { level = "warn", priority = 4 }
+similar_names = { level = "allow", priority = 11 }
 use_self = { level = "allow", priority = 11 }
 wildcard_imports = { level = "allow", priority = 11 }
 many_single_char_names = { level = "allow", priority = 11 }
