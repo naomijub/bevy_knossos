@@ -1,6 +1,6 @@
 use bevy::{prelude::*, platform::collections::HashMap};
 use bevy_knossos::{maze::*, Coords, CoordsComponent, KnossosPlugin};
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+// use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 fn main() {
     let maze = OrthogonalMazeBuilder::new()
@@ -13,7 +13,8 @@ fn main() {
     App::new()
         .insert_resource(maze)
         .add_plugins(DefaultPlugins)
-        .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
+        .add_plugins(KnossosPlugin,)
+        // .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
         .add_systems(Startup, load_assets)
         .add_systems(PostStartup, setup.after(load_assets))
         .run();

@@ -1,6 +1,6 @@
 use bevy::{prelude::*, platform::collections::HashMap};
 use bevy_ecs_tilemap::prelude::*;
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+// use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_knossos::{
     maze::{self, Cell},
     pathfind::MazePath,
@@ -20,7 +20,8 @@ fn main() {
     App::new()
         .insert_resource(maze)
         .add_plugins((DefaultPlugins, TilemapPlugin))
-        .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
+        .add_plugins(KnossosPlugin,)
+        // .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
         .add_systems(Startup, setup)
         .add_systems(Update, draw_path)
         .run();
