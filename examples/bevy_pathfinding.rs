@@ -265,7 +265,7 @@ pub(crate) fn draw_path(
     };
 
     if let (true, Some((path, _cost))) = (path.is_changed() || path.is_added(), &path.path) {
-        for (cell, mut index) in cells.iter_mut() {
+        for (cell, mut index) in &mut cells {
             if path.contains(cell) {
                 index.0 -= 162;
             }

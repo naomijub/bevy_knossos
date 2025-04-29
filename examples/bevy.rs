@@ -62,6 +62,8 @@ fn setup(mut commands: Commands, maze: Res<OrthogonalMaze>, tiles: Res<TilesHand
     }
 }
 
+// Bevy related
+#[expect(clippy::trivially_copy_pass_by_ref)]
 fn load_image(
     coords: &Coords,
     cell: &Cell,
