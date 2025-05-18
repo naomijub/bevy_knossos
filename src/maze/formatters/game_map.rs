@@ -3,7 +3,7 @@ use crate::{
         formatters::Formatter,
         grid::{Grid, cell::Cell},
     },
-    utils::{types::Coords, rand::RandPositions},
+    utils::{rand::RandPositions, types::Coords},
 };
 use std::fmt::Write;
 

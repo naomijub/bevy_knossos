@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 /// An enumeration over supported color types for filling a maze image with colors
 ///
 /// # Usage

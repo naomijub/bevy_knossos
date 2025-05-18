@@ -1,6 +1,6 @@
+use super::grid::{Grid, cell::Cell};
 use crate::utils::types::Coords;
 use rand::prelude::*;
-use super::grid::{Grid, cell::Cell};
 
 /// A utility to validate if a given grid is valid, i.e. all the cells are reachable.
 ///

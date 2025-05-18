@@ -44,7 +44,7 @@ impl Prim {
         if x < grid.width()
             && y < grid.height()
             && !grid.is_cell_marked((x, y))
-            && !self.frontiers.iter().any(|f| *f == (x, y))
+            && !self.frontiers.contains(&(x, y))
         {
             self.frontiers.push((x, y));
         }

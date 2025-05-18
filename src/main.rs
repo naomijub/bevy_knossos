@@ -1,9 +1,9 @@
 use std::fmt;
 use std::str::FromStr;
 
-use clap::{Parser, Subcommand, ValueEnum};
 use bevy_knossos::Color;
-use bevy_knossos::maze::{self, formatters, MazeSaveError};
+use bevy_knossos::maze::{self, MazeSaveError, formatters};
+use clap::{Parser, Subcommand, ValueEnum};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 enum Algorithm {

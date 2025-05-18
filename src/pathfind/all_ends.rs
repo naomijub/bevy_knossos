@@ -1,15 +1,15 @@
+use crate::{
+    Coords, CoordsComponent, Start,
+    maze::Cell,
+    pathfind::{Cost, MazePath},
+};
 use bevy::prelude::*;
 use pathfinding::prelude::astar;
-use crate::{
-    maze::Cell,
-    pathfind::{MazePath, Cost},
-    Coords, CoordsComponent, Start,
-};
 
 use std::collections::HashMap;
 
 /// Auxiliary struct that holds knowledge for path finding on each [`Cell`]
-#[derive(Debug, Clone, PartialEq, Resource, Default, Reflect)]
+#[derive(Debug, Clone, PartialEq, Eq, Resource, Default, Reflect)]
 pub struct MazeEndsPaths {
     /// Map containing all ends and their paths from the [`Start`] component [`Coords`]
     pub paths: HashMap<(Coords, Coords), (Vec<CoordsComponent>, u32)>,

@@ -53,7 +53,7 @@ cargo add bevy_knossos
 Or add the following line to your `Cargo.toml`:
 ```no_test
 [dependencies]
-bevy_knossos = "0.7"
+bevy_knossos = "0.8"
 ```
 
 ## Usage

@@ -1,13 +1,26 @@
-use bevy::{prelude::*, platform::collections::HashMap};
+use std::env;
+
+use bevy::{
+    platform::collections::HashMap,
+    prelude::*,
+    remote::{
+        RemotePlugin,
+        http::{DEFAULT_PORT, RemoteHttpPlugin},
+    },
+};
 use bevy_ecs_tilemap::prelude::*;
-// use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_knossos::{
-    maze::{self, Cell},
     KnossosPlugin,
+    maze::{self, Cell},
 };
 
 const MAZE_SIZE: u32 = 32;
 fn main() {
+    let port: u16 = env::args()
+        .nth(1)
+        .and_then(|arg| arg.parse().ok())
+        .unwrap_or(DEFAULT_PORT);
+
     let maze = maze::OrthogonalMazeBuilder::new()
         .algorithm(Box::new(maze::RecursiveBacktracking))
         .width(MAZE_SIZE as usize)
@@ -18,8 +31,9 @@ fn main() {
     App::new()
         .insert_resource(maze)
         .add_plugins((DefaultPlugins, TilemapPlugin))
-        .add_plugins(KnossosPlugin,)
-        // .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
+        .add_plugins(KnossosPlugin)
+        .add_plugins(RemotePlugin::default())
+        .add_plugins(RemoteHttpPlugin::default().with_port(port))
         .add_systems(Startup, setup)
         .run();
 }

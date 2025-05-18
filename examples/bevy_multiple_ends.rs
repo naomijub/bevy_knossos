@@ -1,13 +1,13 @@
-use bevy::{prelude::*, platform::collections::HashMap};
+use bevy::{platform::collections::HashMap, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
-// use bevy_inspector_egui::quick::WorldInspectorPlugin;
-use bevy_knossos::{
-    maze::{self, Cell},
-    pathfind::MazePath,
-    CellSize, Coords, CoordsComponent, Goal, KnossosPlugin, Start,
-};
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 #[cfg(not(feature = "single_end"))]
 use bevy_knossos::pathfind::MazeEndsPaths;
+use bevy_knossos::{
+    CellSize, Coords, CoordsComponent, Goal, KnossosPlugin, Start,
+    maze::{self, Cell},
+    pathfind::MazePath,
+};
 
 #[derive(Debug, Component)]
 pub struct CoolEnd;
@@ -26,8 +26,7 @@ fn main() {
     let mut app = App::new();
     app.insert_resource(maze)
         .add_plugins((DefaultPlugins, TilemapPlugin))
-        .add_plugins(KnossosPlugin,)
-        // .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
+        .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
         .add_systems(Startup, (setup, setup_cool_ends.after(setup)));
     #[cfg(not(feature = "single_end"))]
     app.add_systems(Update, draw_path);
@@ -47,8 +46,8 @@ fn setup_cool_ends(
         .skip(2)
         .take(MAX_COOL_ENDS)
     {
-        let x = (tile_pos.x as f32 - half_maze) * CELL_SIZE + CELL_SIZE / 2.;
-        let y = (tile_pos.y as f32 - half_maze) * CELL_SIZE + CELL_SIZE / 2.;
+        let x = (tile_pos.x as f32 - half_maze).mul_add(CELL_SIZE, CELL_SIZE / 2.);
+        let y = (tile_pos.y as f32 - half_maze).mul_add(CELL_SIZE, CELL_SIZE / 2.);
         commands.entity(entity).insert(CoolEnd);
         commands.spawn((
             Sprite::from_image(asset_server.load("bevy_bird_dark.png")),
