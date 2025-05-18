@@ -17,7 +17,6 @@ categories = ["algorithms"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-backtrace = ["backtrace-on-stack-overflow"]
 pathfinding = ["dep:pathfinding"]
 single_end = ["dep:pathfinding"]
 default = ["pathfinding"]
@@ -29,9 +28,6 @@ clap = { version = "4.5.38", features = ["derive"] }
 bitflags = "2.9"
 bevy = { version = "0.16.0", default-features = false }
 pathfinding = { version = "4.14", optional = true }
-
-[target.'cfg(target_os = "linux")'.dependencies]
-backtrace-on-stack-overflow = {version = "0.3", optional = true}
 
 [dev-dependencies]
 bevy = { version = "0.16.0", features = ["bevy_remote"] }

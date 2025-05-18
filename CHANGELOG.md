@@ -14,10 +14,6 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 - Dependencies.
 - Examples - `bevy_ecs_tilemap` now supports `bevy_remote`.
 
-### Added
-
-- CI example that screenshots the Game 
-
 ## [0.8.0] - 2025-04-xx: Update to Bevy 0.16 and Edition 2024
 
 ### Breaking Changes
