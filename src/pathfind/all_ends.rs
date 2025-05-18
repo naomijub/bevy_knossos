@@ -3,10 +3,8 @@ use crate::{
     maze::Cell,
     pathfind::{Cost, MazePath},
 };
-use bevy::prelude::*;
+use bevy::{platform::collections::HashMap, prelude::*};
 use pathfinding::prelude::astar;
-
-use std::collections::HashMap;
 
 /// Auxiliary struct that holds knowledge for path finding on each [`Cell`]
 #[derive(Debug, Clone, PartialEq, Eq, Resource, Default, Reflect)]

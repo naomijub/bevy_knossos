@@ -2,9 +2,8 @@ use crate::{
     Cell, CoordsComponent,
     utils::types::{Goal, Start},
 };
-use bevy::prelude::*;
+use bevy::{platform::collections::HashMap, prelude::*};
 use pathfinding::prelude::astar;
-use std::collections::HashMap;
 
 #[cfg(not(feature = "single_end"))]
 pub(crate) mod all_ends;
