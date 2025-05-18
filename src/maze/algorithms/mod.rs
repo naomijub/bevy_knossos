@@ -22,8 +22,8 @@ pub use recursive_backtracking::RecursiveBacktracking;
 pub use recursive_division::RecursiveDivision;
 pub use sidewinder::Sidewinder;
 
-use rand::rngs::StdRng;
 use crate::{maze::grid::Grid, utils::types::Coords};
+use rand::rngs::StdRng;
 
 pub(super) const BOOL_TRUE_PROBABILITY: f64 = 0.5;
 

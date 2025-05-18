@@ -5,7 +5,7 @@ use crate::utils::types::Coords;
 use super::{
     errors::MazeSaveError,
     formatters::{Formatter, Saveable},
-    grid::{cell::Cell, Grid},
+    grid::{Grid, cell::Cell},
     validate::validate,
 };
 use std::fmt;

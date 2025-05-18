@@ -1,5 +1,5 @@
-use bevy_knossos::maze::*;
 use assert_fs::fixture::TempDir;
+use bevy_knossos::maze::*;
 
 macro_rules! maze {
     ($algo:expr_2021) => {

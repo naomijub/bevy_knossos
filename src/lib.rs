@@ -105,7 +105,7 @@ pub mod maze;
 use bevy::app::Plugin;
 use maze::Cell;
 pub use utils::color::Color;
-pub use utils::types::{Coords, CellSize, CoordsComponent, Goal, Start};
+pub use utils::types::{CellSize, Coords, CoordsComponent, Goal, Start};
 
 #[cfg(feature = "pathfinding")]
 /// Module containing all necessary tooling to pathfind between [`Start`] and [`Goal`]

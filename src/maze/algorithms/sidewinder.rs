@@ -1,6 +1,6 @@
 use super::Algorithm;
 use crate::{
-    maze::grid::{cell::Cell, Grid},
+    maze::grid::{Grid, cell::Cell},
     utils::types::Coords,
 };
 use rand::prelude::*;

@@ -1,16 +1,16 @@
+use crate::{
+    Cell, CoordsComponent,
+    utils::types::{Goal, Start},
+};
 use bevy::prelude::*;
 use pathfinding::prelude::astar;
-use crate::{
-    utils::types::{Goal, Start},
-    Cell, CoordsComponent,
-};
 use std::collections::HashMap;
 
 #[cfg(not(feature = "single_end"))]
 pub(crate) mod all_ends;
 
 #[cfg(not(feature = "single_end"))]
-pub use all_ends::{MazeEndsPaths, find_maze_ends_paths, MazeEnd};
+pub use all_ends::{MazeEnd, MazeEndsPaths, find_maze_ends_paths};
 
 /// Associated cost to the path [`Cell`]. Default is 1
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Component, Reflect)]
@@ -130,7 +130,7 @@ mod tests {
         let start: CoordsComponent = (12, 12).into();
         let cell = Cell::from_bits(0b0101).unwrap();
         let key = CoordsComponent::new(12, 12);
-        let cells = [(&key, (&cell, None::<&Cost>))].into_iter().collect();
+        let cells = std::iter::once((&key, (&cell, None::<&Cost>))).collect();
 
         let successor = MazePath::successors(&start, &cells);
 
@@ -144,7 +144,7 @@ mod tests {
         let start: CoordsComponent = (10, 10).into();
         let cell = Cell::from_bits(0b1010).unwrap();
         let key = CoordsComponent::new(10, 10);
-        let cells = [(&key, (&cell, Some(&Cost(2))))].into_iter().collect();
+        let cells = std::iter::once((&key, (&cell, Some(&Cost(2))))).collect();
 
         let successor = MazePath::successors(&start, &cells);
 
@@ -158,7 +158,7 @@ mod tests {
         let goal: CoordsComponent = (0, 0).into();
         let cell = Cell::from_bits(0b0101).unwrap();
         let key = CoordsComponent::new(12, 12);
-        let cells = [(&key, (&cell, None::<&Cost>))].into_iter().collect();
+        let cells = std::iter::once((&key, (&cell, None::<&Cost>))).collect();
 
         let successor = MazePath::successors(&goal, &cells);
 

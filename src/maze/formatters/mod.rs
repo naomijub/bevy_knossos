@@ -10,7 +10,7 @@ use std::{fs::File, io::Write};
 
 pub use self::image::Image;
 use super::errors::MazeSaveError;
-pub use ascii::{AsciiNarrow, AsciiBroad};
+pub use ascii::{AsciiBroad, AsciiNarrow};
 pub use game_map::GameMap;
 
 /// A trait for maze formatters
@@ -107,8 +107,8 @@ impl Saveable for StringWrapper {
 
 #[cfg(test)]
 mod tests {
-    use ::image::Rgb;
     use super::*;
+    use ::image::Rgb;
 
     #[test]
     fn into_inner_returns_inner_string() {
@@ -120,7 +120,7 @@ mod tests {
     #[test]
     fn into_inner_returns_inner_image() {
         let img = RgbImage::from_pixel(2, 2, Rgb([255, 0, 0])); // 2x2 red image
-        let wrapper = ImageWrapper(img.clone());
+        let wrapper = ImageWrapper(img);
         let inner = wrapper.into_inner();
 
         assert_eq!(inner.dimensions(), (2, 2));

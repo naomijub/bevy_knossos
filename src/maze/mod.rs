@@ -4,10 +4,10 @@
 //! mazes.
 
 mod builder;
+mod errors;
 mod grid;
 #[allow(clippy::module_inception)]
 mod maze;
-mod errors;
 mod validate;
 
 pub mod algorithms;
@@ -15,7 +15,7 @@ pub mod formatters;
 
 pub use algorithms::*;
 pub use builder::OrthogonalMazeBuilder;
-pub use formatters::{AsciiNarrow, AsciiBroad, GameMap, Image};
 pub use errors::MazeSaveError;
-pub use maze::OrthogonalMaze;
+pub use formatters::{AsciiBroad, AsciiNarrow, GameMap, Image};
 pub use grid::cell::Cell;
+pub use maze::OrthogonalMaze;

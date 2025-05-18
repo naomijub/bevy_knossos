@@ -1,8 +1,8 @@
 use rand::prelude::*;
 
 use super::Algorithm;
-use crate::maze::grid::cell::Cell;
 use crate::maze::grid::Grid;
+use crate::maze::grid::cell::Cell;
 use crate::utils::arena::{ArenaTree, NodeId};
 use crate::utils::types::Coords;
 

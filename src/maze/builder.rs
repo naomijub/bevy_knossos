@@ -1,8 +1,8 @@
-use rand::rngs::StdRng;
 use rand::SeedableRng;
+use rand::rngs::StdRng;
 
-use crate::maze::algorithms::{Algorithm, RecursiveBacktracking};
 use crate::maze::OrthogonalMaze;
+use crate::maze::algorithms::{Algorithm, RecursiveBacktracking};
 use crate::utils::types::Coords;
 
 use super::errors::BuildError;
