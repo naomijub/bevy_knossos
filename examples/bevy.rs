@@ -14,7 +14,9 @@ fn main() {
     App::new()
         .insert_resource(maze)
         .add_plugins(DefaultPlugins)
-        .add_plugins(EguiPlugin { enable_multipass_for_primary_context: true })
+        .add_plugins(EguiPlugin {
+            enable_multipass_for_primary_context: true,
+        })
         .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
         .add_systems(Startup, load_assets)
         .add_systems(PostStartup, setup.after(load_assets))
