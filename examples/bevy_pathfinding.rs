@@ -1,6 +1,6 @@
 use bevy::{platform::collections::HashMap, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 use bevy_knossos::{
     CellSize, CoordsComponent, Goal, KnossosPlugin, Start,
     maze::{self, Cell},
@@ -20,6 +20,7 @@ fn main() {
     App::new()
         .insert_resource(maze)
         .add_plugins((DefaultPlugins, TilemapPlugin))
+        .add_plugins(EguiPlugin { enable_multipass_for_primary_context: true })
         .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
         .add_systems(Startup, setup)
         .add_systems(Update, draw_path)
