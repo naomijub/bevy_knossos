@@ -69,7 +69,7 @@ impl OrthogonalMaze {
     /// The iterator yields all items, `(Coords, Cell)`, from start to end.
     #[must_use]
     #[expect(clippy::iter_without_into_iter)] // Implemented elsewhere
-    pub const fn iter(&self) -> OrthogonalMazeIterator {
+    pub const fn iter(&'_ self) -> OrthogonalMazeIterator<'_> {
         OrthogonalMazeIterator {
             maze: self,
             index: 0,

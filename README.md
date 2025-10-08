@@ -53,7 +53,7 @@ cargo add bevy_knossos
 Or add the following line to your `Cargo.toml`:
 ```no_test
 [dependencies]
-bevy_knossos = "0.8"
+bevy_knossos = "0.9"
 ```
 
 ## Usage
@@ -68,6 +68,7 @@ For information on knossos CLI usage, check the original repository [#Cli](https
 
 | bevy | bevy_knossos | edition |
 | ---- | ------------ | ------- |
+| 0.17 | 0.9          |  2024   |
 | 0.16 | 0.8          |  2024   |
 | 0.15 | 0.5 - 0.7    |  2021   |
 
