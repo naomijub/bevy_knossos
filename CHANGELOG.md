@@ -11,11 +11,15 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 
 - Bevy version 0.17
 
+### Updated
+
+- Dependencies - via `cargo update`
+
 ## [0.8.1] - 2025-04-28: Update to Bevy 0.16 and Edition 2024
 
 ### Updated
 
-- Dependencies.
+- Dependencies - via `cargo update`
 - Examples - `bevy_ecs_tilemap` now supports `bevy_remote`.
 - Use `bevy::platform::collections::HashMap` instead of `std::collections::HashMap`.
 
