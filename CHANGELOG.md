@@ -5,17 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-## [Unreleased]
+## [0.9.0] - 2025-10-24: Update to Bevy 0.17
 
-## [0.8.1] - 2025-04-xx: Update to Bevy 0.16 and Edition 2024
+### Breaking Changes
+
+- Bevy version 0.17
 
 ### Updated
 
-- Dependencies.
+- Dependencies - via `cargo update`
+
+## [0.8.1] - 2025-04-28: Update to Bevy 0.16 and Edition 2024
+
+### Updated
+
+- Dependencies - via `cargo update`
 - Examples - `bevy_ecs_tilemap` now supports `bevy_remote`.
 - Use `bevy::platform::collections::HashMap` instead of `std::collections::HashMap`.
 
-## [0.8.0] - 2025-04-xx: Update to Bevy 0.16 and Edition 2024
+## [0.8.0] - 2025-04-25: Update to Bevy 0.16 and Edition 2024
 
 ### Breaking Changes
 

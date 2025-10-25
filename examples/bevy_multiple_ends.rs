@@ -26,9 +26,7 @@ fn main() {
     let mut app = App::new();
     app.insert_resource(maze)
         .add_plugins((DefaultPlugins, TilemapPlugin))
-        .add_plugins(EguiPlugin {
-            enable_multipass_for_primary_context: true,
-        })
+        .add_plugins(EguiPlugin::default())
         .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
         .add_systems(Startup, (setup, setup_cool_ends.after(setup)));
     #[cfg(not(feature = "single_end"))]
@@ -66,7 +64,7 @@ fn setup(mut commands: Commands, maze: Res<maze::OrthogonalMaze>, asset_server: 
     commands.spawn((
         Camera2d,
         Projection::Orthographic(OrthographicProjection {
-            scaling_mode: bevy::render::camera::ScalingMode::AutoMin {
+            scaling_mode: bevy::camera::ScalingMode::AutoMin {
                 min_width: CELL_SIZE * MAZE_SIZE as f32,
                 min_height: CELL_SIZE * MAZE_SIZE as f32,
             },

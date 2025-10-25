@@ -29,10 +29,10 @@ impl HuntAndKill {
         directions.shuffle(rng);
 
         for dir in directions {
-            if let Ok(next_coords) = grid.get_next_cell_coords(coords, dir) {
-                if !grid.is_cell_visited(next_coords) {
-                    return grid.carve_passage(coords, dir).ok();
-                }
+            if let Ok(next_coords) = grid.get_next_cell_coords(coords, dir)
+                && !grid.is_cell_visited(next_coords)
+            {
+                return grid.carve_passage(coords, dir).ok();
             }
         }
 
@@ -52,11 +52,11 @@ impl HuntAndKill {
                 unvisited_cells_count += 1;
 
                 for dir in directions {
-                    if let Ok(next_coords) = grid.get_next_cell_coords((x, y), dir) {
-                        if grid.is_cell_visited(next_coords) {
-                            grid.carve_passage((x, y), dir).ok();
-                            return Some((x, y));
-                        }
+                    if let Ok(next_coords) = grid.get_next_cell_coords((x, y), dir)
+                        && grid.is_cell_visited(next_coords)
+                    {
+                        grid.carve_passage((x, y), dir).ok();
+                        return Some((x, y));
                     }
                 }
             }

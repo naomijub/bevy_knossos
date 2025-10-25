@@ -16,7 +16,7 @@ impl AldousBroder {}
 
 /// An implementation of Aldous-Broder's algorithm for generating mazes.
 ///
-/// The problem domain the algorithm was created for is finding unform spanning trees. Here is how
+/// The problem domain the algorithm was created for is finding uniform spanning trees. Here is how
 /// it works:
 ///
 /// 1. Chooses any vertex.
