@@ -1,12 +1,18 @@
 use bevy::{platform::collections::HashMap, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
+#[cfg(not(feature = "single_end"))]
+use bevy_knossos::pathfind::MazeEndsPaths;
 use bevy_knossos::{
-    CellSize, CoordsComponent, Goal, KnossosPlugin, Start,
+    CellSize, Coords, CoordsComponent, Goal, KnossosPlugin, Start,
     maze::{self, Cell},
     pathfind::MazePath,
 };
 
+#[derive(Debug, Component)]
+pub struct CoolEnd;
+
+const MAX_COOL_ENDS: usize = 4;
 const MAZE_SIZE: u32 = 16;
 const CELL_SIZE: f32 = 64.;
 fn main() {
@@ -17,21 +23,48 @@ fn main() {
         .build()
         .unwrap();
 
-    App::new()
-        .insert_resource(maze)
+    let mut app = App::new();
+    app.insert_resource(maze)
         .add_plugins((DefaultPlugins, TilemapPlugin))
         .add_plugins(EguiPlugin::default())
         .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
-        .add_systems(Startup, setup)
-        .add_systems(Update, draw_path)
-        .run();
+        .add_systems(Startup, (setup, setup_cool_ends.after(setup)));
+    #[cfg(not(feature = "single_end"))]
+    app.add_systems(Update, draw_path);
+    app.run();
+}
+
+fn setup_cool_ends(
+    mut commands: Commands,
+    query: Query<(Entity, &Cell, &TilePos), (Without<Goal>, Without<Start>)>,
+    asset_server: Res<AssetServer>,
+) {
+    let half_maze = MAZE_SIZE as f32 / 2.;
+
+    for (entity, _, tile_pos) in query
+        .iter()
+        .filter(|(_entity, cell, _)| cell.is_end())
+        .skip(2)
+        .take(MAX_COOL_ENDS)
+    {
+        let x = (tile_pos.x as f32 - half_maze).mul_add(CELL_SIZE, CELL_SIZE / 2.);
+        let y = (tile_pos.y as f32 - half_maze).mul_add(CELL_SIZE, CELL_SIZE / 2.);
+        commands.entity(entity).insert(CoolEnd);
+        commands.spawn((
+            Sprite::from_image(asset_server.load("bevy_bird_dark.png")),
+            *tile_pos,
+            Transform::from_xyz(x, y, 0.1).with_scale(Vec3::splat(0.1)),
+            Visibility::Visible,
+            Name::new(format!("Cool End on {entity}")),
+        ));
+    }
 }
 
 fn setup(mut commands: Commands, maze: Res<maze::OrthogonalMaze>, asset_server: Res<AssetServer>) {
     commands.spawn((
         Camera2d,
         Projection::Orthographic(OrthographicProjection {
-            scaling_mode: bevy::render::camera::ScalingMode::AutoMin {
+            scaling_mode: bevy::camera::ScalingMode::AutoMin {
                 min_width: CELL_SIZE * MAZE_SIZE as f32,
                 min_height: CELL_SIZE * MAZE_SIZE as f32,
             },
@@ -251,11 +284,13 @@ fn cell_to_index(
     )
 }
 
+#[cfg(not(feature = "single_end"))]
 pub(crate) fn draw_path(
     start: Query<&CoordsComponent, (With<Cell>, With<Start>)>,
     goal: Query<&CoordsComponent, (With<Cell>, With<Goal>)>,
-    mut cells: Query<(&CoordsComponent, &mut TileTextureIndex), With<Cell>>,
+    mut cells: Query<(&CoordsComponent, &mut TileTextureIndex, Option<&CoolEnd>), With<Cell>>,
     path: Res<MazePath>,
+    path_ends: Res<MazeEndsPaths>,
 ) {
     let Ok(_start) = start.single().cloned() else {
         return;
@@ -264,11 +299,32 @@ pub(crate) fn draw_path(
         return;
     };
 
+    let ends = cells
+        .iter()
+        .filter(|(_coords, _texture, is_end)| is_end.is_some())
+        .map(|(coords, ..)| coords.xy())
+        .collect::<Vec<_>>();
+
     if let (true, Some((path, _cost))) = (path.is_changed() || path.is_added(), &path.path) {
-        for (cell, mut index) in &mut cells {
+        for (cell, mut index, _) in &mut cells {
             if path.contains(cell) {
                 index.0 -= 162;
+            } else if ends
+                .iter()
+                .any(|goal| contains_path_to_end(&path_ends, *goal, cell.xy()))
+            {
+                index.0 -= 171;
             }
         }
     }
+}
+
+#[cfg(not(feature = "single_end"))]
+#[must_use]
+pub fn contains_path_to_end(maze_ends: &MazeEndsPaths, goal: Coords, path_coord: Coords) -> bool {
+    maze_ends
+        .paths
+        .iter()
+        .find(|((_start, end), (_path, _cost))| end == &goal)
+        .is_some_and(|((_start, _end), (path, _cost))| path.contains(&(path_coord.into())))
 }

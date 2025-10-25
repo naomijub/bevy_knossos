@@ -34,8 +34,8 @@ bevy = { version = "0.17", features = ["bevy_remote"] }
 assert_cmd = "2.0.16"
 assert_fs = "1.1"
 criterion = { version = "0.7", features = ["html_reports"] }
-bevy-inspector-egui = "0.34"
-bevy_ecs_tilemap = "0.16.0-rc.2"
+bevy-inspector-egui = "0.35"
+bevy_ecs_tilemap = "0.17"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
@@ -73,12 +73,12 @@ harness = false
 name = "formatters"
 harness = false
 
-# [[example]]
-# name = "bevy_pathfinding"
-# features = ["pathfinding"]
-# required-features = ["pathfinding"]
+[[example]]
+name = "bevy_pathfinding"
+features = ["pathfinding"]
+required-features = ["pathfinding"]
 
-# [[example]]
-# name = "bevy_multiple_ends"
-# features = ["pathfinding"]
-# required-features = ["pathfinding"]
+[[example]]
+name = "bevy_multiple_ends"
+features = ["pathfinding"]
+required-features = ["pathfinding"]

@@ -42,7 +42,7 @@ fn setup(mut commands: Commands, maze: Res<maze::OrthogonalMaze>, asset_server: 
     commands.spawn((
         Camera2d,
         Projection::Orthographic(OrthographicProjection {
-            scaling_mode: bevy::render::camera::ScalingMode::AutoMin {
+            scaling_mode: bevy::camera::ScalingMode::AutoMin {
                 min_width: 64. * MAZE_SIZE as f32,
                 min_height: 64. * MAZE_SIZE as f32,
             },
