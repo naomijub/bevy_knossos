@@ -33,7 +33,7 @@ pathfinding = { version = "4.14", optional = true }
 bevy = { version = "0.17", features = ["bevy_remote"] }
 assert_cmd = "2.0.16"
 assert_fs = "1.1"
-criterion = { version = "0.7", features = ["html_reports"] }
+criterion = { version = "0.8", features = ["html_reports"] }
 bevy-inspector-egui = "0.35"
 bevy_ecs_tilemap = "0.17"
 
