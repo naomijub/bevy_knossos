@@ -26,11 +26,11 @@ rand = "0.9.1"
 image = "0.25"
 clap = { version = "4.5.38", features = ["derive"] }
 bitflags = "2.9"
-bevy = { version = "0.17", default-features = false }
+bevy = { version = "0.18", default-features = false }
 pathfinding = { version = "4.14", optional = true }
 
 [dev-dependencies]
-bevy = { version = "0.17", features = ["bevy_remote"] }
+bevy = { version = "0.18", features = ["bevy_remote"] }
 assert_cmd = "2.0.16"
 assert_fs = "1.1"
 criterion = { version = "0.8", features = ["html_reports"] }
