@@ -18,8 +18,8 @@ pub struct Image {
 impl Image {
     /// Returns a new instance of an [Image] formatter with a default settings
     #[must_use]
-    pub const fn new() -> Image {
-        Image {
+    pub const fn new() -> Self {
+        Self {
             wall_width: 40,
             passage_width: 40,
             background_color: Color::RGB(250, 250, 250),
@@ -98,10 +98,10 @@ impl Image {
     }
 
     fn draw_cell(&self, coords: Coords, grid: &Grid, image: &mut RgbImage) {
-        let (x, y) = coords;
+        let (x_coord, y_coord) = coords;
         let inner_cell_width = self.cell_width() - self.wall_width;
-        let cell_x = x * inner_cell_width + self.margin;
-        let cell_y = y * inner_cell_width + self.margin;
+        let cell_x = x_coord * inner_cell_width + self.margin;
+        let cell_y = y_coord * inner_cell_width + self.margin;
 
         for py in cell_y..(cell_y + self.cell_width()) {
             for px in cell_x..(cell_x + self.cell_width()) {
@@ -209,8 +209,8 @@ impl Image {
                 }
             }
         }
-        let is_rightmost_cell = x == grid.width() - 1;
-        let is_bottommost_cell = y == grid.height() - 1;
+        let is_rightmost_cell = x_coord == grid.width() - 1;
+        let is_bottommost_cell = y_coord == grid.height() - 1;
 
         // Ensure the rightmost and bottommost walls are fully drawn to prevent missing edges
         // at the outer boundary of the grid. This guarantees a closed maze structure.

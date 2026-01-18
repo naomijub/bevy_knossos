@@ -59,8 +59,8 @@ impl GrowingTree {
     /// let algorithm = GrowingTree::new(Method::Newest);
     /// ```
     #[must_use]
-    pub const fn new(method: Method) -> GrowingTree {
-        GrowingTree { method }
+    pub const fn new(method: Method) -> Self {
+        Self { method }
     }
 
     fn choose_index(&self, ceil: usize, rng: &mut impl Rng) -> usize {

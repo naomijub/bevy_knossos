@@ -44,8 +44,8 @@ impl BinaryTree {
     /// let algorithm = BinaryTree::new(Bias::NorthWest);
     /// ```
     #[must_use]
-    pub const fn new(bias: Bias) -> BinaryTree {
-        BinaryTree { bias }
+    pub const fn new(bias: Bias) -> Self {
+        Self { bias }
     }
 
     fn populate_dirs(&self, coords: Coords, grid: &Grid) -> Vec<Cell> {

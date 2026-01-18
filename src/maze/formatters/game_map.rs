@@ -72,8 +72,8 @@ struct GameMapState {
 impl GameMap<NoStartGoal> {
     /// Returns a new instance of a [`GameMap`] formatter with a default settings
     #[must_use]
-    pub fn new() -> GameMap<NoStartGoal> {
-        GameMap {
+    pub fn new() -> Self {
+        Self {
             state: Box::new(GameMapState {
                 span: 2,
                 wall: '#',

@@ -17,8 +17,8 @@ pub struct HuntAndKill {
 impl HuntAndKill {
     /// Create a new instance of the algorithm with a default settings for the "hunt" phase
     #[must_use]
-    pub const fn new() -> HuntAndKill {
-        HuntAndKill {
+    pub const fn new() -> Self {
+        Self {
             hunt_start_index: 0,
         }
     }
