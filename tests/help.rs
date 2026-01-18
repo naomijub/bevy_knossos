@@ -1,5 +1,3 @@
-use assert_cmd::Command;
-
 const CLI_HELP_STR: &str = "Rust library for generating and rendering mazes
 
 Usage: bevy_knossos <COMMAND>
@@ -81,13 +79,13 @@ Options:
 
 #[test]
 fn cli_help() {
-    let mut cmd = Command::cargo_bin(assert_cmd::crate_name!()).unwrap();
+    let mut cmd = assert_cmd::cargo_bin_cmd!();
     cmd.arg("--help").assert().success().stdout(CLI_HELP_STR);
 }
 
 #[test]
 fn command_generate_short_help() {
-    let mut cmd = Command::cargo_bin(assert_cmd::crate_name!()).unwrap();
+    let mut cmd = assert_cmd::cargo_bin_cmd!();
     cmd.arg("generate")
         .arg("-h")
         .assert()
@@ -97,7 +95,7 @@ fn command_generate_short_help() {
 
 #[test]
 fn command_generate_image_help() {
-    let mut cmd = Command::cargo_bin(assert_cmd::crate_name!()).unwrap();
+    let mut cmd = assert_cmd::cargo_bin_cmd!();
     cmd.arg("generate")
         .arg("image")
         .arg("--help")
@@ -108,7 +106,7 @@ fn command_generate_image_help() {
 
 #[test]
 fn command_generate_ascii_help() {
-    let mut cmd = Command::cargo_bin(assert_cmd::crate_name!()).unwrap();
+    let mut cmd = assert_cmd::cargo_bin_cmd!();
     cmd.arg("generate")
         .arg("ascii")
         .arg("--help")
@@ -119,7 +117,7 @@ fn command_generate_ascii_help() {
 
 #[test]
 fn command_generate_game_map_help() {
-    let mut cmd = Command::cargo_bin(assert_cmd::crate_name!()).unwrap();
+    let mut cmd = assert_cmd::cargo_bin_cmd!();
     cmd.arg("generate")
         .arg("game-map")
         .arg("--help")

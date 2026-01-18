@@ -1,6 +1,9 @@
 use bevy::{platform::collections::HashMap, prelude::*};
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
-use bevy_knossos::{Coords, CoordsComponent, KnossosPlugin, maze::*};
+use bevy_knossos::{
+    Coords, CoordsComponent, KnossosPlugin,
+    maze::{Cell, OrthogonalMaze, OrthogonalMazeBuilder, RecursiveBacktracking},
+};
 
 fn main() {
     let maze = OrthogonalMazeBuilder::new()

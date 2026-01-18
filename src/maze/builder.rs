@@ -20,7 +20,7 @@ impl OrthogonalMazeBuilder {
     /// Returns a new instance of a builder with the default width, height and algorithm
     #[must_use]
     pub fn new() -> Self {
-        OrthogonalMazeBuilder {
+        Self {
             width: 10,
             height: 10,
             algorithm: Box::new(RecursiveBacktracking),

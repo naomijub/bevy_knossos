@@ -4,9 +4,8 @@ use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 #[cfg(not(feature = "single_end"))]
 use bevy_knossos::pathfind::MazeEndsPaths;
 use bevy_knossos::{
-    CellSize, Coords, CoordsComponent, Goal, KnossosPlugin, Start,
+    CellSize, CoordsComponent, Goal, KnossosPlugin, Start,
     maze::{self, Cell},
-    pathfind::MazePath,
 };
 
 #[derive(Debug, Component)]
@@ -289,7 +288,7 @@ pub(crate) fn draw_path(
     start: Query<&CoordsComponent, (With<Cell>, With<Start>)>,
     goal: Query<&CoordsComponent, (With<Cell>, With<Goal>)>,
     mut cells: Query<(&CoordsComponent, &mut TileTextureIndex, Option<&CoolEnd>), With<Cell>>,
-    path: Res<MazePath>,
+    path: Res<bevy_knossos::pathfind::MazePath>,
     path_ends: Res<MazeEndsPaths>,
 ) {
     let Ok(_start) = start.single().cloned() else {
@@ -321,7 +320,11 @@ pub(crate) fn draw_path(
 
 #[cfg(not(feature = "single_end"))]
 #[must_use]
-pub fn contains_path_to_end(maze_ends: &MazeEndsPaths, goal: Coords, path_coord: Coords) -> bool {
+pub fn contains_path_to_end(
+    maze_ends: &MazeEndsPaths,
+    goal: bevy_knossos::Coords,
+    path_coord: bevy_knossos::Coords,
+) -> bool {
     maze_ends
         .paths
         .iter()
