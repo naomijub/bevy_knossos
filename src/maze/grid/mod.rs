@@ -17,8 +17,8 @@ pub struct Grid {
 }
 
 impl Grid {
-    pub fn new(width: usize, height: usize) -> Grid {
-        Grid {
+    pub fn new(width: usize, height: usize) -> Self {
+        Self {
             width,
             height,
             cells: vec![Cell::default(); width * height],

@@ -46,7 +46,7 @@ impl FromStr for Coords {
             return Err("Start coord should follow the pattern `(0, 0)`".to_string());
         };
 
-        Ok(Coords(
+        Ok(Self(
             x.parse::<usize>().map_err(|err| err.to_string())?,
             y.parse::<usize>().map_err(|err| err.to_string())?,
         ))
@@ -313,18 +313,18 @@ impl std::error::Error for ParseHexError {}
 impl std::fmt::Display for ParseHexError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            ParseHexError::Length(e) => write!(
+            Self::Length(e) => write!(
                 f,
                 "Expected a 6 character color value in hex, but got: {e:?}"
             ),
-            ParseHexError::IntError(e) => e.fmt(f),
+            Self::IntError(e) => e.fmt(f),
         }
     }
 }
 
 impl From<std::num::ParseIntError> for ParseHexError {
-    fn from(err: std::num::ParseIntError) -> ParseHexError {
-        ParseHexError::IntError(err)
+    fn from(err: std::num::ParseIntError) -> Self {
+        Self::IntError(err)
     }
 }
 

@@ -1,5 +1,8 @@
 /// Extensive set of examples on how to use the lib to generate mazes and save them to files
-use bevy_knossos::maze::*;
+use bevy_knossos::maze::{
+    AldousBroder, AsciiBroad, Bias, BinaryTree, Eller, GameMap, GrowingTree, HuntAndKill, Image,
+    Kruskal, Method, OrthogonalMazeBuilder, Prim, RecursiveDivision, Sidewinder,
+};
 
 fn main() {
     let maze = OrthogonalMazeBuilder::new()

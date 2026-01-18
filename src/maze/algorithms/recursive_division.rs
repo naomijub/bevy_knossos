@@ -80,15 +80,15 @@ impl RecursiveDivision {
         match orientation {
             Orientation::Horizontal => {
                 // Top subfield
-                RecursiveDivision::divide(grid, x, y, ax, py, rng);
+                Self::divide(grid, x, y, ax, py, rng);
                 // Bottom subfield
-                RecursiveDivision::divide(grid, x, ny, ax, ay, rng);
+                Self::divide(grid, x, ny, ax, ay, rng);
             }
             Orientation::Vertical => {
                 // Left subfield
-                RecursiveDivision::divide(grid, x, y, px, ay, rng);
+                Self::divide(grid, x, y, px, ay, rng);
                 // Right subfield
-                RecursiveDivision::divide(grid, nx, y, ax, ay, rng);
+                Self::divide(grid, nx, y, ax, ay, rng);
             }
         }
     }
@@ -119,7 +119,7 @@ impl Algorithm for RecursiveDivision {
         }
         let width = grid.width();
         let height = grid.height();
-        RecursiveDivision::divide(grid, 0, 0, width - 1, height - 1, rng);
+        Self::divide(grid, 0, 0, width - 1, height - 1, rng);
     }
 
     fn has_start_coords(&self) -> bool {

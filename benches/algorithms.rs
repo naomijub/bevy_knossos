@@ -31,10 +31,13 @@ criterion_group!(
 );
 criterion_main!(benches);
 
-use bevy_knossos::maze::*;
+use bevy_knossos::maze::{
+    AldousBroder, Bias, BinaryTree, Eller, GrowingTree, HuntAndKill, Kruskal, Method,
+    OrthogonalMazeBuilder, Prim, RecursiveBacktracking, RecursiveDivision, Sidewinder,
+};
 
 mod aldous_broder {
-    use super::*;
+    use super::{AldousBroder, Criterion, OrthogonalMazeBuilder};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("aldous_broder/generate_10_x_10", |b| {
@@ -64,7 +67,7 @@ mod aldous_broder {
 }
 
 mod binary_tree {
-    use super::*;
+    use super::{Bias, BinaryTree, Criterion, OrthogonalMazeBuilder};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("binary_tree/generate_10_x_10", |b| {
@@ -94,7 +97,7 @@ mod binary_tree {
 }
 
 mod eller {
-    use super::*;
+    use super::{Criterion, Eller, OrthogonalMazeBuilder};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("eller//generate_10_x_10", |b| {
@@ -124,7 +127,7 @@ mod eller {
 }
 
 mod growing_tree_method_random {
-    use super::*;
+    use super::{Criterion, GrowingTree, Method, OrthogonalMazeBuilder};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("growing_tree_method_random/generate_10_x_10", |b| {
@@ -154,7 +157,7 @@ mod growing_tree_method_random {
 }
 
 mod growing_tree_method_oldest {
-    use super::*;
+    use super::{Criterion, GrowingTree, Method, OrthogonalMazeBuilder};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("growing_tree_method_oldest/generate_10_x_10", |b| {
@@ -184,7 +187,7 @@ mod growing_tree_method_oldest {
 }
 
 mod growing_tree_method_newest {
-    use super::*;
+    use super::{Criterion, GrowingTree, Method, OrthogonalMazeBuilder};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("growing_tree_method_newest/generate_10_x_10", |b| {
@@ -214,7 +217,7 @@ mod growing_tree_method_newest {
 }
 
 mod growing_tree_method_middle {
-    use super::*;
+    use super::{Criterion, GrowingTree, Method, OrthogonalMazeBuilder};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("growing_tree_method_middle/generate_10_x_10", |b| {
@@ -244,7 +247,7 @@ mod growing_tree_method_middle {
 }
 
 mod hunt_and_kill {
-    use super::*;
+    use super::{Criterion, HuntAndKill, OrthogonalMazeBuilder};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("hunt_and_kill/generate_10_x_10", |b| {
@@ -274,7 +277,7 @@ mod hunt_and_kill {
 }
 
 mod kruskal {
-    use super::*;
+    use super::{Criterion, Kruskal, OrthogonalMazeBuilder};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("kruskal/generate_10_x_10", |b| {
@@ -304,7 +307,7 @@ mod kruskal {
 }
 
 mod prim {
-    use super::*;
+    use super::{Criterion, OrthogonalMazeBuilder, Prim};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("prim/generate_10_x_10", |b| {
@@ -334,7 +337,7 @@ mod prim {
 }
 
 mod recursive_backtracking {
-    use super::*;
+    use super::{Criterion, OrthogonalMazeBuilder, RecursiveBacktracking};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("recursive_backtracking/generate_10_x_10", |b| {
@@ -364,7 +367,7 @@ mod recursive_backtracking {
 }
 
 mod recursive_division {
-    use super::*;
+    use super::{Criterion, OrthogonalMazeBuilder, RecursiveDivision};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("recursive_division/generate_10_x_10", |b| {
@@ -394,7 +397,7 @@ mod recursive_division {
 }
 
 mod sidewinder {
-    use super::*;
+    use super::{Criterion, OrthogonalMazeBuilder, Sidewinder};
 
     pub fn generate_10_x_10(c: &mut Criterion) {
         c.bench_function("sidewinder/generate_10_x_10", |b| {

@@ -1,6 +1,6 @@
 [package]
 name = "bevy_knossos"
-version = "0.9.0"
+version = "0.10.0"
 authors = [
     "Julia Naomi <jnboeira@outlook.com>",
     "unrenamed <renkonazbka@gmail.com>",
@@ -34,36 +34,32 @@ bevy = { version = "0.18", features = ["bevy_remote"] }
 assert_cmd = "2.0.16"
 assert_fs = "1.1"
 criterion = { version = "0.8", features = ["html_reports"] }
-bevy-inspector-egui = "0.35"
-bevy_ecs_tilemap = "0.17"
+bevy-inspector-egui = "0.36"
+bevy_ecs_tilemap = "0.18"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
 
 [lints.clippy]
-pedantic = { level = "warn", priority = 5 }
-nursery = { level = "warn", priority = 4 }
-similar_names = { level = "allow", priority = 11 }
-use_self = { level = "allow", priority = 11 }
-wildcard_imports = { level = "allow", priority = 11 }
-many_single_char_names = { level = "allow", priority = 11 }
-missing_const_for_fn = { level = "warn" }
-option_if_let_else = { level = "warn" }
-or_fun_call = { level = "warn" }
+pedantic = "deny"
+nursery = "deny"
+all = "deny"
+
 
 # Bevy Related
-float_cmp = { level = "allow", priority = 10 }
-cast_sign_loss = { level = "allow", priority = 10 }
-cast_possible_truncation = { level = "allow", priority = 10 }
-cast_precision_loss = { level = "allow", priority = 10 }
-too_many_lines = { level = "allow", priority = 10 }
-cognitive_complexity = { level = "allow", priority = 10 }
-type_complexity = { level = "allow", priority = 10 }
-needless_pass_by_value = { level = "allow", priority = 10 }
-needless_pass_by_ref_mut = { level = "allow", priority = 10 }
-significant_drop_in_scrutinee = { level = "allow", priority = 10 }
-significant_drop_tightening = { level = "allow", priority = 10 }
-too_many_arguments = { level = "allow", priority = 10 }
+similar_names = { level = "allow", priority = 1 }
+float_cmp = { level = "allow", priority = 1 }
+cast_sign_loss = { level = "allow", priority = 1 }
+cast_possible_truncation = { level = "allow", priority = 1 }
+cast_precision_loss = { level = "allow", priority = 1 }
+too_many_lines = { level = "allow", priority = 1 }
+cognitive_complexity = { level = "allow", priority = 1 }
+type_complexity = { level = "allow", priority = 1 }
+needless_pass_by_value = { level = "allow", priority = 1 }
+needless_pass_by_ref_mut = { level = "allow", priority = 1 }
+significant_drop_in_scrutinee = { level = "allow", priority = 1 }
+significant_drop_tightening = { level = "allow", priority = 1 }
+too_many_arguments = { level = "allow", priority = 1 }
 
 [[bench]]
 name = "algorithms"
