@@ -27,8 +27,8 @@ struct State {
 }
 
 impl State {
-    fn new(row_num: usize, next_set_id: Option<usize>, width: usize) -> State {
-        State {
+    fn new(row_num: usize, next_set_id: Option<usize>, width: usize) -> Self {
+        Self {
             width,
             next_set_id,
             row_num,
@@ -36,8 +36,8 @@ impl State {
         }
     }
 
-    fn next(&self) -> State {
-        State::new(self.row_num + 1, self.next_set_id, self.width)
+    fn next(&self) -> Self {
+        Self::new(self.row_num + 1, self.next_set_id, self.width)
     }
 
     fn populate(mut self) -> Self {

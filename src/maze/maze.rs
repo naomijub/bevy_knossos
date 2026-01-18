@@ -22,8 +22,8 @@ pub struct OrthogonalMaze {
 impl OrthogonalMaze {
     /// Returns a new instance of an orthogonal maze with a given width and height
     #[must_use]
-    pub fn new(width: usize, height: usize) -> OrthogonalMaze {
-        OrthogonalMaze {
+    pub fn new(width: usize, height: usize) -> Self {
+        Self {
             grid: Grid::new(width, height),
         }
     }

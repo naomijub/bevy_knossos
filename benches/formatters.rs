@@ -24,10 +24,12 @@ criterion_group!(
 criterion_main!(benches);
 
 use assert_fs::fixture::TempDir;
-use bevy_knossos::maze::*;
+use bevy_knossos::maze::{
+    AsciiBroad, AsciiNarrow, GameMap, Image, OrthogonalMazeBuilder, RecursiveBacktracking,
+};
 
 mod image {
-    use super::*;
+    use super::{Criterion, Image, OrthogonalMazeBuilder, RecursiveBacktracking, TempDir};
 
     pub fn format_10_x_10(c: &mut Criterion) {
         c.bench_function("image/format_10_x_10", |b| {
@@ -53,7 +55,7 @@ mod image {
 }
 
 mod ascii_narrow {
-    use super::*;
+    use super::{AsciiNarrow, Criterion, OrthogonalMazeBuilder, RecursiveBacktracking, TempDir};
 
     pub fn format_10_x_10(c: &mut Criterion) {
         c.bench_function("ascii_narrow/format_10_x_10", |b| {
@@ -79,7 +81,7 @@ mod ascii_narrow {
 }
 
 mod ascii_broad {
-    use super::*;
+    use super::{AsciiBroad, Criterion, OrthogonalMazeBuilder, RecursiveBacktracking, TempDir};
 
     pub fn format_10_x_10(c: &mut Criterion) {
         c.bench_function("ascii_broad/format_10_x_10", |b| {
@@ -105,7 +107,7 @@ mod ascii_broad {
 }
 
 mod game_map {
-    use super::*;
+    use super::{Criterion, GameMap, OrthogonalMazeBuilder, RecursiveBacktracking, TempDir};
 
     pub fn format_10_x_10(c: &mut Criterion) {
         c.bench_function("game_map/format_10_x_10", |b| {

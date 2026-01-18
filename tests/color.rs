@@ -1,4 +1,4 @@
-use assert_cmd::Command;
+use assert_cmd::{Command, cargo::cargo_bin_cmd};
 
 struct TestCli {
     cmd: Command,
@@ -6,7 +6,7 @@ struct TestCli {
 
 impl TestCli {
     fn new() -> Self {
-        let mut cmd = Command::cargo_bin(assert_cmd::crate_name!()).unwrap();
+        let mut cmd = cargo_bin_cmd!();
 
         cmd.arg("generate")
             .arg("image")
