@@ -70,9 +70,13 @@ impl OrthogonalMazeBuilder {
     /// Returns a [`BuildError`] if the algorithm does not support start coords
     pub fn build(mut self) -> Result<OrthogonalMaze, BuildError> {
         let mut maze = OrthogonalMaze::new(self.width, self.height);
-        let mut rng = self
-            .seed
-            .map_or_else(StdRng::from_os_rng, StdRng::seed_from_u64);
+        let mut rng = self.seed.map_or_else(
+            || {
+                let mut rng = rand::rng();
+                StdRng::from_rng(&mut rng)
+            },
+            StdRng::seed_from_u64,
+        );
         if self.start_coords.is_some() && !self.algorithm.has_start_coords() {
             Err(BuildError::reason(self.algorithm.name()))
         } else {

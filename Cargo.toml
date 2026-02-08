@@ -22,7 +22,7 @@ single_end = ["dep:pathfinding"]
 default = ["pathfinding"]
 
 [dependencies]
-rand = "0.9.1"
+rand = "0.10.0"
 image = "0.25"
 clap = { version = "4.5", features = ["derive"] }
 bitflags = "2.9"
