@@ -76,7 +76,7 @@
 //! use bevy_knossos::maze::*;
 //!
 //! // Generate a maze with a fixed seed
-//! let maze = OrthogonalMazeBuilder::new().seed(Some(40)).build();
+//! let maze = OrthogonalMazeBuilder::new().seed(40).build();
 //! ```
 //!
 //! Passing `None` as the seed (or omitting the `.seed()` method) will result in a random maze each time.
