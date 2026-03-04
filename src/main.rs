@@ -209,13 +209,16 @@ fn main() -> Result<(), maze::MazeSaveError> {
                 Algorithm::Sidewinder => Box::new(maze::Sidewinder),
             };
 
-            let maze = start_coords
+            let mut builder = start_coords
                 .map_or_else(maze::OrthogonalMazeBuilder::new, |coords| {
                     maze::OrthogonalMazeBuilder::new().start_coords((coords.0, coords.1))
-                })
+                });
+            if let Some(seed) = seed {
+                builder = builder.seed(seed);
+            }
+            let maze = builder
                 .height(height)
                 .width(width)
-                .seed(seed)
                 .algorithm(algorithm)
                 .build()
                 .map_err(|err| MazeSaveError::reason(err.to_string()))?;

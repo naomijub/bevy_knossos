@@ -11,6 +11,7 @@ const MAZE_SIZE: u32 = 16;
 const CELL_SIZE: f32 = 64.;
 fn main() {
     let maze = maze::OrthogonalMazeBuilder::new()
+        .seed(38)
         .algorithm(Box::new(maze::RecursiveBacktracking))
         .width(MAZE_SIZE as usize)
         .height(MAZE_SIZE as usize)

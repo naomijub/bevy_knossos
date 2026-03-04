@@ -8,7 +8,7 @@ use bevy_knossos::{
 fn main() {
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(RecursiveBacktracking))
-        .seed(Some(0))
+        .seed(0)
         .width(5)
         .height(5)
         .build()
