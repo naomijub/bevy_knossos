@@ -1,6 +1,6 @@
 [package]
 name = "bevy_knossos"
-version = "0.10.1"
+version = "0.11.0"
 authors = [
     "Julia Naomi <jnboeira@outlook.com>",
     "unrenamed <renkonazbka@gmail.com>",
@@ -28,6 +28,7 @@ clap = { version = "4.5", features = ["derive"] }
 bitflags = "2.9"
 bevy = { version = "0.18", default-features = false }
 pathfinding = { version = "4.14", optional = true }
+
 
 [dev-dependencies]
 bevy = { version = "0.18", features = ["bevy_remote"] }

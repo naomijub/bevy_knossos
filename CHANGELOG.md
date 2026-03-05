@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
+## [0.11.0] - 2026-03-04: Update to Bevy 0.18.1
+
+### Breaking Changes
+
+- Maze `.seed` method is called with `usize` as argument instead of `Option<usize>`
+
+### Updated
+
+- Updated `bevy` to `0.18.1`
+- Dependencies - via `cargo update`
+
+## [0.10.1] - 2026-02-08: Update subdeps
+
+### Updated
+
+- Dependencies `clap`, `rand` and `criterion` 
+
 ## [0.10.0] - 2026-01-18: Update to Bevy 0.18
 
 ### Breaking Changes

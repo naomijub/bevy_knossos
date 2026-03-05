@@ -33,14 +33,14 @@ fn build_valid_maze_with_custom_params() {
 
 #[test]
 fn build_valid_maze_with_seed_value() {
-    let maze = OrthogonalMazeBuilder::new().seed(Some(40)).build().unwrap();
+    let maze = OrthogonalMazeBuilder::new().seed(40).build().unwrap();
     assert!(maze.is_valid());
 }
 
 #[test]
 fn build_identical_mazes_with_same_seed() {
-    let old = OrthogonalMazeBuilder::new().seed(Some(40)).build().unwrap();
-    let new = OrthogonalMazeBuilder::new().seed(Some(40)).build().unwrap();
+    let old = OrthogonalMazeBuilder::new().seed(40).build().unwrap();
+    let new = OrthogonalMazeBuilder::new().seed(40).build().unwrap();
     assert_eq!(old.to_string(), new.to_string());
 }
 
@@ -235,7 +235,7 @@ fn format_maze() {
     let ascii = OrthogonalMazeBuilder::new()
         .width(5)
         .height(5)
-        .seed(Some(10))
+        .seed(10)
         .build()
         .unwrap()
         .format(AsciiBroad)
