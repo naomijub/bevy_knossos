@@ -1,8 +1,4 @@
-use bevy::{
-    platform::collections::HashMap,
-    prelude::*,
-    render::view::screenshot::{Screenshot, save_to_disk},
-};
+use bevy::{platform::collections::HashMap, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 use bevy_knossos::{
@@ -29,20 +25,7 @@ fn main() {
         .add_plugins((KnossosPlugin, WorldInspectorPlugin::new()))
         .add_systems(Startup, setup)
         .add_systems(Update, draw_path)
-        .add_systems(PostUpdate, screenshot)
         .run();
-}
-
-fn screenshot(mut commands: Commands, mut counter: Local<u32>) {
-    if *counter == 10 {
-        let path = "./screenshot.png".to_string();
-        *counter += 1;
-        commands
-            .spawn(Screenshot::primary_window())
-            .observe(save_to_disk(path));
-    } else if *counter < 10 {
-        *counter += 1;
-    }
 }
 
 fn setup(mut commands: Commands, maze: Res<maze::OrthogonalMaze>, asset_server: Res<AssetServer>) {
