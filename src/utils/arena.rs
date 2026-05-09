@@ -7,7 +7,7 @@ struct Node {
     parent: Option<NodeId>,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct NodeId(pub usize);
 
 impl ArenaTree {
@@ -27,36 +27,23 @@ impl ArenaTree {
     }
 
     pub fn connect(&mut self, id1: NodeId, id2: NodeId) {
-        let root1 = self.root(id1);
-        let root2 = self.root(id2);
-
-        if root1.and(root2).is_none() {
+        let (Some(root1), Some(root2)) = (self.root(id1), self.root(id2)) else {
             return;
-        }
+        };
 
-        if let Some(node) = self.nodes.get_mut(root2.unwrap().0) {
-            node.parent = root1;
+        if let Some(node) = self.nodes.get_mut(root2.0) {
+            node.parent = Some(root1);
         }
     }
 
     pub fn connected(&self, id1: NodeId, id2: NodeId) -> bool {
-        let root1 = self.root(id1);
-        let root2 = self.root(id2);
-
-        if root1.and(root2).is_none() {
-            return false;
-        }
-
-        root1.unwrap().0 == root2.unwrap().0
+        self.root(id1) == self.root(id2) && self.root(id1).is_some()
     }
 
     fn root(&self, id: NodeId) -> Option<NodeId> {
-        let node = self.nodes.get(id.0);
-        node?;
+        let node = self.nodes.get(id.0)?;
 
-        node.unwrap()
-            .parent
-            .map_or(Some(id), |parent| self.root(parent))
+        node.parent.map_or(Some(id), |parent| self.root(parent))
     }
 }
 

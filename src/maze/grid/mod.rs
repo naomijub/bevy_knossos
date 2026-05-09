@@ -119,13 +119,13 @@ impl Grid {
             _ => None,
         };
 
-        if reason.is_none() {
+        let Some(reason) = reason else {
             return Ok(());
-        }
+        };
 
         Err(TransitError {
             coords: (x, y),
-            reason: reason.unwrap().to_string(),
+            reason: reason.to_string(),
         })
     }
 }

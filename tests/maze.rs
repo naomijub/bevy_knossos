@@ -128,6 +128,84 @@ fn build_valid_maze_with_sidewinder_algorithm() {
     assert!(maze!(Sidewinder).unwrap().is_valid());
 }
 
+fn assert_maze_consistency(maze: &OrthogonalMaze) {
+    let nodes = maze.iter().count();
+    let width = maze.iter().map(|((x, _), _)| x).max().map_or(0, |x| x + 1);
+    let height = maze.iter().map(|((_, y), _)| y).max().map_or(0, |y| y + 1);
+
+    assert!(maze.is_valid());
+    assert_eq!(nodes, width * height);
+
+    for ((x, y), cell) in maze.iter() {
+        if x + 1 < width {
+            assert_eq!(
+                cell.contains(Cell::EAST),
+                maze[(x + 1, y)].contains(Cell::WEST)
+            );
+        }
+        if y + 1 < height {
+            assert_eq!(
+                cell.contains(Cell::SOUTH),
+                maze[(x, y + 1)].contains(Cell::NORTH)
+            );
+        }
+    }
+}
+
+#[test]
+fn generated_mazes_are_consistent_across_algorithms_and_seeds() {
+    let algorithms: [(&str, fn() -> Box<dyn Algorithm>); 15] = [
+        ("AldousBroder", || Box::new(AldousBroder)),
+        ("BinaryTree::NorthWest", || {
+            Box::new(BinaryTree::new(Bias::NorthWest))
+        }),
+        ("BinaryTree::SouthWest", || {
+            Box::new(BinaryTree::new(Bias::SouthWest))
+        }),
+        ("BinaryTree::NorthEast", || {
+            Box::new(BinaryTree::new(Bias::NorthEast))
+        }),
+        ("BinaryTree::SouthEast", || {
+            Box::new(BinaryTree::new(Bias::SouthEast))
+        }),
+        ("Eller", || Box::new(Eller)),
+        ("GrowingTree::Newest", || {
+            Box::new(GrowingTree::new(Method::Newest))
+        }),
+        ("GrowingTree::Oldest", || {
+            Box::new(GrowingTree::new(Method::Oldest))
+        }),
+        ("GrowingTree::Middle", || {
+            Box::new(GrowingTree::new(Method::Middle))
+        }),
+        ("GrowingTree::Random", || {
+            Box::new(GrowingTree::new(Method::Random))
+        }),
+        ("HuntAndKill", || Box::new(HuntAndKill::new())),
+        ("Kruskal", || Box::new(Kruskal)),
+        ("Prim", || Box::new(Prim::new())),
+        ("RecursiveBacktracking", || Box::new(RecursiveBacktracking)),
+        ("Sidewinder", || Box::new(Sidewinder)),
+    ];
+    let seeds = [0_u64, 1, 7, 19, 42, 99];
+    let sizes = [(2, 2), (3, 5), (8, 8), (12, 7)];
+
+    for (_name, algorithm) in algorithms {
+        for seed in seeds {
+            for (width, height) in sizes {
+                let maze = OrthogonalMazeBuilder::new()
+                    .width(width)
+                    .height(height)
+                    .seed(seed)
+                    .algorithm(algorithm())
+                    .build()
+                    .unwrap();
+                assert_maze_consistency(&maze);
+            }
+        }
+    }
+}
+
 macro_rules! to_absolute_path {
     ($path:expr_2021) => {
         std::env::current_dir().unwrap().join($path).display()
