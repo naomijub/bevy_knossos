@@ -1,10 +1,12 @@
 pub mod cell;
+pub mod topology;
 use self::cell::CellStatus;
 
 use super::errors::TransitError;
 use crate::utils::types::Coords;
 use cell::Cell;
 use std::fmt;
+use topology::Topology;
 
 type TransitResult<T> = Result<T, TransitError>;
 
@@ -12,18 +14,32 @@ type TransitResult<T> = Result<T, TransitError>;
 pub struct Grid {
     width: usize,
     height: usize,
+    topology: Topology,
     pub(crate) cells: Vec<Cell>,
     cell_statuses: Vec<CellStatus>,
 }
 
 impl Grid {
     pub fn new(width: usize, height: usize) -> Self {
+        Self::with_topology(width, height, Topology::Orthogonal)
+    }
+
+    pub fn new_hex(width: usize, height: usize) -> Self {
+        Self::with_topology(width, height, Topology::HexOddR)
+    }
+
+    pub fn with_topology(width: usize, height: usize, topology: Topology) -> Self {
         Self {
             width,
             height,
+            topology,
             cells: vec![Cell::default(); width * height],
             cell_statuses: vec![CellStatus::default(); width * height],
         }
+    }
+
+    pub const fn topology(&self) -> Topology {
+        self.topology
     }
 
     pub const fn height(&self) -> usize {
@@ -32,6 +48,10 @@ impl Grid {
 
     pub const fn width(&self) -> usize {
         self.width
+    }
+
+    pub const fn directions(&self) -> &'static [Cell] {
+        self.topology.directions()
     }
 
     pub fn mark_cell(&mut self, coords: Coords) {
@@ -59,26 +79,13 @@ impl Grid {
     pub fn carve_passage(&mut self, coords: Coords, direction: Cell) -> TransitResult<Coords> {
         let (x, y) = coords;
         let (nx, ny) = self.get_next_cell_coords(coords, direction)?;
+        let opposite = self.topology.opposite(direction).ok_or_else(|| TransitError {
+            coords,
+            reason: format!("Invalid direction for {:?} topology", self.topology),
+        })?;
 
-        match direction {
-            Cell::NORTH => {
-                self.cells[y * self.width + x] |= Cell::NORTH;
-                self.cells[ny * self.width + nx] |= Cell::SOUTH;
-            }
-            Cell::SOUTH => {
-                self.cells[y * self.width + x] |= Cell::SOUTH;
-                self.cells[ny * self.width + nx] |= Cell::NORTH;
-            }
-            Cell::EAST => {
-                self.cells[y * self.width + x] |= Cell::EAST;
-                self.cells[ny * self.width + nx] |= Cell::WEST;
-            }
-            Cell::WEST => {
-                self.cells[y * self.width + x] |= Cell::WEST;
-                self.cells[ny * self.width + nx] |= Cell::EAST;
-            }
-            _ => (),
-        }
+        self.cells[y * self.width + x] |= direction;
+        self.cells[ny * self.width + nx] |= opposite;
 
         self.visit_cell(coords);
         self.visit_cell((nx, ny));
@@ -87,17 +94,22 @@ impl Grid {
     }
 
     pub fn get_next_cell_coords(&self, coords: Coords, direction: Cell) -> TransitResult<Coords> {
-        self.validate_transit(coords, direction)?;
+        self.topology
+            .next_coords(coords, direction, self.width, self.height)
+            .ok_or_else(|| TransitError {
+                coords,
+                reason: format!(
+                    "Cannot transit from {:?} in direction {:?} for {:?} topology",
+                    coords, direction, self.topology
+                ),
+            })
+    }
 
-        let (x, y) = coords;
-        let (nx, ny) = match direction {
-            Cell::NORTH => (x, y - 1),
-            Cell::SOUTH => (x, y + 1),
-            Cell::WEST => (x - 1, y),
-            Cell::EAST => (x + 1, y),
-            _ => (x, y),
-        };
-        Ok((nx, ny))
+    pub fn neighbor_coords(&self, coords: Coords) -> Vec<(Cell, Coords)> {
+        self.directions()
+            .iter()
+            .filter_map(|dir| self.get_next_cell_coords(coords, *dir).ok().map(|next| (*dir, next)))
+            .collect()
     }
 
     fn visit_cell(&mut self, coords: Coords) {
@@ -107,26 +119,6 @@ impl Grid {
     fn get_cell_status_mut(&mut self, coords: Coords) -> &mut CellStatus {
         let (x, y) = coords;
         &mut self.cell_statuses[y * self.width + x]
-    }
-
-    fn validate_transit(&self, coords: Coords, direction: Cell) -> TransitResult<()> {
-        let (x, y) = coords;
-        let reason = match direction {
-            Cell::NORTH if y < 1 => Some("First row in the grid cannot go North"),
-            Cell::SOUTH if y + 1 == self.height => Some("Last row in the grid cannot go South"),
-            Cell::WEST if x < 1 => Some("First cell in a row cannot go West"),
-            Cell::EAST if x + 1 == self.width => Some("Last column in the grid cannot go East"),
-            _ => None,
-        };
-
-        let Some(reason) = reason else {
-            return Ok(());
-        };
-
-        Err(TransitError {
-            coords: (x, y),
-            reason: reason.to_string(),
-        })
     }
 }
 
@@ -144,6 +136,14 @@ impl std::ops::Index<Coords> for Grid {
 
 impl fmt::Display for Grid {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.topology != Topology::Orthogonal {
+            return write!(
+                f,
+                "Grid({:?}, {}x{}) display is only implemented for orthogonal topology",
+                self.topology, self.width, self.height
+            );
+        }
+
         let top_border = "_".repeat(self.width * 2 - 1);
 
         writeln!(f, " {top_border} ")?;

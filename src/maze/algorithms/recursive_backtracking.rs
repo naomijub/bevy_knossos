@@ -1,5 +1,5 @@
 use super::Algorithm;
-use crate::maze::grid::{Grid, cell::Cell};
+use crate::maze::grid::Grid;
 use crate::utils::types::Coords;
 use rand::prelude::*;
 
@@ -43,7 +43,7 @@ impl Algorithm for RecursiveBacktracking {
 }
 
 fn carve_passages_from(coords: Coords, grid: &mut Grid, rng: &mut impl Rng) {
-    let mut dirs = [Cell::NORTH, Cell::SOUTH, Cell::WEST, Cell::EAST];
+    let mut dirs = grid.directions().to_vec();
     dirs.shuffle(rng);
 
     for dir in dirs {

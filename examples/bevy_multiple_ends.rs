@@ -42,7 +42,7 @@ fn setup_cool_ends(
 
     for (entity, _, tile_pos) in query
         .iter()
-        .filter(|(_entity, cell, _)| cell.is_end())
+        .filter(|(_entity, cell, _)| cell.is_end_sq())
         .skip(2)
         .take(MAX_COOL_ENDS)
     {

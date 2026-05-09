@@ -6,6 +6,8 @@
 mod builder;
 mod errors;
 mod grid;
+mod hex_builder;
+mod hex_maze;
 #[allow(clippy::module_inception)]
 mod maze;
 mod validate;
@@ -18,4 +20,7 @@ pub use builder::OrthogonalMazeBuilder;
 pub use errors::MazeSaveError;
 pub use formatters::{AsciiBroad, AsciiNarrow, GameMap, Image};
 pub use grid::cell::Cell;
+pub use grid::topology::Topology;
+pub use hex_builder::HexMazeBuilder;
+pub use hex_maze::HexMaze;
 pub use maze::OrthogonalMaze;
