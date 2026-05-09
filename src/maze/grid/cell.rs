@@ -76,7 +76,7 @@ impl Cell {
     ///Checks if [`Cell`] has 5 walls (*Dead End*)
     #[must_use]
     pub const fn is_end_hex(&self) -> bool {
-        self.walls_count_sq() == 3
+        self.walls_count_hex() == 5
     }
 }
 
@@ -297,5 +297,42 @@ mod tests {
         assert!(!(Cell::SOUTH | Cell::NORTH | Cell::WEST).is_end_sq());
         assert!(!(Cell::EAST | Cell::NORTH | Cell::WEST).is_end_sq());
         assert!(!Cell::all().is_end_sq());
+    }
+
+    #[test]
+    fn get_all_walls_count_hex() {
+        assert_eq!(Cell::empty().walls_count_hex(), 6);
+        assert_eq!(Cell::EAST.walls_count_hex(), 5);
+        assert_eq!(
+            (Cell::EAST | Cell::NORTH_EAST | Cell::SOUTH_EAST).walls_count_hex(),
+            3
+        );
+        assert_eq!(
+            (Cell::NORTH
+                | Cell::SOUTH
+                | Cell::EAST
+                | Cell::WEST
+                | Cell::NORTH_EAST
+                | Cell::SOUTH_WEST)
+                .walls_count_hex(),
+            0
+        );
+    }
+
+    #[test]
+    fn get_all_is_end_hex() {
+        assert!(!Cell::empty().is_end_hex());
+        assert!(Cell::EAST.is_end_hex());
+        assert!(Cell::NORTH_WEST.is_end_hex());
+        assert!(!(Cell::EAST | Cell::WEST).is_end_hex());
+        assert!(
+            !(Cell::NORTH
+                | Cell::SOUTH
+                | Cell::EAST
+                | Cell::WEST
+                | Cell::NORTH_EAST
+                | Cell::SOUTH_WEST)
+                .is_end_hex()
+        );
     }
 }
