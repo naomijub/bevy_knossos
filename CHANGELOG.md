@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
+## [0.11.1] - 2026-05-09: Minor updates
+
+### Updated
+
+- Documentation update to latest bevy_knossos version `0.11`
+- Documentation update explaining features better
+- Dependencies - via `cargo update`
+- Removes some remaining unwraps
+
 ## [0.11.0] - 2026-03-04: Update to Bevy 0.18.1
 
 ### Breaking Changes

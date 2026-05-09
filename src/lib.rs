@@ -13,7 +13,7 @@
 //! Or add the following line to your `Cargo.toml`:
 //! ```no_test
 //! [dependencies]
-//! bevy_knossos = "0.7.0"
+//! bevy_knossos = "0.11"
 //! ```
 //!
 //! # Usage
@@ -80,6 +80,11 @@
 //! ```
 //!
 //! Passing `None` as the seed (or omitting the `.seed()` method) will result in a random maze each time.
+//!
+//! # Feature Flags
+//!
+//! - `pathfinding` (default): Enables pathfinding module plus plugin resources/systems.
+//! - `single_end`: Works with `pathfinding`; only registers single start/goal pathfinding systems.
 //!
 //! # Algorithms
 //!

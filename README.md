@@ -53,7 +53,7 @@ cargo add bevy_knossos
 Or add the following line to your `Cargo.toml`:
 ```no_test
 [dependencies]
-bevy_knossos = "0.9"
+bevy_knossos = "0.11"
 ```
 
 ## Usage
@@ -68,7 +68,7 @@ For information on knossos CLI usage, check the original repository [#Cli](https
 
 | bevy | bevy_knossos | edition |
 | ---- | ------------ | ------- |
-| 0.18 | 0.10          |  2024   |
+| 0.18 | 0.10 - 0.11  |  2024   |
 | 0.17 | 0.9          |  2024   |
 | 0.16 | 0.8          |  2024   |
 | 0.15 | 0.5 - 0.7    |  2021   |
@@ -78,6 +78,10 @@ For information on knossos CLI usage, check the original repository [#Cli](https
 | name          | description | default| dependencies |
 | ------------- | ----------- | ------ | ------------ |
 | `pathfinding` | Enables bevy to pathfind in the Maze (banner image is a demo) | true | `pathfinding = "4.14"` |
+| `single_end` | Only registers single start/goal pathfinding resources and systems | false | `pathfinding` |
+
+When `pathfinding` is disabled, no pathfinding resources or systems are registered by `KnossosPlugin`.
+When `single_end` is enabled, only `MazePath`/`find_path` are registered and multi-end systems are skipped.
 
 ### Examples:
 

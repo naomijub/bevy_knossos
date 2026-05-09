@@ -17,7 +17,7 @@ jobs:
     - name: Checkout Actions Repository
       uses: actions/checkout@v6
     - name: Check spelling
-      uses: crate-ci/typos@master
+      uses: crate-ci/typos@v1
       
   fmt:
     name: Format
@@ -25,6 +25,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
+    - name: Install stable toolchain
+      uses: dtolnay/rust-toolchain@stable
     - name: Format
       run: cargo fmt -- --check
 
@@ -49,6 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: check
         run: cargo check --locked --all-features
@@ -58,11 +61,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Install Dependencies
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
       - name: Test
-        run: cargo test --locked --all-features
+        run: cargo test --locked --all-features --all-targets
 
   coverage:
     name: Coverage
@@ -76,7 +80,7 @@ jobs:
       - name: Install nightly@nightly toolchain
         uses: dtolnay/rust-toolchain@nightly
       - name: Install tarpaulin
-        run: cargo install cargo-tarpaulin --locked
+        run: cargo install cargo-tarpaulin --version 0.34.1 --locked
       - name: Install Dependencies
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
       - name: Generate code coverage
