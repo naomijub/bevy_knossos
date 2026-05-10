@@ -1,5 +1,5 @@
-use std::fs;
 use std::fmt::Write;
+use std::fs;
 
 use bevy_knossos::maze::{Cell, HexMaze, HexMazeBuilder, HexText, RecursiveBacktracking};
 
@@ -20,12 +20,15 @@ fn main() {
     maze.save("output/hex_maze.txt", HexText)
         .expect("hex maze text should save");
 
-    let text = fs::read_to_string("output/hex_maze.txt")
-        .expect("hex maze text file should be readable");
+    let text =
+        fs::read_to_string("output/hex_maze.txt").expect("hex maze text file should be readable");
 
     let restored = HexMaze::from_text(&text).expect("hex maze text should deserialize");
 
-    let original_cells: Vec<_> = maze.iter().map(|(coord, cell)| (coord, cell.to_bits())).collect();
+    let original_cells: Vec<_> = maze
+        .iter()
+        .map(|(coord, cell)| (coord, cell.to_bits()))
+        .collect();
     let restored_cells: Vec<_> = restored
         .iter()
         .map(|(coord, cell)| (coord, cell.to_bits()))
@@ -137,7 +140,9 @@ fn to_hex_ascii_art(maze: &HexMaze, width: usize, height: usize) -> String {
 
     let mut output = String::new();
     output.push_str("KNOSSOS_HEX_ASCII_V1\n");
-    output.push_str("legend: o=cell, -=east/west passage, /=ne or sw passage, \\\\=nw or se passage\n\n");
+    output.push_str(
+        "legend: o=cell, -=east/west passage, /=ne or sw passage, \\\\=nw or se passage\n\n",
+    );
 
     for row in canvas {
         let line: String = row.into_iter().collect();
@@ -154,7 +159,9 @@ fn put_char(canvas: &mut [Vec<char>], x: i32, y: i32, ch: char) {
     }
     let ux = x as usize;
     let uy = y as usize;
-    if let Some(row) = canvas.get_mut(uy) && let Some(cell) = row.get_mut(ux) {
+    if let Some(row) = canvas.get_mut(uy)
+        && let Some(cell) = row.get_mut(ux)
+    {
         *cell = ch;
     }
 }

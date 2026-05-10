@@ -1,8 +1,8 @@
-use std::fmt::Write;
 use crate::maze::{
     formatters::{Formatter, StringWrapper},
     grid::{Grid, topology::Topology},
 };
+use std::fmt::Write;
 
 /// Formatter that serializes a hex maze grid into a compact text representation.
 ///

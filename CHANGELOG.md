@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
+## [0.12.0] - 2026-05-10: Hexagonal mazes and generic topology support
+
+### Added
+
+- Hexagonal maze support based on odd-r offset topology:
+  - `HexMaze`
+  - `HexMazeBuilder`
+  - `Topology::HexOddR`
+- New hex text formatter:
+  - `HexText` formatter to persist hex mazes as text.
+- Hex maze text serialization APIs:
+  - `HexMaze::to_text()`
+  - `HexMaze::from_text(&str)`
+- New examples:
+  - `bevy_hexagonal` (3D hex maze visualization with GLB tiles)
+  - `hex_text_roundtrip` (hex text save/load roundtrip)
+  - `image_output` (hex maze image output example)
+
+### Changed
+
+- Refactored grid internals to support multiple topologies instead of hardcoded orthogonal behavior:
+  - `Grid` now stores `Topology`.
+  - Added topology-aware construction: `Grid::with_topology`, `Grid::new_hex`.
+  - Added topology-driven navigation helpers: `Grid::directions()`, `Grid::neighbor_coords(...)`.
+  - Cell transit and opposite-direction logic moved behind topology rules.
+- Extended cell passage representation from orthogonal-only assumptions to support six-way hex passages.
+- Validation and selected generation algorithms now iterate directions through topology APIs rather than fixed NSEW constants.
+
+### Breaking Changes
+
+- `Cell` dead-end and wall-count APIs were split by topology to remove orthogonal-only semantics:
+  - Use `walls_count_sq()` / `is_end_sq()` for square mazes.
+  - Use `walls_count_hex()` / `is_end_hex()` for hex mazes.
+- `Grid` display output remains orthogonal-only; non-orthogonal grids no longer render using square ASCII display rules.
+
 ## [0.11.1] - 2026-05-09: Minor updates
 
 ### Updated

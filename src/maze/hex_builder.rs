@@ -61,7 +61,7 @@ impl HexMazeBuilder {
     }
 
     /// Builds Hexagonal Maze
-    /// 
+    ///
     /// # Errors
     /// - Fails if selected algorithm doesnt have a set `start_coords` or it doesnt support starting coords.
     pub fn build(mut self) -> Result<HexMaze, BuildError> {

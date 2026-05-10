@@ -1,8 +1,5 @@
 use super::Algorithm;
-use crate::{
-    maze::grid::Grid,
-    utils::types::Coords,
-};
+use crate::{maze::grid::Grid, utils::types::Coords};
 use rand::prelude::*;
 
 /// The Aldous-Broder's algorithm for generating mazes.

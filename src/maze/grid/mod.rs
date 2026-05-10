@@ -79,10 +79,13 @@ impl Grid {
     pub fn carve_passage(&mut self, coords: Coords, direction: Cell) -> TransitResult<Coords> {
         let (x, y) = coords;
         let (nx, ny) = self.get_next_cell_coords(coords, direction)?;
-        let opposite = self.topology.opposite(direction).ok_or_else(|| TransitError {
-            coords,
-            reason: format!("Invalid direction for {:?} topology", self.topology),
-        })?;
+        let opposite = self
+            .topology
+            .opposite(direction)
+            .ok_or_else(|| TransitError {
+                coords,
+                reason: format!("Invalid direction for {:?} topology", self.topology),
+            })?;
 
         self.cells[y * self.width + x] |= direction;
         self.cells[ny * self.width + nx] |= opposite;
@@ -108,7 +111,11 @@ impl Grid {
     pub fn neighbor_coords(&self, coords: Coords) -> Vec<(Cell, Coords)> {
         self.directions()
             .iter()
-            .filter_map(|dir| self.get_next_cell_coords(coords, *dir).ok().map(|next| (*dir, next)))
+            .filter_map(|dir| {
+                self.get_next_cell_coords(coords, *dir)
+                    .ok()
+                    .map(|next| (*dir, next))
+            })
             .collect()
     }
 

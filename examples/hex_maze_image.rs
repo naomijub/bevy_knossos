@@ -142,7 +142,13 @@ fn draw_thick_line(
         let t = i as f32 / steps as f32;
         let x = ((x1 - x0) as f32).mul_add(t, x0 as f32);
         let y = ((y1 - y0) as f32).mul_add(t, y0 as f32);
-        draw_filled_circle(image, x.round() as i32, y.round() as i32, thickness / 2, color);
+        draw_filled_circle(
+            image,
+            x.round() as i32,
+            y.round() as i32,
+            thickness / 2,
+            color,
+        );
     }
 }
 

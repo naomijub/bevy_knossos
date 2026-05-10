@@ -35,7 +35,7 @@ impl HexMaze {
     }
 
     /// Saves maze
-    /// 
+    ///
     /// # Errors
     /// fails to save maze due to incorrect formatting
     pub fn save<F, T>(&self, path: &str, formatter: F) -> Result<String, MazeSaveError>
@@ -50,7 +50,10 @@ impl HexMaze {
     #[must_use]
     pub fn ends(&self) -> Vec<((usize, usize), &Cell)> {
         self.iter()
-            .filter(|maze_cell| maze_cell.1.walls_count_for(self.grid.topology().sides()) + 1 == self.grid.topology().sides())
+            .filter(|maze_cell| {
+                maze_cell.1.walls_count_for(self.grid.topology().sides()) + 1
+                    == self.grid.topology().sides()
+            })
             .collect()
     }
 
@@ -62,7 +65,7 @@ impl HexMaze {
         formatter.format(&self.grid)
     }
 
-    /// Serializes the maze into a human redable text format.
+    /// Serializes the maze into a human readable text format.
     ///
     /// The output can be parsed back via [`Self::from_text`].
     #[must_use]
@@ -196,8 +199,10 @@ mod tests {
             .unwrap();
         let text = maze.to_text();
         let restored = HexMaze::from_text(&text).unwrap();
-        let maze_cells: Vec<((usize, usize), u8)> =
-            maze.iter().map(|(coord, cell)| (coord, cell.to_bits())).collect();
+        let maze_cells: Vec<((usize, usize), u8)> = maze
+            .iter()
+            .map(|(coord, cell)| (coord, cell.to_bits()))
+            .collect();
         let restored_cells: Vec<((usize, usize), u8)> = restored
             .iter()
             .map(|(coord, cell)| (coord, cell.to_bits()))
