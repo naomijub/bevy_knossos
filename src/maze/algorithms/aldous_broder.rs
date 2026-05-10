@@ -1,8 +1,5 @@
 use super::Algorithm;
-use crate::{
-    maze::grid::{Grid, cell::Cell},
-    utils::types::Coords,
-};
+use crate::{maze::grid::Grid, utils::types::Coords};
 use rand::prelude::*;
 
 /// The Aldous-Broder's algorithm for generating mazes.
@@ -32,8 +29,8 @@ impl Algorithm for AldousBroder {
         let mut remaining = grid.width() * grid.height() - 1; // the number of remaining unvisited cells
 
         while remaining > 0 {
-            let mut directions = [Cell::NORTH, Cell::SOUTH, Cell::WEST, Cell::EAST];
-            directions.shuffle(&mut rand::rng());
+            let mut directions = grid.directions().to_vec();
+            directions.shuffle(rng);
 
             for dir in directions {
                 let next_cell = grid.get_next_cell_coords((x, y), dir);

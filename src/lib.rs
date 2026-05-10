@@ -13,7 +13,7 @@
 //! Or add the following line to your `Cargo.toml`:
 //! ```no_test
 //! [dependencies]
-//! bevy_knossos = "0.11"
+//! bevy_knossos = "0.12"
 //! ```
 //!
 //! # Usage

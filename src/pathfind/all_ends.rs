@@ -47,7 +47,7 @@ pub fn find_maze_ends_paths(
     let mut ends: Vec<((usize, usize), &Cell)> = Vec::default();
 
     for (entity, coords, cell, ..) in &cells {
-        if cell.is_end() {
+        if cell.is_end_sq() {
             commands.entity(entity).insert(MazeEnd);
             ends.push((coords.coord, cell));
         }

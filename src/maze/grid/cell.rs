@@ -4,7 +4,7 @@ use bevy::{ecs::component::Component, reflect::Reflect};
 use bitflags::bitflags;
 
 bitflags! {
-    /// Maze Cell defining open passages
+    ///Maze Cell defining open passages
     #[derive(Default, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Component, Reflect)]
     #[reflect(opaque)]
     pub struct Cell: u8 {
@@ -16,46 +16,72 @@ bitflags! {
         const EAST =  0b0100;
         /// Has passage to WEST
         const WEST =  0b1000;
+    ///Has passage to NORTH_EAST (hex)
+        const NORTH_EAST = 0b0001_0000;
+    ///Has passage to NORTH_WEST (hex)
+        const NORTH_WEST = 0b0010_0000;
+    ///Has passage to SOUTH_EAST (hex)
+        const SOUTH_EAST = 0b0100_0000;
+    ///Has passage to SOUTH_WEST (hex)
+        const SOUTH_WEST = 0b1000_0000;
     }
 }
 
 impl Cell {
-    /// Returns bits &str representation.
-    ///  > use `to_bits_string` for string value
+    ///Returns bits &str representation.
+    /// > use `to_bits_string` for string value
     #[must_use]
     pub fn to_bits_str(&self) -> &'static str {
         let bits = format!("{:0>4b}", self.bits());
         bits.leak()
     }
 
-    /// Returns bits string representation.
+    ///Returns bits string representation.
     #[must_use]
     pub fn to_bits_string(&self) -> String {
         format!("{:0>4b}", self.bits())
     }
 
-    /// Returns bits u8 representation.
-    /// > analogous to `bits`.
+    ///Returns bits u8 representation.
+    ///> analogous to `bits`.
     #[must_use]
     pub const fn to_bits(&self) -> u8 {
         self.bits()
     }
 
-    /// Amount of walls present: [0..=4].
+    ///Amount of walls present: [0..=4].
     #[must_use]
-    pub const fn walls_count(&self) -> u8 {
-        self.bits().count_zeros().saturating_sub(4) as u8
+    pub const fn walls_count_sq(&self) -> u8 {
+        self.walls_count_for(4)
     }
 
-    /// Checks if [`Cell`] has 3 walls (*Dead End*)
+    ///Amount of walls present: [0..=6].
     #[must_use]
-    pub const fn is_end(&self) -> bool {
-        self.walls_count() == 3
+    pub const fn walls_count_hex(&self) -> u8 {
+        self.walls_count_for(6)
+    }
+
+    /// Amount of walls present for an arbitrary-sided cell.
+    #[must_use]
+    pub const fn walls_count_for(&self, sides: u8) -> u8 {
+        sides.saturating_sub(self.bits().count_ones() as u8)
+    }
+
+    ///Checks if [`Cell`] has 3 walls (*Dead End*)
+    #[must_use]
+    pub const fn is_end_sq(&self) -> bool {
+        self.walls_count_sq() == 3
+    }
+
+    ///Checks if [`Cell`] has 5 walls (*Dead End*)
+    #[must_use]
+    pub const fn is_end_hex(&self) -> bool {
+        self.walls_count_hex() == 5
     }
 }
 
 impl fmt::Display for Cell {
-    /// Writes a formatted maze into a buffer
+    ///Writes a formatted maze into a buffer
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let names = self
             .iter_names()
@@ -109,7 +135,7 @@ mod tests {
     fn all_is_1111_str() {
         let zero = Cell::all();
 
-        assert_eq!(zero.to_bits_str(), "1111");
+        assert_eq!(zero.to_bits_str(), "11111111");
     }
 
     #[test]
@@ -151,7 +177,7 @@ mod tests {
     fn all_is_1111_bits() {
         let zero = Cell::all();
 
-        assert_eq!(zero.to_bits(), 0b1111);
+        assert_eq!(zero.to_bits(), 0b1111_1111);
     }
 
     #[test]
@@ -193,7 +219,7 @@ mod tests {
     fn all_is_1111() {
         let zero = Cell::all();
 
-        assert_eq!(zero.to_bits_string(), "1111");
+        assert_eq!(zero.to_bits_string(), "11111111");
     }
 
     #[test]
@@ -235,7 +261,7 @@ mod tests {
     fn all_cell_name() {
         let cell = Cell::all();
 
-        assert_eq!(cell.to_string(), "NSEW");
+        assert_eq!(cell.to_string(), "NSEWNNSS");
     }
 
     #[test]
@@ -247,29 +273,66 @@ mod tests {
 
     #[test]
     fn get_all_walls_count() {
-        assert_eq!(Cell::empty().walls_count(), 4);
-        assert_eq!(Cell::SOUTH.walls_count(), 3);
-        assert_eq!(Cell::NORTH.walls_count(), 3);
-        assert_eq!(Cell::WEST.walls_count(), 3);
-        assert_eq!(Cell::EAST.walls_count(), 3);
-        assert_eq!((Cell::SOUTH | Cell::NORTH).walls_count(), 2);
-        assert_eq!((Cell::EAST | Cell::WEST).walls_count(), 2);
-        assert_eq!((Cell::SOUTH | Cell::NORTH | Cell::WEST).walls_count(), 1);
-        assert_eq!((Cell::EAST | Cell::NORTH | Cell::WEST).walls_count(), 1);
-        assert_eq!(Cell::all().walls_count(), 0);
+        assert_eq!(Cell::empty().walls_count_sq(), 4);
+        assert_eq!(Cell::SOUTH.walls_count_sq(), 3);
+        assert_eq!(Cell::NORTH.walls_count_sq(), 3);
+        assert_eq!(Cell::WEST.walls_count_sq(), 3);
+        assert_eq!(Cell::EAST.walls_count_sq(), 3);
+        assert_eq!((Cell::SOUTH | Cell::NORTH).walls_count_sq(), 2);
+        assert_eq!((Cell::EAST | Cell::WEST).walls_count_sq(), 2);
+        assert_eq!((Cell::SOUTH | Cell::NORTH | Cell::WEST).walls_count_sq(), 1);
+        assert_eq!((Cell::EAST | Cell::NORTH | Cell::WEST).walls_count_sq(), 1);
+        assert_eq!(Cell::all().walls_count_sq(), 0);
     }
 
     #[test]
     fn get_all_is_end() {
-        assert!(!Cell::empty().is_end());
-        assert!(Cell::SOUTH.is_end());
-        assert!(Cell::NORTH.is_end());
-        assert!(Cell::WEST.is_end());
-        assert!(Cell::EAST.is_end());
-        assert!(!(Cell::SOUTH | Cell::NORTH).is_end());
-        assert!(!(Cell::EAST | Cell::WEST).is_end());
-        assert!(!(Cell::SOUTH | Cell::NORTH | Cell::WEST).is_end());
-        assert!(!(Cell::EAST | Cell::NORTH | Cell::WEST).is_end());
-        assert!(!Cell::all().is_end());
+        assert!(!Cell::empty().is_end_sq());
+        assert!(Cell::SOUTH.is_end_sq());
+        assert!(Cell::NORTH.is_end_sq());
+        assert!(Cell::WEST.is_end_sq());
+        assert!(Cell::EAST.is_end_sq());
+        assert!(!(Cell::SOUTH | Cell::NORTH).is_end_sq());
+        assert!(!(Cell::EAST | Cell::WEST).is_end_sq());
+        assert!(!(Cell::SOUTH | Cell::NORTH | Cell::WEST).is_end_sq());
+        assert!(!(Cell::EAST | Cell::NORTH | Cell::WEST).is_end_sq());
+        assert!(!Cell::all().is_end_sq());
+    }
+
+    #[test]
+    fn get_all_walls_count_hex() {
+        assert_eq!(Cell::empty().walls_count_hex(), 6);
+        assert_eq!(Cell::EAST.walls_count_hex(), 5);
+        assert_eq!(
+            (Cell::EAST | Cell::NORTH_EAST | Cell::SOUTH_EAST).walls_count_hex(),
+            3
+        );
+        assert_eq!(
+            (Cell::NORTH
+                | Cell::SOUTH
+                | Cell::EAST
+                | Cell::WEST
+                | Cell::NORTH_EAST
+                | Cell::SOUTH_WEST)
+                .walls_count_hex(),
+            0
+        );
+    }
+
+    #[test]
+    fn get_all_is_end_hex() {
+        assert!(!Cell::empty().is_end_hex());
+        assert!(Cell::EAST.is_end_hex());
+        assert!(Cell::NORTH_WEST.is_end_hex());
+        assert!(!(Cell::EAST | Cell::WEST).is_end_hex());
+        assert!(
+            !(Cell::NORTH
+                | Cell::SOUTH
+                | Cell::EAST
+                | Cell::WEST
+                | Cell::NORTH_EAST
+                | Cell::SOUTH_WEST)
+                .is_end_hex()
+        );
     }
 }

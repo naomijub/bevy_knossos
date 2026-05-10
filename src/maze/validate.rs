@@ -1,4 +1,4 @@
-use super::grid::{Grid, cell::Cell};
+use super::grid::Grid;
 use crate::utils::types::Coords;
 use rand::prelude::*;
 
@@ -15,7 +15,7 @@ pub fn validate(grid: &Grid) -> bool {
 }
 
 fn visit(coords: Coords, grid: &Grid, visited: &mut Vec<Coords>) {
-    let mut dirs = [Cell::NORTH, Cell::SOUTH, Cell::WEST, Cell::EAST];
+    let mut dirs = grid.directions().to_vec();
     dirs.shuffle(&mut rand::rng());
 
     for dir in dirs {

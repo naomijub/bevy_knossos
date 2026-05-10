@@ -2,6 +2,7 @@
 
 mod ascii;
 mod game_map;
+mod hex_text;
 mod image;
 
 use crate::maze::grid::Grid;
@@ -12,6 +13,7 @@ pub use self::image::Image;
 use super::errors::MazeSaveError;
 pub use ascii::{AsciiBroad, AsciiNarrow};
 pub use game_map::GameMap;
+pub use hex_text::HexText;
 
 /// A trait for maze formatters
 pub trait Formatter<T>

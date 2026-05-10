@@ -80,7 +80,7 @@ impl OrthogonalMaze {
     #[must_use]
     pub fn ends(&self) -> Vec<((usize, usize), &Cell)> {
         self.iter()
-            .filter(|maze_cell| maze_cell.1.walls_count() == 3)
+            .filter(|maze_cell| maze_cell.1.walls_count_sq() == 3)
             .collect()
     }
 

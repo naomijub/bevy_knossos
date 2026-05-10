@@ -1281,7 +1281,7 @@ dependencies = [
 
 [[package]]
 name = "bevy_knossos"
-version = "0.11.1"
+version = "0.12.0"
 dependencies = [
  "assert_cmd",
  "assert_fs",
@@ -1291,6 +1291,7 @@ dependencies = [
  "bitflags 2.11.1",
  "clap",
  "criterion",
+ "hexx",
  "image",
  "pathfinding",
  "rand 0.10.1",
@@ -3590,6 +3591,19 @@ name = "hexf-parse"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dfa686283ad6dd069f105e5ab091b04c62850d3e4cf5d67debad1933f55023df"
+
+[[package]]
+name = "hexx"
+version = "0.24.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f6e1747feec024f4fb1b56bca2e3c149814baed861fdc7044d6482ff8daf8fb0"
+dependencies = [
+ "bevy_ecs",
+ "bevy_platform",
+ "bevy_reflect",
+ "glam",
+ "serde",
+]
 
 [[package]]
 name = "http"

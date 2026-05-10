@@ -1,8 +1,5 @@
 use super::Algorithm;
-use crate::{
-    maze::grid::{Grid, cell::Cell},
-    utils::types::Coords,
-};
+use crate::{maze::grid::Grid, utils::types::Coords};
 use rand::prelude::*;
 
 /// The "Hunt & Kill" algorithm for generating mazes
@@ -25,7 +22,7 @@ impl HuntAndKill {
 
     #[expect(clippy::unused_self)]
     fn walk(&self, coords: Coords, grid: &mut Grid, rng: &mut impl Rng) -> Option<Coords> {
-        let mut directions = [Cell::NORTH, Cell::SOUTH, Cell::WEST, Cell::EAST];
+        let mut directions = grid.directions().to_vec();
         directions.shuffle(rng);
 
         for dir in directions {
@@ -40,8 +37,6 @@ impl HuntAndKill {
     }
 
     fn hunt(&mut self, grid: &mut Grid) -> Option<Coords> {
-        let directions = [Cell::NORTH, Cell::SOUTH, Cell::WEST, Cell::EAST];
-
         for y in self.hunt_start_index..grid.height() {
             let mut unvisited_cells_count = 0;
 
@@ -51,11 +46,11 @@ impl HuntAndKill {
                 }
                 unvisited_cells_count += 1;
 
-                for dir in directions {
-                    if let Ok(next_coords) = grid.get_next_cell_coords((x, y), dir)
+                for dir in grid.directions() {
+                    if let Ok(next_coords) = grid.get_next_cell_coords((x, y), *dir)
                         && grid.is_cell_visited(next_coords)
                     {
-                        grid.carve_passage((x, y), dir).ok();
+                        grid.carve_passage((x, y), *dir).ok();
                         return Some((x, y));
                     }
                 }
