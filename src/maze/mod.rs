@@ -19,6 +19,7 @@ pub use algorithms::*;
 pub use builder::OrthogonalMazeBuilder;
 pub use errors::MazeSaveError;
 pub use formatters::{AsciiBroad, AsciiNarrow, GameMap, Image};
+pub use formatters::HexText;
 pub use grid::cell::Cell;
 pub use grid::topology::Topology;
 pub use hex_builder::HexMazeBuilder;

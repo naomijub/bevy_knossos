@@ -62,6 +62,66 @@ impl HexMaze {
         formatter.format(&self.grid)
     }
 
+    /// Serializes the maze into a human redable text format.
+    ///
+    /// The output can be parsed back via [`Self::from_text`].
+    #[must_use]
+    pub fn to_text(&self) -> String {
+        self.format(super::formatters::HexText).into_inner()
+    }
+
+    /// Deserializes a maze from [`Self::to_text`] output.
+    ///
+    /// # Errors
+    /// Returns [`MazeSaveError`] when text is malformed or inconsistent.
+    pub fn from_text(input: &str) -> Result<Self, MazeSaveError> {
+        let mut lines = input.lines();
+        let Some(header) = lines.next() else {
+            return Err(MazeSaveError::reason("Missing header line"));
+        };
+        if header.trim() != "KNOSSOS_HEX_V1" {
+            return Err(MazeSaveError::reason("Invalid hex maze header"));
+        }
+
+        let Some(width_line) = lines.next() else {
+            return Err(MazeSaveError::reason("Missing width line"));
+        };
+        let Some(height_line) = lines.next() else {
+            return Err(MazeSaveError::reason("Missing height line"));
+        };
+
+        let width = parse_dimension(width_line, "width")?;
+        let height = parse_dimension(height_line, "height")?;
+
+        let mut maze = Self::new(width, height);
+        let grid = maze.get_grid_mut();
+
+        for y in 0..height {
+            let Some(line) = lines.next() else {
+                return Err(MazeSaveError::reason("Missing cell row"));
+            };
+
+            let cols: Vec<&str> = line.split(',').collect();
+            if cols.len() != width {
+                return Err(MazeSaveError::reason(format!(
+                    "Invalid row width at y={y}: expected {width}, got {}",
+                    cols.len()
+                )));
+            }
+
+            for (x, token) in cols.iter().enumerate() {
+                let bits = u8::from_str_radix(token.trim(), 16).map_err(|err| {
+                    MazeSaveError::reason(format!(
+                        "Invalid cell token at x={x}, y={y}: `{token}` ({err})"
+                    ))
+                })?;
+                grid.cells[y * width + x] = Cell::from_bits_retain(bits);
+            }
+        }
+
+        Ok(maze)
+    }
+
     #[must_use]
     #[expect(clippy::iter_without_into_iter)]
     pub const fn iter(&'_ self) -> HexMazeIterator<'_> {
@@ -70,6 +130,24 @@ impl HexMaze {
             index: 0,
         }
     }
+}
+
+fn parse_dimension(line: &str, key: &str) -> Result<usize, MazeSaveError> {
+    let Some((k, value)) = line.split_once('=') else {
+        return Err(MazeSaveError::reason(format!(
+            "Malformed dimension line `{line}`"
+        )));
+    };
+    if k.trim() != key {
+        return Err(MazeSaveError::reason(format!(
+            "Expected `{key}=...`, got `{line}`"
+        )));
+    }
+
+    value
+        .trim()
+        .parse::<usize>()
+        .map_err(|err| MazeSaveError::reason(format!("Invalid {key} value `{value}`: {err}")))
 }
 
 impl std::ops::Index<Coords> for HexMaze {
@@ -99,5 +177,42 @@ impl<'a> Iterator for HexMazeIterator<'a> {
         } else {
             None
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::maze::HexMazeBuilder;
+
+    use super::HexMaze;
+
+    #[test]
+    fn text_roundtrip() {
+        let maze = HexMazeBuilder::new()
+            .width(6)
+            .height(5)
+            .seed(42)
+            .build()
+            .unwrap();
+        let text = maze.to_text();
+        let restored = HexMaze::from_text(&text).unwrap();
+        let maze_cells: Vec<((usize, usize), u8)> =
+            maze.iter().map(|(coord, cell)| (coord, cell.to_bits())).collect();
+        let restored_cells: Vec<((usize, usize), u8)> = restored
+            .iter()
+            .map(|(coord, cell)| (coord, cell.to_bits()))
+            .collect();
+
+        assert_eq!(maze_cells, restored_cells);
+    }
+
+    #[test]
+    fn invalid_header() {
+        let input = "NOPE\nwidth=1\nheight=1\n00\n";
+        let err = HexMaze::from_text(input).unwrap_err();
+        assert_eq!(
+            err.to_string(),
+            "Cannot save maze to file. Reason: Invalid hex maze header"
+        );
     }
 }
