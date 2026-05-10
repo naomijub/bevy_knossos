@@ -1,4 +1,9 @@
-use std::collections::{HashMap, HashSet};
+// TODO: Fix example
+// Currently example is not correctly matching the generated paths for the maze
+use std::{
+    collections::{HashMap, HashSet},
+    sync::OnceLock,
+};
 
 use bevy::prelude::*;
 use hexx::{EdgeDirection, Hex, HexLayout, HexOrientation, OffsetHexMode};
@@ -6,6 +11,9 @@ use rand::{RngExt, SeedableRng, prelude::SliceRandom, rngs::StdRng};
 
 const MAZE_WIDTH: i32 = 7;
 const MAZE_HEIGHT: i32 = 8;
+const HEX_SIDES_U8: u8 = 6;
+const HEX_SIDES_I32: i32 = 6;
+const HEX_MASK: u8 = 0b11_1111;
 // Controls distance between neighboring hex centers.
 const HEX_LAYOUT_SCALE: f32 = 0.72;
 // Controls the GLB mesh size independently from layout spacing.
@@ -13,11 +21,14 @@ const HEX_MODEL_SCALE: f32 = 1.18;
 // Calibrates GLB native orientation against logical hex directions.
 // Increase/decrease by 1 to rotate all tiles by +/- 60 degrees.
 const MODEL_ROTATION_OFFSET_STEPS: i32 = 1;
+// Rotation winding between logical mask steps and rendered model orientation.
+// Use 1 for same winding, -1 for opposite winding.
+const MODEL_ROTATION_WINDING_SIGN: i32 = -1;
 // Fine-grained base rotation calibration for how the GLB was authored.
 // Useful when the mesh's intrinsic "forward" is offset by 30 degrees.
 const MODEL_ROTATION_BASE_RADIANS: f32 = -std::f32::consts::FRAC_PI_6;
 
-const DIRS: [EdgeDirection; 6] = [
+const HEX_EDGE_DIRECTIONS: [EdgeDirection; HEX_SIDES_U8 as usize] = [
     EdgeDirection::FLAT_NORTH_EAST,
     EdgeDirection::FLAT_NORTH,
     EdgeDirection::FLAT_NORTH_WEST,
@@ -37,6 +48,21 @@ struct TileChoice {
     rot_steps: u8,
 }
 
+#[derive(Clone, Copy)]
+struct TileTemplate {
+    name: &'static str,
+    mask: u8,
+}
+
+impl TileTemplate {
+    fn from_dirs(name: &'static str, dirs: &[EdgeDirection]) -> Self {
+        Self {
+            name,
+            mask: mask_from_dirs(dirs),
+        }
+    }
+}
+
 fn main() {
     App::new()
         .insert_resource(HexMaze::generate(MAZE_WIDTH, MAZE_HEIGHT, 7))
@@ -52,11 +78,7 @@ impl HexMaze {
 
         for row in 0..height {
             for col in 0..width {
-                let hex = Hex::from_offset_coordinates(
-                    [col, row],
-                    OffsetHexMode::Odd,
-                    HexOrientation::Flat,
-                );
+                let hex = offset_to_hex(col, row);
                 cells.insert(hex, 0);
                 all.insert(hex);
             }
@@ -65,11 +87,7 @@ impl HexMaze {
         let mut rng = StdRng::seed_from_u64(seed);
         let start_col = rng.random_range(0..width);
         let start_row = rng.random_range(0..height);
-        let start = Hex::from_offset_coordinates(
-            [start_col, start_row],
-            OffsetHexMode::Odd,
-            HexOrientation::Flat,
-        );
+        let start = offset_to_hex(start_col, start_row);
 
         let mut visited = HashSet::<Hex>::new();
         carve_recursive(start, &all, &mut visited, &mut cells, &mut rng);
@@ -94,7 +112,7 @@ fn carve_recursive(
 ) {
     visited.insert(current);
 
-    let mut dirs = DIRS;
+    let mut dirs = HEX_EDGE_DIRECTIONS;
     dirs.shuffle(rng);
 
     for dir in dirs {
@@ -117,16 +135,12 @@ fn carve(cells: &mut HashMap<Hex, u8>, hex: Hex, dir: EdgeDirection) {
     }
 }
 
-fn direction_index(dir: EdgeDirection) -> u8 {
-    match dir {
-        EdgeDirection::FLAT_NORTH_EAST => 0,
-        EdgeDirection::FLAT_NORTH => 1,
-        EdgeDirection::FLAT_NORTH_WEST => 2,
-        EdgeDirection::FLAT_SOUTH_WEST => 3,
-        EdgeDirection::FLAT_SOUTH => 4,
-        EdgeDirection::FLAT_SOUTH_EAST => 5,
-        _ => unreachable!("expected flat edge direction"),
-    }
+const fn direction_index(dir: EdgeDirection) -> u8 {
+    dir.index()
+}
+
+const fn offset_to_hex(col: i32, row: i32) -> Hex {
+    Hex::from_offset_coordinates([col, row], OffsetHexMode::Odd, HexOrientation::Flat)
 }
 
 fn setup_camera_and_light(mut commands: Commands) {
@@ -171,14 +185,8 @@ fn spawn_hex_maze(
     for (hex, mask) in &maze.cells {
         let tile = choose_tile(*mask, *hex, start_hex, end_hex);
         let scene: Handle<Scene> = asset_server.load(format!("hexagons/{}.glb#Scene0", tile.name));
-
         let world = layout.hex_to_world_pos(*hex);
-        // The GLBs are authored in a local orientation that needs a fixed calibration offset.
-        let calibrated_steps =
-            (i32::from(tile.rot_steps) + MODEL_ROTATION_OFFSET_STEPS).rem_euclid(6) as f32;
-        let rot = Quat::from_rotation_y(
-            MODEL_ROTATION_BASE_RADIANS + calibrated_steps * std::f32::consts::FRAC_PI_3,
-        );
+        let rot = tile_rotation(tile.rot_steps);
 
         commands.spawn((
             SceneRoot(scene),
@@ -193,40 +201,18 @@ fn spawn_hex_maze(
 }
 
 fn choose_tile(mask: u8, hex: Hex, start_hex: Option<Hex>, end_hex: Option<Hex>) -> TileChoice {
-    let base_tiles: [(&str, u8); 13] = [
-        ("river-crossing", mask_from_indices(&[0, 1, 2, 3, 4, 5])),
-        ("river-straight", mask_from_indices(&[1, 4])), // north + south
-        ("river-corner-sharp", mask_from_indices(&[0, 5])), // north-east + south-east
-        ("river-corner", mask_from_indices(&[5, 1])),   // south-east + north
-        ("river-intersectionA", mask_from_indices(&[0, 1, 2])), // north-east + north + north-west
-        ("river-intersectionB", mask_from_indices(&[5, 1, 2])), // south-east + north + north-west
-        ("river-intersectionC", mask_from_indices(&[0, 1, 3])), // north-east + north + south-west
-        ("river-intersectionD", mask_from_indices(&[0, 1, 2, 4])), // north-east + north + north-west + south
-        ("river-intersectionE", mask_from_indices(&[5, 4, 1, 2])), // south-east + south + north + north-west
-        ("river-intersectionF", mask_from_indices(&[0, 4, 2])), // north-east + south + north-west
-        ("river-intersectionG", mask_from_indices(&[0, 1, 2, 5, 3])), // north-east + north + north-west + south-east + south-west
-        ("river-intersectionH", mask_from_indices(&[0, 1, 2, 3])), // north-east + north + north-west + south-west
-        ("river-end", mask_from_indices(&[0])),
-    ];
+    for template in tile_templates() {
+        for rot_steps in 0..HEX_SIDES_U8 {
+            if rotate_mask(template.mask, rot_steps) == mask {
+                let name =
+                    dead_end_override(mask, hex, start_hex, end_hex).unwrap_or(template.name);
+                let final_rot_steps =
+                    (rot_steps + per_tile_rotation_offset_steps(name)) % HEX_SIDES_U8;
 
-    for (name, base) in base_tiles {
-        for rot_steps in 0..6 {
-            if rotate_mask(base, rot_steps) == mask {
-                let is_dead_end = mask.is_power_of_two();
-                if is_dead_end && Some(hex) == start_hex {
-                    return TileChoice {
-                        name: "river-start",
-                        rot_steps,
-                    };
-                }
-                if is_dead_end && Some(hex) == end_hex {
-                    return TileChoice {
-                        name: "river-end",
-                        rot_steps,
-                    };
-                }
-
-                return TileChoice { name, rot_steps };
+                return TileChoice {
+                    name,
+                    rot_steps: final_rot_steps,
+                };
             }
         }
     }
@@ -238,17 +224,168 @@ fn choose_tile(mask: u8, hex: Hex, start_hex: Option<Hex>, end_hex: Option<Hex>)
     }
 }
 
-const fn rotate_mask(mask: u8, steps: u8) -> u8 {
-    let s = steps % 6;
-    ((mask << s) | (mask >> (6 - s))) & 0b11_1111
+fn tile_templates() -> &'static [TileTemplate] {
+    static TEMPLATES: OnceLock<Vec<TileTemplate>> = OnceLock::new();
+    TEMPLATES.get_or_init(build_tile_templates).as_slice()
 }
 
-const fn mask_from_indices(indices: &[u8]) -> u8 {
+fn build_tile_templates() -> Vec<TileTemplate> {
+    vec![
+        TileTemplate::from_dirs(
+            "river-crossing",
+            &[
+                EdgeDirection::FLAT_NORTH_EAST,
+                EdgeDirection::FLAT_NORTH,
+                EdgeDirection::FLAT_NORTH_WEST,
+                EdgeDirection::FLAT_SOUTH_WEST,
+                EdgeDirection::FLAT_SOUTH,
+                EdgeDirection::FLAT_SOUTH_EAST,
+            ],
+        ),
+        TileTemplate::from_dirs(
+            "river-straight",
+            &[EdgeDirection::FLAT_NORTH, EdgeDirection::FLAT_SOUTH],
+        ),
+        TileTemplate::from_dirs(
+            "river-corner-sharp",
+            &[
+                EdgeDirection::FLAT_NORTH_EAST,
+                EdgeDirection::FLAT_SOUTH_EAST,
+            ],
+        ),
+        TileTemplate::from_dirs(
+            "river-corner",
+            &[EdgeDirection::FLAT_SOUTH_EAST, EdgeDirection::FLAT_NORTH],
+        ),
+        TileTemplate::from_dirs(
+            "river-intersectionA",
+            &[
+                EdgeDirection::FLAT_NORTH_EAST,
+                EdgeDirection::FLAT_NORTH,
+                EdgeDirection::FLAT_NORTH_WEST,
+            ],
+        ),
+        TileTemplate::from_dirs(
+            "river-intersectionB",
+            &[
+                EdgeDirection::FLAT_SOUTH_EAST,
+                EdgeDirection::FLAT_NORTH,
+                EdgeDirection::FLAT_NORTH_WEST,
+            ],
+        ),
+        TileTemplate::from_dirs(
+            "river-intersectionC",
+            &[
+                EdgeDirection::FLAT_NORTH_EAST,
+                EdgeDirection::FLAT_NORTH,
+                EdgeDirection::FLAT_SOUTH_WEST,
+            ],
+        ),
+        TileTemplate::from_dirs(
+            "river-intersectionD",
+            &[
+                EdgeDirection::FLAT_NORTH_EAST,
+                EdgeDirection::FLAT_NORTH,
+                EdgeDirection::FLAT_NORTH_WEST,
+                EdgeDirection::FLAT_SOUTH,
+            ],
+        ),
+        TileTemplate::from_dirs(
+            "river-intersectionE",
+            &[
+                EdgeDirection::FLAT_SOUTH_EAST,
+                EdgeDirection::FLAT_SOUTH,
+                EdgeDirection::FLAT_NORTH,
+                EdgeDirection::FLAT_NORTH_WEST,
+            ],
+        ),
+        TileTemplate::from_dirs(
+            "river-intersectionF",
+            &[
+                EdgeDirection::FLAT_NORTH_EAST,
+                EdgeDirection::FLAT_SOUTH,
+                EdgeDirection::FLAT_NORTH_WEST,
+            ],
+        ),
+        TileTemplate::from_dirs(
+            "river-intersectionG",
+            &[
+                EdgeDirection::FLAT_NORTH_EAST,
+                EdgeDirection::FLAT_NORTH,
+                EdgeDirection::FLAT_NORTH_WEST,
+                EdgeDirection::FLAT_SOUTH_EAST,
+                EdgeDirection::FLAT_SOUTH_WEST,
+            ],
+        ),
+        TileTemplate::from_dirs(
+            "river-intersectionH",
+            &[
+                EdgeDirection::FLAT_NORTH_EAST,
+                EdgeDirection::FLAT_NORTH,
+                EdgeDirection::FLAT_NORTH_WEST,
+                EdgeDirection::FLAT_SOUTH_WEST,
+            ],
+        ),
+        TileTemplate::from_dirs("river-end", &[EdgeDirection::FLAT_NORTH_EAST]),
+    ]
+}
+
+fn dead_end_override(
+    mask: u8,
+    hex: Hex,
+    start_hex: Option<Hex>,
+    end_hex: Option<Hex>,
+) -> Option<&'static str> {
+    if !mask.is_power_of_two() {
+        return None;
+    }
+
+    if Some(hex) == start_hex {
+        Some("river-start")
+    } else if Some(hex) == end_hex {
+        Some("river-end")
+    } else {
+        None
+    }
+}
+
+fn tile_rotation(rot_steps: u8) -> Quat {
+    // The GLBs are authored in a local orientation that needs a fixed calibration offset.
+    let calibrated_steps = (MODEL_ROTATION_WINDING_SIGN * i32::from(rot_steps)
+        + MODEL_ROTATION_OFFSET_STEPS)
+        .rem_euclid(HEX_SIDES_I32) as f32;
+    Quat::from_rotation_y(
+        calibrated_steps.mul_add(std::f32::consts::FRAC_PI_3, MODEL_ROTATION_BASE_RADIANS),
+    )
+}
+
+const fn rotate_mask(mask: u8, steps: u8) -> u8 {
+    let s = steps % HEX_SIDES_U8;
+    ((mask << s) | (mask >> (HEX_SIDES_U8 - s))) & HEX_MASK
+}
+
+fn mask_from_dirs(dirs: &[EdgeDirection]) -> u8 {
     let mut mask = 0u8;
-    let mut i = 0usize;
-    while i < indices.len() {
-        mask |= 1 << indices[i];
-        i += 1;
+    for dir in dirs {
+        mask |= 1 << dir.index();
     }
     mask
+}
+
+// Per-model rotation calibration (in 60-degree steps) so rendered river exits
+// align with logical cell directions.
+fn per_tile_rotation_offset_steps(name: &str) -> u8 {
+    match name {
+        // Corner families are authored one step offset from logical direction masks.
+        // These intersection variants share the same local orientation convention as corners.
+        "river-corner"
+        | "river-corner-sharp"
+        | "river-intersectionB"
+        | "river-intersectionC"
+        | "river-intersectionF"
+        | "river-intersectionH"
+        | "river-end"
+        | "river-start" => 1,
+        _ => 0,
+    }
 }
