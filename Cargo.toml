@@ -37,7 +37,7 @@ assert_cmd = "2.1"
 assert_fs = "1.1"
 criterion = { version = "0.8", features = ["html_reports"] }
 bevy-inspector-egui = "0.36"
-bevy_ecs_tilemap = "0.18"
+bevy_ecs_tilemap = "0.19"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
