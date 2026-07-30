@@ -11,35 +11,35 @@ fn main() {
         .build()
         .unwrap();
     println!("\nRecursive backtracking");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(BinaryTree::new(Bias::NorthEast)))
         .build()
         .unwrap();
     println!("\nBinary Tree (NorthEast)");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(BinaryTree::new(Bias::NorthWest)))
         .build()
         .unwrap();
     println!("\nBinary Tree (NorthWest)");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(BinaryTree::new(Bias::SouthEast)))
         .build()
         .unwrap();
     println!("\nBinary Tree (SouthEast)");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(BinaryTree::new(Bias::SouthWest)))
         .build()
         .unwrap();
     println!("\nBinary Tree (SouthWest)");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .width(20)
@@ -47,7 +47,7 @@ fn main() {
         .build()
         .unwrap();
     println!("\nSidewinder");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .height(10)
@@ -57,7 +57,7 @@ fn main() {
         .unwrap();
 
     println!("\nKruskal");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(GrowingTree::new(Method::Newest)))
@@ -65,7 +65,7 @@ fn main() {
         .unwrap();
 
     println!("\nGrowing tree (Newest)");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(GrowingTree::new(Method::Oldest)))
@@ -73,7 +73,7 @@ fn main() {
         .unwrap();
 
     println!("\nGrowing tree (Oldest)");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(GrowingTree::new(Method::Random)))
@@ -81,7 +81,7 @@ fn main() {
         .unwrap();
 
     println!("\nGrowing tree (Random)");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(GrowingTree::new(Method::Middle)))
@@ -89,7 +89,7 @@ fn main() {
         .unwrap();
 
     println!("\nGrowing tree (Middle)");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(GrowingTree::new(Method::Newest50Random50)))
@@ -97,7 +97,7 @@ fn main() {
         .unwrap();
 
     println!("\nGrowing tree (Newest50Random50)");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(GrowingTree::new(Method::Newest75Random25)))
@@ -105,7 +105,7 @@ fn main() {
         .unwrap();
 
     println!("\nGrowing tree (Newest75Random25)");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(GrowingTree::new(Method::Newest25Random75)))
@@ -113,7 +113,7 @@ fn main() {
         .unwrap();
 
     println!("\nGrowing tree (Newest25Random75)");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(Prim::new()))
@@ -121,7 +121,7 @@ fn main() {
         .unwrap();
 
     println!("\nPrim");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .height(10)
@@ -131,7 +131,7 @@ fn main() {
         .unwrap();
 
     println!("\nHunt & kill");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .height(25)
@@ -141,7 +141,7 @@ fn main() {
         .unwrap();
 
     println!("\nAldou-Broder");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .algorithm(Box::new(RecursiveDivision))
@@ -149,7 +149,7 @@ fn main() {
         .unwrap();
 
     println!("\nRecursive Division");
-    println!("{}", &maze);
+    println!("{maze}");
 
     let maze = OrthogonalMazeBuilder::new()
         .height(15)
@@ -159,7 +159,7 @@ fn main() {
         .unwrap();
 
     println!("\nEller");
-    println!("{}", &maze);
+    println!("{maze}");
 
     maze.save("maze.txt", AsciiBroad).unwrap();
     maze.save(

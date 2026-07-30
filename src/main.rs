@@ -54,7 +54,7 @@ impl FromStr for Coords {
 }
 
 #[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
+#[command(name = "bevy_knossos", bin_name = "bevy_knossos", author, version, about, long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,

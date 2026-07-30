@@ -137,7 +137,7 @@ impl std::ops::Index<Coords> for Grid {
         let idx = index.1 * width + index.0;
         self.cells
             .get(idx)
-            .unwrap_or_else(|| panic!("Cell at {:?} doesn't exist.", &index))
+            .unwrap_or_else(|| panic!("Cell at {index:?} doesn't exist."))
     }
 }
 

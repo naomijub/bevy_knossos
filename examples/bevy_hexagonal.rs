@@ -6,6 +6,8 @@ use std::{
 };
 
 use bevy::prelude::*;
+use bevy::world_serialization::{WorldAsset, WorldAssetRoot};
+use hexx::Vec2;
 use hexx::{EdgeDirection, Hex, HexLayout, HexOrientation, OffsetHexMode};
 use rand::{RngExt, SeedableRng, prelude::SliceRandom, rngs::StdRng};
 
@@ -151,7 +153,7 @@ fn setup_camera_and_light(mut commands: Commands) {
 
     commands.spawn((
         DirectionalLight {
-            shadows_enabled: true,
+            shadow_maps_enabled: true,
             illuminance: 15_000.0,
             ..default()
         },
@@ -184,12 +186,13 @@ fn spawn_hex_maze(
 
     for (hex, mask) in &maze.cells {
         let tile = choose_tile(*mask, *hex, start_hex, end_hex);
-        let scene: Handle<Scene> = asset_server.load(format!("hexagons/{}.glb#Scene0", tile.name));
+        let scene: Handle<WorldAsset> =
+            asset_server.load(format!("hexagons/{}.glb#Scene0", tile.name));
         let world = layout.hex_to_world_pos(*hex);
         let rot = tile_rotation(tile.rot_steps);
 
         commands.spawn((
-            SceneRoot(scene),
+            WorldAssetRoot(scene),
             // hexx returns 2D world coords in an XY plane. In Bevy's XZ ground plane,
             // mapping y->-z preserves winding/chirality for tile orientation.
             Transform::from_translation(Vec3::new(world.x, 0.0, -world.y))

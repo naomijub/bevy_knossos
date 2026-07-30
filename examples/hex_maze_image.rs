@@ -1,7 +1,7 @@
 use std::fs;
 
-use bevy::math::Vec2;
 use bevy_knossos::maze::{Cell, HexMazeBuilder, RecursiveBacktracking};
+use hexx::Vec2;
 use hexx::{EdgeDirection, Hex, HexLayout, HexOrientation, OffsetHexMode};
 use image::{Rgb, RgbImage};
 
