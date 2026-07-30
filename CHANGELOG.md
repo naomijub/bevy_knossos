@@ -5,10 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-## [0.12.0] - 2026-05-10: Hexagonal mazes and generic topology support
+## [0.12.0] - 2026-05-10: Hexagonal mazes, generic topology support and bevy-0.19
 
 ### Added
 
+- HEXAGONAL IS EXPERIMENTAL
 - Hexagonal maze support based on odd-r offset topology:
   - `HexMaze`
   - `HexMazeBuilder`
@@ -35,6 +36,7 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 
 ### Breaking Changes
 
+- Updated `bevy` to `0.19`
 - `Cell` dead-end and wall-count APIs were split by topology to remove orthogonal-only semantics:
   - Use `walls_count_sq()` / `is_end_sq()` for square mazes.
   - Use `walls_count_hex()` / `is_end_hex()` for hex mazes.

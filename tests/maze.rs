@@ -298,7 +298,7 @@ fn save_maze_as_game_map_returns_error() {
 fn save_maze_as_png() {
     let output_dir = TempDir::new().unwrap();
     let file_path = format!("{}/maze.png", output_dir.path().display());
-    let expected = format!("Maze was successfully saved as an image: {}", &file_path);
+    let expected = format!("Maze was successfully saved as an image: {file_path}");
     assert_save_maze!(&file_path, Image::new(), expected);
 }
 

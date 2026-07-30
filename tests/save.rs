@@ -5,7 +5,7 @@ use assert_fs::fixture::TempDir;
 fn image_save_success() {
     let output_dir = TempDir::new().unwrap();
     let file_path = format!("{}/maze.png", output_dir.path().display());
-    let expected = format!("Maze was successfully saved as an image: {}\n", &file_path);
+    let expected = format!("Maze was successfully saved as an image: {file_path}\n");
 
     let mut cmd = cargo_bin_cmd!();
     cmd.args(["generate", "image", "--output-path", &file_path])

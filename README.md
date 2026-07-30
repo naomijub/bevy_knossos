@@ -68,6 +68,7 @@ For information on knossos CLI usage, check the original repository [#Cli](https
 
 | bevy | bevy_knossos | edition |
 | ---- | ------------ | ------- |
+| 0.19 | 0.12         |  2024   |
 | 0.18 | 0.10 - 0.11  |  2024   |
 | 0.17 | 0.9          |  2024   |
 | 0.16 | 0.8          |  2024   |
@@ -77,6 +78,7 @@ For information on knossos CLI usage, check the original repository [#Cli](https
 
 | name          | description | default| dependencies |
 | ------------- | ----------- | ------ | ------------ |
+| `hexagonal` | Enables `experimental` hexagonal mazes | false | `hexx = 0.24` |
 | `pathfinding` | Enables bevy to pathfind in the Maze (banner image is a demo) | true | `pathfinding = "4.14"` |
 | `single_end` | Only registers single start/goal pathfinding resources and systems | false | `pathfinding` |
 
@@ -87,6 +89,8 @@ When `single_end` is enabled, only `MazePath`/`find_path` are registered and mul
 
 - `Bevy_ecs_tilemap`, by @ChristopherBiscardi, uses [`bevy_ecs_tilemap` crate](https://crates.io/crates/bevy_ecs_tilemap) to handle tilemap from tiles spritesheets.
 - `Bevy_pathfinding`, uses [`pathfinding` crate](https://crates.io/crates/pathfinding) to pathfind between [`Start`] and [`Goal`] components Coords in the Maze.
+- `Bevy_multiple_ends`, uses [`pathfinding` crate](https://crates.io/crates/pathfinding) to pathfind between [`Start`] and multiple [`Goal`] components Coords in the Maze.
+- `Bevy_hexagonal`, uses [`hexx` crate](https://crates.io/crates/hexx) to generate 3d hexagonal maze.
 
 ## Bevy Mini-maze under Kenney.nl license and APACHE:
 
