@@ -98,10 +98,16 @@ impl HexMaze {
     }
 
     fn dead_ends(&self) -> Vec<Hex> {
-        self.cells
+        let mut ends: Vec<_> = self
+            .cells
             .iter()
             .filter_map(|(hex, mask)| mask.is_power_of_two().then_some(*hex))
-            .collect()
+            .collect();
+        ends.sort_by_key(|hex| {
+            let offset = hex.to_offset_coordinates(OffsetHexMode::Odd, HexOrientation::Flat);
+            (offset[1], offset[0])
+        });
+        ends
     }
 }
 
@@ -209,12 +215,11 @@ fn choose_tile(mask: u8, hex: Hex, start_hex: Option<Hex>, end_hex: Option<Hex>)
             if rotate_mask(template.mask, rot_steps) == mask {
                 let name =
                     dead_end_override(mask, hex, start_hex, end_hex).unwrap_or(template.name);
-                let final_rot_steps =
-                    (rot_steps + per_tile_rotation_offset_steps(name)) % HEX_SIDES_U8;
-
                 return TileChoice {
                     name,
-                    rot_steps: final_rot_steps,
+                    // The template mask describes the asset's unrotated exits;
+                    // apply exactly one logical rotation after matching.
+                    rot_steps,
                 };
             }
         }
@@ -373,22 +378,4 @@ fn mask_from_dirs(dirs: &[EdgeDirection]) -> u8 {
         mask |= 1 << dir.index();
     }
     mask
-}
-
-// Per-model rotation calibration (in 60-degree steps) so rendered river exits
-// align with logical cell directions.
-fn per_tile_rotation_offset_steps(name: &str) -> u8 {
-    match name {
-        // Corner families are authored one step offset from logical direction masks.
-        // These intersection variants share the same local orientation convention as corners.
-        "river-corner"
-        | "river-corner-sharp"
-        | "river-intersectionB"
-        | "river-intersectionC"
-        | "river-intersectionF"
-        | "river-intersectionH"
-        | "river-end"
-        | "river-start" => 1,
-        _ => 0,
-    }
 }
