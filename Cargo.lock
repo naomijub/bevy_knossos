@@ -1380,7 +1380,7 @@ dependencies = [
 
 [[package]]
 name = "bevy_knossos"
-version = "0.12.0"
+version = "0.12.1"
 dependencies = [
  "assert_cmd",
  "assert_fs",
