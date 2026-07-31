@@ -1,5 +1,8 @@
 use super::Algorithm;
-use crate::{maze::grid::Grid, utils::types::Coords};
+use crate::{
+    maze::grid::{Grid, topology::Topology},
+    utils::types::Coords,
+};
 use rand::prelude::*;
 
 /// The "Hunt & Kill" algorithm for generating mazes
@@ -117,6 +120,10 @@ impl Algorithm for HuntAndKill {
 
     fn name(&self) -> &'static str {
         "HuntAndKill"
+    }
+
+    fn supports_topology(&self, _topology: Topology) -> bool {
+        true
     }
 }
 

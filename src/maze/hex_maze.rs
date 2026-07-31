@@ -118,8 +118,22 @@ impl HexMaze {
                         "Invalid cell token at x={x}, y={y}: `{token}` ({err})"
                     ))
                 })?;
+                if bits & 0x03 != 0 {
+                    return Err(MazeSaveError::reason(format!(
+                        "Invalid cell token at x={x}, y={y}: north/south bits are not valid for hex topology"
+                    )));
+                }
                 grid.cells[y * width + x] = Cell::from_bits_retain(bits);
             }
+        }
+
+        if lines.next().is_some() {
+            return Err(MazeSaveError::reason("Unexpected trailing cell data"));
+        }
+        if !maze.is_valid() {
+            return Err(MazeSaveError::reason(
+                "Hex maze passages are disconnected or asymmetric",
+            ));
         }
 
         Ok(maze)

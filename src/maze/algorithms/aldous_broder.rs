@@ -1,5 +1,8 @@
 use super::Algorithm;
-use crate::{maze::grid::Grid, utils::types::Coords};
+use crate::{
+    maze::grid::{Grid, topology::Topology},
+    utils::types::Coords,
+};
 use rand::prelude::*;
 
 /// The Aldous-Broder's algorithm for generating mazes.
@@ -57,6 +60,10 @@ impl Algorithm for AldousBroder {
 
     fn name(&self) -> &'static str {
         "AldousBroder"
+    }
+
+    fn supports_topology(&self, _topology: Topology) -> bool {
+        true
     }
 }
 

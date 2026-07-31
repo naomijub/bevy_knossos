@@ -1,5 +1,5 @@
 use super::Algorithm;
-use crate::maze::grid::Grid;
+use crate::maze::grid::{Grid, topology::Topology};
 use crate::utils::types::Coords;
 use rand::prelude::*;
 
@@ -40,22 +40,37 @@ impl Algorithm for RecursiveBacktracking {
     fn name(&self) -> &'static str {
         "RecursiveBacktracking"
     }
+
+    fn supports_topology(&self, _topology: Topology) -> bool {
+        true
+    }
 }
 
 fn carve_passages_from(coords: Coords, grid: &mut Grid, rng: &mut impl Rng) {
-    let mut dirs = grid.directions().to_vec();
-    dirs.shuffle(rng);
+    // Keep the DFS frames on the heap instead of the call stack. Large mazes
+    // can otherwise overflow the stack along a long single corridor.
+    let mut initial_dirs = grid.directions().to_vec();
+    initial_dirs.shuffle(rng);
+    initial_dirs.reverse();
+    let mut stack = vec![(coords, initial_dirs)];
 
-    for dir in dirs {
-        let Ok(next) = grid.get_next_cell_coords(coords, dir) else {
+    while let Some((current, directions)) = stack.last_mut() {
+        let Some(direction) = directions.pop() else {
+            stack.pop();
+            continue;
+        };
+        let Ok(next) = grid.get_next_cell_coords(*current, direction) else {
             continue;
         };
         if grid.is_cell_visited(next) {
             continue;
         }
 
-        if let Ok(next) = grid.carve_passage(coords, dir) {
-            carve_passages_from(next, grid, rng);
+        if let Ok(next) = grid.carve_passage(*current, direction) {
+            let mut next_dirs = grid.directions().to_vec();
+            next_dirs.shuffle(rng);
+            next_dirs.reverse();
+            stack.push((next, next_dirs));
         }
     }
 }

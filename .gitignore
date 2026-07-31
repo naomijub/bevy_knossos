@@ -3,6 +3,7 @@ target
 
 # Test output
 coverage
+output
 
 # VSCode
 .vscode

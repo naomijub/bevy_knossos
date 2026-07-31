@@ -22,7 +22,10 @@ pub use recursive_backtracking::RecursiveBacktracking;
 pub use recursive_division::RecursiveDivision;
 pub use sidewinder::Sidewinder;
 
-use crate::{maze::grid::Grid, utils::types::Coords};
+use crate::{
+    maze::grid::{Grid, topology::Topology},
+    utils::types::Coords,
+};
 use rand::rngs::StdRng;
 
 pub(super) const BOOL_TRUE_PROBABILITY: f64 = 0.5;
@@ -39,4 +42,9 @@ pub trait Algorithm {
     // Cannot be a const because of dyn-trait compatibility
     /// Algorithm name
     fn name(&self) -> &'static str;
+
+    /// Whether this algorithm understands the requested grid topology.
+    fn supports_topology(&self, topology: Topology) -> bool {
+        topology == Topology::Orthogonal
+    }
 }

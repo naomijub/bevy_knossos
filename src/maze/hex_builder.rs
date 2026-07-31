@@ -65,6 +65,20 @@ impl HexMazeBuilder {
     /// # Errors
     /// - Fails if selected algorithm doesnt have a set `start_coords` or it doesnt support starting coords.
     pub fn build(mut self) -> Result<HexMaze, BuildError> {
+        if self.width == 0 || self.height == 0 {
+            return Err(BuildError::reason(
+                "hex maze dimensions must be greater than zero",
+            ));
+        }
+        if !self
+            .algorithm
+            .supports_topology(crate::maze::grid::topology::Topology::HexOddR)
+        {
+            return Err(BuildError::reason(format!(
+                "algorithm `{}` does not support hexagonal topology",
+                self.algorithm.name()
+            )));
+        }
         let mut maze = HexMaze::new(self.width, self.height);
         let mut rng = self.seed.map_or_else(
             || {
