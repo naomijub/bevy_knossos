@@ -89,6 +89,41 @@ impl GameMapState {
 
         Ok((map_rows, map_cols))
     }
+
+    fn build_map(&self, grid: &Grid) -> Result<(Vec<char>, usize, usize), MazeSaveError> {
+        let span = self
+            .span
+            .checked_add(1)
+            .ok_or_else(|| MazeSaveError::reason("game-map span is too large"))?;
+        let (map_rows, map_cols) = self.map_dimensions(grid)?;
+        let mut map = vec![self.wall; map_cols];
+
+        for y in 0..map_rows - 1 {
+            map.push(self.wall);
+            for x in 0..map_cols - 1 {
+                let cx = x / span;
+                let cy = y / span;
+                let is_last_row = (y + 1) % span == 0;
+                let is_last_col = (x + 1) % span == 0;
+                let character = match (is_last_row, is_last_col) {
+                    (false, false) => self.passage,
+                    (false, true) if grid.is_carved((cx, cy), Cell::EAST) => self.passage,
+                    (true, false) if grid.is_carved((cx, cy), Cell::SOUTH) => self.passage,
+                    (true, true)
+                        if grid.is_carved((cx, cy), Cell::EAST)
+                            && grid.is_carved((cx, cy), Cell::SOUTH)
+                            && bottom_right_neighbour_exists(cx, cy, grid) =>
+                    {
+                        self.passage
+                    }
+                    _ => self.wall,
+                };
+                map.push(character);
+            }
+        }
+
+        Ok((map, map_cols, map_rows))
+    }
 }
 
 /// An implementation of a formatter without predefined start and exit points
@@ -229,67 +264,7 @@ impl Default for GameMap<NoStartGoal> {
 impl Formatter<StringWrapper> for GameMap<NoStartGoal> {
     /// Converts a given grid into the map characters and returns an [`StringWrapper`] over that image
     fn format(&self, grid: &Grid) -> Result<StringWrapper, MazeSaveError> {
-        let mut map = vec![];
-
-        // Span (width of a passage) + 1 (place for a wall)
-        let span = self
-            .state
-            .span
-            .checked_add(1)
-            .ok_or_else(|| MazeSaveError::reason("game-map span is too large"))?;
-        let (map_rows, map_cols) = self.state.map_dimensions(grid)?;
-
-        // Add the north wall
-        for _ in 0..map_cols {
-            map.push(self.state.wall);
-        }
-
-        for y in 0..map_rows - 1 {
-            // Add the west wall
-            map.push(self.state.wall);
-
-            for x in 0..map_cols - 1 {
-                // X coordinate of a cell in the grid
-                let cx = (x as f64 / span as f64).floor() as usize;
-                // Y coordinate of a cell in the grid
-                let cy = (y as f64 / span as f64).floor() as usize;
-
-                // Indicates if a row is a last row of a grid cell
-                let is_last_row = (y as f64 + 1.0) / span as f64 == cy as f64 + 1.0;
-                // Indicates if a column is a last column of a grid cell
-                let is_last_col = (x as f64 + 1.0) / span as f64 == cx as f64 + 1.0;
-
-                match (is_last_row, is_last_col) {
-                    (false, false) => map.push(self.state.passage),
-                    (false, true) => {
-                        if grid.is_carved((cx, cy), Cell::EAST) {
-                            map.push(self.state.passage);
-                        } else {
-                            map.push(self.state.wall);
-                        }
-                    }
-                    (true, false) => {
-                        if grid.is_carved((cx, cy), Cell::SOUTH) {
-                            map.push(self.state.passage);
-                        } else {
-                            map.push(self.state.wall);
-                        }
-                    }
-                    (true, true) => {
-                        if grid.is_carved((cx, cy), Cell::EAST)
-                            && grid.is_carved((cx, cy), Cell::SOUTH)
-                            && bottom_right_neighbour_exists(cx, cy, grid)
-                        {
-                            map.push(self.state.passage);
-                        } else {
-                            map.push(self.state.wall);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Write map to string
+        let (map, map_cols, _) = self.state.build_map(grid)?;
         let string_map = write_map(&map, map_cols);
 
         Ok(StringWrapper(string_map))
@@ -300,65 +275,7 @@ impl Formatter<StringWrapper> for GameMap<NoStartGoal> {
 impl Formatter<StringWrapper> for GameMap<WithStartGoal> {
     /// Converts a given grid into the map characters and returns an [`StringWrapper`] over that image
     fn format(&self, grid: &Grid) -> Result<StringWrapper, MazeSaveError> {
-        let mut map = vec![];
-
-        // Span (width of a passage) + 1 (place for a wall)
-        let span = self
-            .state
-            .span
-            .checked_add(1)
-            .ok_or_else(|| MazeSaveError::reason("game-map span is too large"))?;
-        let (map_rows, map_cols) = self.state.map_dimensions(grid)?;
-
-        // Add the north wall
-        for _ in 0..map_cols {
-            map.push(self.state.wall);
-        }
-
-        for y in 0..map_rows - 1 {
-            // Add the west wall
-            map.push(self.state.wall);
-
-            for x in 0..map_cols - 1 {
-                // X coordinate of a cell in the grid
-                let cx = (x as f64 / span as f64).floor() as usize;
-                // Y coordinate of a cell in the grid
-                let cy = (y as f64 / span as f64).floor() as usize;
-
-                // Indicates if a row is a last row of a grid cell
-                let is_last_row = (y as f64 + 1.0) / span as f64 == cy as f64 + 1.0;
-                // Indicates if a column is a last column of a grid cell
-                let is_last_col = (x as f64 + 1.0) / span as f64 == cx as f64 + 1.0;
-
-                match (is_last_row, is_last_col) {
-                    (false, false) => map.push(self.state.passage),
-                    (false, true) => {
-                        if grid.is_carved((cx, cy), Cell::EAST) {
-                            map.push(self.state.passage);
-                        } else {
-                            map.push(self.state.wall);
-                        }
-                    }
-                    (true, false) => {
-                        if grid.is_carved((cx, cy), Cell::SOUTH) {
-                            map.push(self.state.passage);
-                        } else {
-                            map.push(self.state.wall);
-                        }
-                    }
-                    (true, true) => {
-                        if grid.is_carved((cx, cy), Cell::EAST)
-                            && grid.is_carved((cx, cy), Cell::SOUTH)
-                            && bottom_right_neighbour_exists(cx, cy, grid)
-                        {
-                            map.push(self.state.passage);
-                        } else {
-                            map.push(self.state.wall);
-                        }
-                    }
-                }
-            }
-        }
+        let (mut map, map_cols, map_rows) = self.state.build_map(grid)?;
 
         // Get random start and goal points
         let (start_idx, goal_idx) =
@@ -415,6 +332,30 @@ fn iter_neighbors((row, col): Coords, cols: usize, rows: usize) -> impl Iterator
 #[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn rectangular_marker_overlay_preserves_base_layout() {
+        let mut grid = Grid::new(2, 3);
+        let _ = grid.carve_passage((0, 0), Cell::SOUTH);
+        let _ = grid.carve_passage((0, 1), Cell::SOUTH);
+        let _ = grid.carve_passage((0, 2), Cell::EAST);
+
+        let base = GameMap::new().span(1).format(&grid).unwrap().into_inner();
+        let marked = GameMap::new()
+            .span(1)
+            .with_start_goal()
+            .format(&grid)
+            .unwrap()
+            .into_inner();
+
+        assert_eq!(base.lines().count(), marked.lines().count());
+        assert_eq!(base.lines().next().map(str::len), marked.lines().next().map(str::len));
+        assert_eq!(marked.matches('S').count(), 1);
+        assert_eq!(marked.matches('G').count(), 1);
+        assert!(base.chars().zip(marked.chars()).all(|(base, marked)| {
+            base == marked || (base == '#' && matches!(marked, 'S' | 'G'))
+        }));
+    }
 
     #[test]
     fn new_call() {
