@@ -27,6 +27,6 @@ mod tests {
 
     #[test]
     fn display_color() {
-        assert_eq!(Color::RGB(0, 10, 20).to_string(), format!("rgb(0, 10, 20)"));
+        assert_eq!(Color::RGB(0, 10, 20).to_string(), "rgb(0, 10, 20)".to_string());
     }
 }
