@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)]
+#![allow(clippy::expect_used)]
 use criterion::{Criterion, criterion_group, criterion_main};
 
 macro_rules! maze {

@@ -46,6 +46,8 @@ unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
 pedantic = { level = "deny", priority = 0 }
 nursery = { level = "deny", priority = 0 }
 all = { level = "deny", priority = 0 }
+unwrap_used = { level = "deny", priority = 0 }
+expect_used = { level = "deny", priority = 0 }
 
 
 # Bevy Related

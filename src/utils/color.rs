@@ -22,11 +22,15 @@ impl std::fmt::Display for Color {
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
 
     #[test]
     fn display_color() {
-        assert_eq!(Color::RGB(0, 10, 20).to_string(), "rgb(0, 10, 20)".to_string());
+        assert_eq!(
+            Color::RGB(0, 10, 20).to_string(),
+            "rgb(0, 10, 20)".to_string()
+        );
     }
 }

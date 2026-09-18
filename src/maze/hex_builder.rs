@@ -104,6 +104,7 @@ impl Default for HexMazeBuilder {
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
 

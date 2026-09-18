@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)]
+#![allow(clippy::expect_used)]
 use assert_fs::fixture::TempDir;
 use bevy_knossos::maze::*;
 
@@ -317,6 +319,7 @@ fn format_maze() {
         .build()
         .unwrap()
         .format(AsciiBroad)
+        .unwrap()
         .into_inner();
 
     let mut expected = String::new();

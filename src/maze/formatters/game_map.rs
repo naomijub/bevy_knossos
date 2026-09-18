@@ -1,13 +1,13 @@
 use crate::{
     maze::{
+        MazeSaveError,
         formatters::Formatter,
         grid::{Grid, cell::Cell},
     },
     utils::{rand::RandPositions, types::Coords},
 };
-use std::fmt::Write;
 
-use super::StringWrapper;
+use super::{StringWrapper, validate_nonempty_grid};
 
 pub trait ExtraState {}
 pub struct NoStartGoal;
@@ -66,6 +66,29 @@ struct GameMapState {
     span: usize,
     wall: char,
     passage: char,
+}
+
+impl GameMapState {
+    fn map_dimensions(&self, grid: &Grid) -> Result<(usize, usize), MazeSaveError> {
+        validate_nonempty_grid(grid)?;
+
+        let span = self
+            .span
+            .checked_add(1)
+            .ok_or_else(|| MazeSaveError::reason("game-map span is too large"))?;
+        let map_rows = grid
+            .height()
+            .checked_mul(span)
+            .and_then(|value| value.checked_add(1))
+            .ok_or_else(|| MazeSaveError::reason("game-map height is too large"))?;
+        let map_cols = grid
+            .width()
+            .checked_mul(span)
+            .and_then(|value| value.checked_add(1))
+            .ok_or_else(|| MazeSaveError::reason("game-map width is too large"))?;
+
+        Ok((map_rows, map_cols))
+    }
 }
 
 /// An implementation of a formatter without predefined start and exit points
@@ -138,7 +161,7 @@ impl GameMap<WithStartGoal> {
         map: &[char],
         cols: usize,
         rows: usize,
-    ) -> (usize, usize) {
+    ) -> Result<(usize, usize), MazeSaveError> {
         let mut positions: Vec<Coords> = self
             .iter_possible_start_and_goal_positions(map, cols, rows)
             .collect();
@@ -146,17 +169,20 @@ impl GameMap<WithStartGoal> {
         // shuffle possible positions
         RandPositions::rand(&mut positions);
 
-        let (srow, scol) = positions[0];
+        let Some(&(srow, scol)) = positions.first() else {
+            return Err(MazeSaveError::reason("no valid start position exists"));
+        };
 
-        let (grow, gcol) = positions
+        let Some(&(grow, gcol)) = positions
             .iter()
-            .filter(|(nrow, ncol)| *ncol != scol && *nrow != srow)
-            .nth(0)
-            .unwrap(); // the smallest grid with a single cell formatted into a map has 3 available positions for a goal
+            .find(|(nrow, ncol)| *ncol != scol && *nrow != srow)
+        else {
+            return Err(MazeSaveError::reason("no valid goal position exists"));
+        };
 
         let start_idx = srow * cols + scol;
         let goal_idx = grow * cols + gcol;
-        (start_idx, goal_idx)
+        Ok((start_idx, goal_idx))
     }
 
     fn iter_possible_start_and_goal_positions(
@@ -202,14 +228,16 @@ impl Default for GameMap<NoStartGoal> {
 /// An implementation of a formatter
 impl Formatter<StringWrapper> for GameMap<NoStartGoal> {
     /// Converts a given grid into the map characters and returns an [`StringWrapper`] over that image
-    fn format(&self, grid: &Grid) -> StringWrapper {
+    fn format(&self, grid: &Grid) -> Result<StringWrapper, MazeSaveError> {
         let mut map = vec![];
 
         // Span (width of a passage) + 1 (place for a wall)
-        let span = self.state.span + 1;
-
-        let map_rows = grid.height() * span + 1;
-        let map_cols = grid.width() * span + 1;
+        let span = self
+            .state
+            .span
+            .checked_add(1)
+            .ok_or_else(|| MazeSaveError::reason("game-map span is too large"))?;
+        let (map_rows, map_cols) = self.state.map_dimensions(grid)?;
 
         // Add the north wall
         for _ in 0..map_cols {
@@ -264,21 +292,23 @@ impl Formatter<StringWrapper> for GameMap<NoStartGoal> {
         // Write map to string
         let string_map = write_map(&map, map_cols);
 
-        StringWrapper(string_map)
+        Ok(StringWrapper(string_map))
     }
 }
 
 /// An implementation of a formatter
 impl Formatter<StringWrapper> for GameMap<WithStartGoal> {
     /// Converts a given grid into the map characters and returns an [`StringWrapper`] over that image
-    fn format(&self, grid: &Grid) -> StringWrapper {
+    fn format(&self, grid: &Grid) -> Result<StringWrapper, MazeSaveError> {
         let mut map = vec![];
 
         // Span (width of a passage) + 1 (place for a wall)
-        let span = self.state.span + 1;
-
-        let map_rows = grid.height() * span + 1;
-        let map_cols = grid.width() * span + 1;
+        let span = self
+            .state
+            .span
+            .checked_add(1)
+            .ok_or_else(|| MazeSaveError::reason("game-map span is too large"))?;
+        let (map_rows, map_cols) = self.state.map_dimensions(grid)?;
 
         // Add the north wall
         for _ in 0..map_cols {
@@ -332,14 +362,14 @@ impl Formatter<StringWrapper> for GameMap<WithStartGoal> {
 
         // Get random start and goal points
         let (start_idx, goal_idx) =
-            self.get_random_start_and_goal_positions(&map, map_cols, map_rows);
+            self.get_random_start_and_goal_positions(&map, map_cols, map_rows)?;
         map[start_idx] = self.extra.start;
         map[goal_idx] = self.extra.goal;
 
         // Write map to string
         let string_map = write_map(&map, map_cols);
 
-        StringWrapper(string_map)
+        Ok(StringWrapper(string_map))
     }
 }
 
@@ -354,9 +384,9 @@ fn bottom_right_neighbour_exists(cx: usize, cy: usize, grid: &Grid) -> bool {
 fn write_map(map: &[char], cols: usize) -> String {
     let mut ascii_map: String = String::new();
     for (i, ch) in map.iter().enumerate() {
-        write!(ascii_map, "{ch}").unwrap();
+        ascii_map.push(*ch);
         if (i + 1) % cols == 0 {
-            writeln!(ascii_map).unwrap();
+            ascii_map.push('\n');
         }
     }
     ascii_map
@@ -382,6 +412,7 @@ fn iter_neighbors((row, col): Coords, cols: usize, rows: usize) -> impl Iterator
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
 
@@ -490,10 +521,21 @@ mod tests {
         let rows = 5;
         let map = vec!['.'; cols * rows];
 
-        let (start_idx, goal_idx) =
-            formatter.get_random_start_and_goal_positions(&map, cols, rows);
+        let Ok((start_idx, goal_idx)) =
+            formatter.get_random_start_and_goal_positions(&map, cols, rows)
+        else {
+            panic!("valid rectangular map should have start and goal positions");
+        };
 
         assert_eq!((start_idx, goal_idx), (0, 5));
+    }
+
+    #[test]
+    fn rejects_overflowing_span() {
+        let formatter = GameMap::new().span(usize::MAX);
+        let grid = Grid::new(1, 1);
+
+        assert!(formatter.format(&grid).is_err());
     }
 
     #[test]
@@ -520,7 +562,7 @@ mod tests {
 
         let formatter = GameMap::new().span(1);
         let grid = generate_maze();
-        let actual = formatter.format(&grid).0;
+        let actual = formatter.format(&grid).unwrap().0;
 
         assert_eq!(actual, expected);
     }
@@ -540,7 +582,7 @@ mod tests {
 
         let formatter = GameMap::new().span(1).with_start_goal();
         let grid = generate_maze();
-        let actual = formatter.format(&grid).0;
+        let actual = formatter.format(&grid).unwrap().0;
 
         assert_eq!(actual, expected);
     }

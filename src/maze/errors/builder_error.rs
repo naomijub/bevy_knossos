@@ -21,15 +21,12 @@ impl BuildError {
 /// An implementation of [fmt::Display](fmt::Display) trait
 impl fmt::Display for BuildError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "Cannot build maze. Reason: {}",
-            self.reason
-        )
+        write!(f, "Cannot build maze. Reason: {}", self.reason)
     }
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
 

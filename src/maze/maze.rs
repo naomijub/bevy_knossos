@@ -60,7 +60,7 @@ impl OrthogonalMaze {
         F: Formatter<T>,
         T: Saveable,
     {
-        let data = formatter.format(&self.grid);
+        let data = formatter.format(&self.grid)?;
         Saveable::save(&data, path)
     }
 
@@ -96,13 +96,16 @@ impl OrthogonalMaze {
     /// use bevy_knossos::maze::*;
     ///
     /// let maze = OrthogonalMaze::new(5, 5);
-    /// let formatted_maze = maze.format(GameMap::new());
+    /// let formatted_maze = maze.format(GameMap::new()).unwrap();
     /// ```
     ///
     /// # Note
     /// This function can be useful when the formatted maze needs to be used for further processing,
     /// logging, or display.
-    pub fn format<F, T>(&self, formatter: F) -> T
+    ///
+    /// # Errors
+    /// Returns [`MazeSaveError`] when the formatter cannot produce output.
+    pub fn format<F, T>(&self, formatter: F) -> Result<T, MazeSaveError>
     where
         F: Formatter<T>,
         T: Saveable,
@@ -185,6 +188,7 @@ impl Iterator for OrthogonalMazeIntoIterator {
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use crate::maze::grid::cell::Cell;
 

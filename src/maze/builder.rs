@@ -121,6 +121,7 @@ impl Default for OrthogonalMazeBuilder {
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use crate::maze::RecursiveDivision;
 

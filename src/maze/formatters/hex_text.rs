@@ -1,4 +1,5 @@
 use crate::maze::{
+    MazeSaveError,
     formatters::{Formatter, StringWrapper},
     grid::{Grid, topology::Topology},
 };
@@ -11,11 +12,11 @@ use std::fmt::Write;
 pub struct HexText;
 
 impl Formatter<StringWrapper> for HexText {
-    fn format(&self, grid: &Grid) -> StringWrapper {
+    fn format(&self, grid: &Grid) -> Result<StringWrapper, MazeSaveError> {
         if grid.topology() != Topology::HexOddR {
-            return StringWrapper(
-                "KNOSSOS_HEX_V1\nerror=HexText formatter only supports hex topology\n".to_string(),
-            );
+            return Err(MazeSaveError::reason(
+                "HexText formatter only supports hex topology",
+            ));
         }
 
         let mut output = String::new();
@@ -34,6 +35,6 @@ impl Formatter<StringWrapper> for HexText {
             output.push('\n');
         }
 
-        StringWrapper(output)
+        Ok(StringWrapper(output))
     }
 }

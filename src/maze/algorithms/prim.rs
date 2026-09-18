@@ -117,8 +117,9 @@ impl Algorithm for Prim {
             let (x, y) = coords;
 
             let dir = direction(x, y, nx, ny);
-            grid.carve_passage(coords, dir).unwrap();
-            self.mark(coords, grid);
+            if grid.carve_passage(coords, dir).is_ok() {
+                self.mark(coords, grid);
+            }
         }
     }
 
@@ -155,6 +156,7 @@ fn direction(x: usize, y: usize, nx: usize, ny: usize) -> Cell {
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
 
