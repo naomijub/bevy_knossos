@@ -349,7 +349,10 @@ mod tests {
             .into_inner();
 
         assert_eq!(base.lines().count(), marked.lines().count());
-        assert_eq!(base.lines().next().map(str::len), marked.lines().next().map(str::len));
+        assert_eq!(
+            base.lines().next().map(str::len),
+            marked.lines().next().map(str::len)
+        );
         assert_eq!(marked.matches('S').count(), 1);
         assert_eq!(marked.matches('G').count(), 1);
         assert!(base.chars().zip(marked.chars()).all(|(base, marked)| {
