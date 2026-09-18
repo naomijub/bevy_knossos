@@ -344,7 +344,7 @@ impl Formatter<StringWrapper> for GameMap<WithStartGoal> {
 }
 
 fn bottom_right_neighbour_exists(cx: usize, cy: usize, grid: &Grid) -> bool {
-    if cy + 1 >= grid.width() || cx + 1 >= grid.height() {
+    if cx + 1 >= grid.width() || cy + 1 >= grid.height() {
         return false;
     }
 
@@ -494,6 +494,15 @@ mod tests {
             formatter.get_random_start_and_goal_positions(&map, cols, rows);
 
         assert_eq!((start_idx, goal_idx), (0, 5));
+    }
+
+    #[test]
+    fn bottom_right_neighbour_exists_on_tall_grid() {
+        let mut grid = Grid::new(2, 3);
+        grid.carve_passage((0, 2), Cell::EAST).unwrap();
+        grid.carve_passage((1, 1), Cell::SOUTH).unwrap();
+
+        assert!(bottom_right_neighbour_exists(0, 1, &grid));
     }
 
     #[test]
