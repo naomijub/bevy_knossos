@@ -16,6 +16,28 @@ pub struct OrthogonalMazeBuilder {
     seed: Option<u64>,
 }
 
+pub(super) fn validate_dimensions_and_start(
+    width: usize,
+    height: usize,
+    start_coords: Option<Coords>,
+) -> Result<(), BuildError> {
+    if width == 0 || height == 0 {
+        return Err(BuildError::reason(
+            "maze dimensions must be greater than zero",
+        ));
+    }
+
+    if let Some((x, y)) = start_coords
+        && (x >= width || y >= height)
+    {
+        return Err(BuildError::reason(format!(
+            "start coordinates ({x}, {y}) are outside maze dimensions {width}x{height}"
+        )));
+    }
+
+    Ok(())
+}
+
 impl OrthogonalMazeBuilder {
     /// Returns a new instance of a builder with the default width, height and algorithm
     #[must_use]
@@ -67,8 +89,10 @@ impl OrthogonalMazeBuilder {
     /// Builds a maze and returns a resulting object of the generated orthogonal maze
     ///
     /// # Errors
-    /// Returns a [`BuildError`] if the algorithm does not support start coords
+    /// Returns a [`BuildError`] for invalid dimensions, out-of-bounds start coordinates,
+    /// or an algorithm that does not support start coordinates.
     pub fn build(mut self) -> Result<OrthogonalMaze, BuildError> {
+        validate_dimensions_and_start(self.width, self.height, self.start_coords)?;
         let mut maze = OrthogonalMaze::new(self.width, self.height);
         let mut rng = self.seed.map_or_else(
             || {
@@ -78,7 +102,10 @@ impl OrthogonalMazeBuilder {
             StdRng::seed_from_u64,
         );
         if self.start_coords.is_some() && !self.algorithm.has_start_coords() {
-            Err(BuildError::reason(self.algorithm.name()))
+            Err(BuildError::reason(format!(
+                "Algorithm `{}` doesn't support `start_coords`",
+                self.algorithm.name()
+            )))
         } else {
             self.algorithm
                 .generate(maze.get_grid_mut(), self.start_coords, &mut rng);
@@ -115,6 +142,46 @@ mod tests {
         assert_eq!(
             maze_err.to_string(),
             "Cannot build maze. Reason: Algorithm `RecursiveDivision` doesn't support `start_coords`"
+        );
+    }
+
+    #[test]
+    fn rejects_zero_dimensions() {
+        for (width, height) in [(0, 1), (1, 0)] {
+            assert!(
+                OrthogonalMazeBuilder::new()
+                    .width(width)
+                    .height(height)
+                    .build()
+                    .is_err()
+            );
+        }
+    }
+
+    #[test]
+    fn rejects_out_of_bounds_start_coordinates() {
+        for start_coords in [(2, 0), (0, 3)] {
+            assert!(
+                OrthogonalMazeBuilder::new()
+                    .width(2)
+                    .height(3)
+                    .start_coords(start_coords)
+                    .build()
+                    .is_err()
+            );
+        }
+    }
+
+    #[test]
+    fn accepts_boundary_start_coordinates() {
+        assert!(
+            OrthogonalMazeBuilder::new()
+                .width(2)
+                .height(3)
+                .start_coords((1, 2))
+                .build()
+                .unwrap()
+                .is_valid()
         );
     }
 }

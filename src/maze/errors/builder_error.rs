@@ -23,7 +23,7 @@ impl fmt::Display for BuildError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "Cannot build maze. Reason: Algorithm `{}` doesn't support `start_coords`",
+            "Cannot build maze. Reason: {}",
             self.reason
         )
     }
@@ -41,7 +41,7 @@ mod tests {
 
         assert_eq!(
             error.to_string(),
-            "Cannot build maze. Reason: Algorithm `It's a fake reason` doesn't support `start_coords`"
+            "Cannot build maze. Reason: It's a fake reason"
         );
     }
 }
