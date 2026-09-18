@@ -154,8 +154,8 @@ impl GameMap<WithStartGoal> {
             .nth(0)
             .unwrap(); // the smallest grid with a single cell formatted into a map has 3 available positions for a goal
 
-        let start_idx = srow * rows + scol;
-        let goal_idx = grow * rows + gcol;
+        let start_idx = srow * cols + scol;
+        let goal_idx = grow * cols + gcol;
         (start_idx, goal_idx)
     }
 
@@ -178,7 +178,7 @@ impl GameMap<WithStartGoal> {
                 }
 
                 let adjacent_passages_count = iter_neighbors((row, col), cols, rows)
-                    .filter(move |(ny, nx)| map[ny * rows + nx] == self.state.passage)
+                    .filter(move |(ny, nx)| map[ny * cols + nx] == self.state.passage)
                     .count();
 
                 if adjacent_passages_count == 0 {
@@ -481,6 +481,19 @@ mod tests {
         let positions: Vec<Coords> = vec![];
         let result = formatter.iter_possible_start_and_goal_positions(&map, 0, 0);
         assert_eq!(positions, result.collect::<Vec<Coords>>());
+    }
+
+    #[test]
+    fn start_and_goal_indices_use_column_stride_for_tall_maps() {
+        let formatter = GameMap::new().with_start_goal();
+        let cols = 3;
+        let rows = 5;
+        let map = vec!['.'; cols * rows];
+
+        let (start_idx, goal_idx) =
+            formatter.get_random_start_and_goal_positions(&map, cols, rows);
+
+        assert_eq!((start_idx, goal_idx), (0, 5));
     }
 
     #[test]
