@@ -21,7 +21,20 @@ where
     T: Saveable,
 {
     /// Returns a given grid converted into a given type that implements [Saveable]
-    fn format(&self, grid: &Grid) -> T;
+    ///
+    /// # Errors
+    /// Returns a [`MazeSaveError`] when formatter settings or output dimensions are invalid.
+    fn format(&self, grid: &Grid) -> Result<T, MazeSaveError>;
+}
+
+pub(super) fn validate_nonempty_grid(grid: &Grid) -> Result<(), MazeSaveError> {
+    if grid.width() == 0 || grid.height() == 0 {
+        return Err(MazeSaveError::reason(
+            "cannot format a maze with zero width or height",
+        ));
+    }
+
+    Ok(())
 }
 
 /// A trait for data wrappers that must be returned after formatting the grid
@@ -108,6 +121,7 @@ impl Saveable for StringWrapper {
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
     use ::image::Rgb;

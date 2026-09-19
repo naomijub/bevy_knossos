@@ -21,15 +21,12 @@ impl BuildError {
 /// An implementation of [fmt::Display](fmt::Display) trait
 impl fmt::Display for BuildError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "Cannot build maze. Reason: Algorithm `{}` doesn't support `start_coords`",
-            self.reason
-        )
+        write!(f, "Cannot build maze. Reason: {}", self.reason)
     }
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
 
@@ -41,7 +38,7 @@ mod tests {
 
         assert_eq!(
             error.to_string(),
-            "Cannot build maze. Reason: Algorithm `It's a fake reason` doesn't support `start_coords`"
+            "Cannot build maze. Reason: It's a fake reason"
         );
     }
 }

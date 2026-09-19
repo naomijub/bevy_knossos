@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)]
+#![allow(clippy::expect_used)]
 use assert_cmd::cargo::cargo_bin_cmd;
 use assert_fs::fixture::TempDir;
 

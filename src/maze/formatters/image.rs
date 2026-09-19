@@ -1,10 +1,10 @@
 use crate::maze::grid::cell::Cell;
-use crate::maze::{formatters::Formatter, grid::Grid};
+use crate::maze::{MazeSaveError, formatters::Formatter, grid::Grid};
 use crate::utils::color::Color;
 use crate::utils::types::Coords;
 use image::{ImageBuffer, RgbImage};
 
-use super::ImageWrapper;
+use super::{ImageWrapper, validate_nonempty_grid};
 
 /// An Image formatter for a generated maze
 pub struct Image {
@@ -67,18 +67,44 @@ impl Image {
         self.wall_width * 2 + self.passage_width
     }
 
-    const fn sizes(&self, grid: &Grid) -> (usize, usize) {
+    fn sizes(&self, grid: &Grid) -> Result<(u32, u32), MazeSaveError> {
+        validate_nonempty_grid(grid)?;
+        if self.wall_width == 0 || self.passage_width == 0 {
+            return Err(MazeSaveError::reason(
+                "image wall and passage widths must be greater than zero",
+            ));
+        }
+
         // To calculate maze's width and height we use a simple formula that multiplies a single
         // cell width and a number of cells (in a row or column). However, since two cells
         // have a single joint wall, we do the subtraction of the joint walls from the
         // preceding width
-        let maze_width = self.cell_width() * grid.width() - (grid.width() - 1) * self.wall_width;
-        let maze_height = self.cell_width() * grid.height() - (grid.height() - 1) * self.wall_width;
+        let inner_cell_width = self
+            .wall_width
+            .checked_add(self.passage_width)
+            .ok_or_else(|| MazeSaveError::reason("image cell width is too large"))?;
+        let margin_width = self
+            .margin
+            .checked_mul(2)
+            .ok_or_else(|| MazeSaveError::reason("image margin is too large"))?;
+        let image_dimension = |cells: usize| {
+            let maze_interior = cells
+                .checked_mul(inner_cell_width)
+                .ok_or_else(|| MazeSaveError::reason("image dimensions are too large"))?;
+            self.wall_width
+                .checked_add(maze_interior)
+                .and_then(|maze_size| maze_size.checked_add(margin_width))
+                .ok_or_else(|| MazeSaveError::reason("image dimensions are too large"))
+        };
+        let image_width = image_dimension(grid.width())?;
+        let image_height = image_dimension(grid.height())?;
 
-        let image_width = maze_width + self.margin * 2;
-        let image_height = maze_height + self.margin * 2;
-
-        (image_width, image_height)
+        Ok((
+            u32::try_from(image_width)
+                .map_err(|_| MazeSaveError::reason("image width exceeds u32::MAX"))?,
+            u32::try_from(image_height)
+                .map_err(|_| MazeSaveError::reason("image height exceeds u32::MAX"))?,
+        ))
     }
 
     fn fill_background(&self, image: &mut RgbImage) {
@@ -242,18 +268,19 @@ impl Default for Image {
 /// An implementation of a formatter
 impl Formatter<ImageWrapper> for Image {
     /// Converts a given grid into an image and returns an [`ImageWrapper`] over that image
-    fn format(&self, grid: &Grid) -> ImageWrapper {
-        let (width, height) = self.sizes(grid);
-        let mut image: RgbImage = ImageBuffer::new(width as u32, height as u32);
+    fn format(&self, grid: &Grid) -> Result<ImageWrapper, MazeSaveError> {
+        let (width, height) = self.sizes(grid)?;
+        let mut image: RgbImage = ImageBuffer::new(width, height);
 
         self.fill_background(&mut image);
         self.draw_maze(&mut image, grid);
 
-        ImageWrapper(image)
+        Ok(ImageWrapper(image))
     }
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use image::EncodableLayout;
 
@@ -292,7 +319,7 @@ mod tests {
         let formatter = Image::new().wall(1).passage(1).margin(0);
         let grid = generate_maze();
 
-        let actual = formatter.format(&grid).into_inner();
+        let actual = formatter.format(&grid).unwrap().into_inner();
         let expected = image::open("tests/fixtures/zero_margin_maze.png").unwrap();
         assert_eq!(actual.as_bytes(), expected.as_bytes());
     }
@@ -302,10 +329,26 @@ mod tests {
         let formatter = Image::new().wall(1).passage(1).margin(1);
         let grid = generate_maze();
 
-        let actual = formatter.format(&grid).into_inner();
+        let actual = formatter.format(&grid).unwrap().into_inner();
         let expected = image::open("tests/fixtures/nonzero_margin_maze.png").unwrap();
 
         assert_eq!(actual.as_bytes(), expected.as_bytes());
+    }
+
+    #[test]
+    fn rejects_overflowing_dimensions() {
+        let grid = Grid::new(1, 1);
+        let formatter = Image::new().wall(usize::MAX);
+
+        assert!(formatter.format(&grid).is_err());
+    }
+
+    #[test]
+    fn rejects_dimensions_that_exceed_u32() {
+        let grid = Grid::new(1, 1);
+        let formatter = Image::new().wall(u32::MAX as usize).passage(1).margin(0);
+
+        assert!(formatter.format(&grid).is_err());
     }
 
     fn generate_maze() -> Grid {

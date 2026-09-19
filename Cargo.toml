@@ -1,6 +1,6 @@
 [package]
 name = "bevy_knossos"
-version = "0.12.1"
+version = "0.13.0"
 authors = [
     "Julia Naomi <jnboeira@outlook.com>",
     "unrenamed <renkonazbka@gmail.com>",
@@ -46,6 +46,8 @@ unexpected_cfgs = { level = "warn", check-cfg = ['cfg(tarpaulin_include)'] }
 pedantic = { level = "deny", priority = 0 }
 nursery = { level = "deny", priority = 0 }
 all = { level = "deny", priority = 0 }
+unwrap_used = { level = "deny", priority = 0 }
+expect_used = { level = "deny", priority = 0 }
 
 
 # Bevy Related

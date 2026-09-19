@@ -49,12 +49,12 @@ impl RecursiveDivision {
             if w > 1 {
                 // Carve passages till the horizontal end of the subfield
                 for cx in x..ax {
-                    grid.carve_passage((cx, y), Cell::EAST).unwrap();
+                    let _ = grid.carve_passage((cx, y), Cell::EAST);
                 }
             } else if h > 1 {
                 // Carve passages till the vertical end of the subfield
                 for cy in y..ay {
-                    grid.carve_passage((x, cy), Cell::SOUTH).unwrap();
+                    let _ = grid.carve_passage((x, cy), Cell::SOUTH);
                 }
             }
             return;
@@ -74,7 +74,9 @@ impl RecursiveDivision {
         };
 
         // Carve passage
-        let (nx, ny) = grid.carve_passage((px, py), dir).unwrap();
+        let Ok((nx, ny)) = grid.carve_passage((px, py), dir) else {
+            return;
+        };
 
         // Determine the bounds of the subfields and get them split
         match orientation {

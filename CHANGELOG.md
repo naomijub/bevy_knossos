@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
+## [0.13.0] - 2026-09-18
+
+### Fixed
+
+- Corrected row-major indexing for start and goal markers in rectangular game maps.
+- Corrected bottom-right junction detection on rectangular game maps.
+- Validate orthogonal and hex maze dimensions and start coordinates before generation.
+- Return formatting errors for invalid, overflowing, or unsupported output dimensions instead of
+  panicking or truncating image sizes.
+- Removed additional production `unwrap` paths in maze generation and formatting.
+
+### Changed
+
+- `GameMap` now builds its base wall/passage map through one shared implementation, then overlays
+  optional start and goal markers.
+- Improved builder errors so their displayed reason reflects the actual validation failure.
+
+### Breaking Changes
+
+- `Formatter::format`, `OrthogonalMaze::format`, `HexMaze::format`, and `HexMaze::to_text` now
+  return `Result`; callers must handle formatting failures.
+
+
 ## [0.12.0] - 2026-05-10: Hexagonal mazes, generic topology support and bevy-0.19
 
 ### Added

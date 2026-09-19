@@ -48,7 +48,10 @@ impl State {
             }
 
             self.next_set_id = Some(self.next_set_id.unwrap_or(0) + 1);
-            let set_id = SetId(self.next_set_id.unwrap());
+            let Some(next_set_id) = self.next_set_id else {
+                continue;
+            };
+            let set_id = SetId(next_set_id);
 
             self.add(cell_id, set_id, (n - 1, self.row_num));
         }
@@ -66,20 +69,24 @@ impl State {
     }
 
     fn connect(&mut self, sink_id: CellId, target_id: CellId) {
-        let sink = self.cells.get(&sink_id).unwrap().borrow();
-        let mut target = self.cells.get(&target_id).unwrap().borrow_mut();
+        let (Some(sink), Some(target)) = (self.cells.get(&sink_id), self.cells.get(&target_id))
+        else {
+            return;
+        };
+        let sink = sink.borrow();
+        let mut target = target.borrow_mut();
         target.set_id = sink.set_id;
     }
 
     fn connected(&self, id: CellId, other_id: CellId) -> bool {
-        let cell = self.cells.get(&id).unwrap().borrow();
-        let other = self.cells.get(&other_id).unwrap().borrow();
-        cell.set_id == other.set_id
+        let (Some(cell), Some(other)) = (self.cells.get(&id), self.cells.get(&other_id)) else {
+            return false;
+        };
+        cell.borrow().set_id == other.borrow().set_id
     }
 
-    fn get_cell_coords(&self, id: CellId) -> Coords {
-        let cell = self.cells.get(&id).unwrap().borrow();
-        cell.coords
+    fn get_cell_coords(&self, id: CellId) -> Option<Coords> {
+        self.cells.get(&id).map(|cell| cell.borrow().coords)
     }
 
     fn sets(&self) -> HashMap<SetId, Vec<CellId>> {
@@ -127,8 +134,9 @@ impl Eller {
             }
 
             state.connect(cell_id, next_cell_id);
-            let (x, y) = state.get_cell_coords(cell_id);
-            grid.carve_passage((x, y), GridCell::EAST).unwrap();
+            if let Some((x, y)) = state.get_cell_coords(cell_id) {
+                let _ = grid.carve_passage((x, y), GridCell::EAST);
+            }
         }
     }
 
@@ -148,9 +156,10 @@ impl Eller {
 
         for (set_id, cells) in state.sets() {
             for cell_id in self.cells_to_connect(cells, rng) {
-                let (x, y) = state.get_cell_coords(cell_id);
-                grid.carve_passage((x, y), GridCell::SOUTH).unwrap();
-                next_state.add(cell_id, set_id, (x, y + 1));
+                if let Some((x, y)) = state.get_cell_coords(cell_id) {
+                    let _ = grid.carve_passage((x, y), GridCell::SOUTH);
+                    next_state.add(cell_id, set_id, (x, y + 1));
+                }
             }
         }
 

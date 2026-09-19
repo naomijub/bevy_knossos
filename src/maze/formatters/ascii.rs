@@ -1,8 +1,7 @@
 use crate::maze::grid::cell::Cell;
 use crate::maze::{formatters::Formatter, grid::Grid};
-use std::fmt::Write;
 
-use super::StringWrapper;
+use super::{StringWrapper, validate_nonempty_grid};
 
 /// A formatter to emit the maze as ASCII with narrow passages
 ///
@@ -37,47 +36,51 @@ pub struct AsciiBroad;
 /// An implementation of a narrow ASCII formatter
 impl Formatter<StringWrapper> for AsciiNarrow {
     /// Converts a given grid into ASCII characters and returns an [`StringWrapper`] over that image
-    fn format(&self, grid: &Grid) -> StringWrapper {
+    fn format(&self, grid: &Grid) -> Result<StringWrapper, crate::maze::MazeSaveError> {
+        validate_nonempty_grid(grid)?;
         let mut result = String::new();
 
         let top_border = "_".repeat(grid.width() * 2 - 1);
 
-        writeln!(result, " {top_border} ").unwrap();
+        result.push(' ');
+        result.push_str(&top_border);
+        result.push_str(" \n");
 
         for y in 0..grid.height() {
-            write!(result, "|").unwrap();
+            result.push('|');
 
             for x in 0..grid.width() {
                 if grid.is_carved((x, y), Cell::SOUTH) {
-                    write!(result, " ").unwrap();
+                    result.push(' ');
                 } else {
-                    write!(result, "_").unwrap();
+                    result.push('_');
                 }
 
                 if grid.is_carved((x, y), Cell::EAST) {
                     if grid.is_carved((x, y), Cell::SOUTH)
                         || grid.is_carved((x + 1, y), Cell::SOUTH)
                     {
-                        write!(result, " ").unwrap();
+                        result.push(' ');
                     } else {
-                        write!(result, "_").unwrap();
+                        result.push('_');
                     }
                 } else {
-                    write!(result, "|").unwrap();
+                    result.push('|');
                 }
             }
 
-            writeln!(result).unwrap();
+            result.push('\n');
         }
 
-        StringWrapper(result)
+        Ok(StringWrapper(result))
     }
 }
 
 /// An implementation of an broad ASCII formatter
 impl Formatter<StringWrapper> for AsciiBroad {
     /// Converts a given grid into ASCII characters and returns an [`StringWrapper`] over that image
-    fn format(&self, grid: &Grid) -> StringWrapper {
+    fn format(&self, grid: &Grid) -> Result<StringWrapper, crate::maze::MazeSaveError> {
+        validate_nonempty_grid(grid)?;
         let mut output = format!("+{}\n", "---+".to_string().repeat(grid.width()));
 
         for y in 0..grid.height() {
@@ -110,11 +113,12 @@ impl Formatter<StringWrapper> for AsciiBroad {
             }
         }
 
-        StringWrapper(output)
+        Ok(StringWrapper(output))
     }
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
 
@@ -129,7 +133,7 @@ mod tests {
 
         let formatter = AsciiNarrow;
         let grid = generate_maze();
-        let actual = formatter.format(&grid).0;
+        let actual = formatter.format(&grid).unwrap().0;
 
         assert_eq!(actual, expected);
     }
@@ -149,7 +153,7 @@ mod tests {
 
         let formatter = AsciiBroad;
         let grid = generate_maze();
-        let actual = formatter.format(&grid).0;
+        let actual = formatter.format(&grid).unwrap().0;
 
         assert_eq!(actual, expected);
     }

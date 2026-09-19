@@ -29,6 +29,7 @@ impl fmt::Display for TransitError {
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
 

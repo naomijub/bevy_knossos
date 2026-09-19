@@ -36,14 +36,10 @@ impl Algorithm for AldousBroder {
             directions.shuffle(rng);
 
             for dir in directions {
-                let next_cell = grid.get_next_cell_coords((x, y), dir);
-                if next_cell.is_err() {
+                let Ok((nx, ny)) = grid.get_next_cell_coords((x, y), dir) else {
                     continue;
-                }
-
-                let (nx, ny) = next_cell.unwrap();
-                if !grid.is_cell_visited((nx, ny)) {
-                    grid.carve_passage((x, y), dir).unwrap();
+                };
+                if !grid.is_cell_visited((nx, ny)) && grid.carve_passage((x, y), dir).is_ok() {
                     remaining -= 1;
                 }
 

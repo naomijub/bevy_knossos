@@ -13,6 +13,7 @@ impl RandPositions {
     }
 
     #[cfg(test)]
+    #[allow(clippy::unwrap_used)]
     #[cfg(not(tarpaulin_include))]
     pub const fn rand(positions: &mut Vec<Coords>) -> &mut Vec<Coords> {
         positions

@@ -332,6 +332,7 @@ impl From<std::num::ParseIntError> for ParseHexError {
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
 

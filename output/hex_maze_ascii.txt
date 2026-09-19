@@ -1,0 +1,22 @@
+KNOSSOS_HEX_ASCII_V1
+legend: o=cell, -=east/west passage, /=ne or sw passage, \\=nw or se passage
+
+
+  o---o   o---o   o---o   o   o---o---o
+     /         \ /   /   / \ / \
+    o   o---o   o   o---o   o   o---o---o
+   /   /   /     \                     /
+  o---o   o   o   o---o---o---o   o   o
+           \   \             /     \   \
+    o---o   o   o---o---o---o   o---o   o
+   /   /     \   \           \   \     /
+  o   o   o   o   o---o   o   o---o   o
+     /   / \ /   /       / \     /   /
+    o---o   o   o   o   o   o   o   o---o
+     \             / \ /     \   \     /
+  o   o---o---o---o   o   o---o   o   o
+   \                       \         / \
+    o---o---o---o---o---o---o---o---o   o
+
+
+

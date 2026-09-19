@@ -40,20 +40,16 @@ impl Algorithm for Kruskal {
         let mut edges: Edges = populate_edges(grid);
         edges.shuffle(rng);
 
-        while !edges.is_empty() {
-            let edge: Option<Edge> = edges.pop();
-            if edge.is_none() {
-                break;
-            }
-
-            let (x, y, direction) = edge.unwrap();
-            let (nx, ny) = grid.get_next_cell_coords((x, y), direction).unwrap();
+        while let Some((x, y, direction)) = edges.pop() {
+            let Ok((nx, ny)) = grid.get_next_cell_coords((x, y), direction) else {
+                continue;
+            };
 
             let node1 = NodeId(y * grid.width() + x);
             let node2 = NodeId(ny * grid.width() + nx);
             if !arena.connected(node1, node2) {
                 arena.connect(node1, node2);
-                grid.carve_passage((x, y), direction).unwrap();
+                let _ = grid.carve_passage((x, y), direction);
             }
         }
     }

@@ -1,13 +1,13 @@
 use crate::{
     maze::{
+        MazeSaveError,
         formatters::Formatter,
         grid::{Grid, cell::Cell},
     },
     utils::{rand::RandPositions, types::Coords},
 };
-use std::fmt::Write;
 
-use super::StringWrapper;
+use super::{StringWrapper, validate_nonempty_grid};
 
 pub trait ExtraState {}
 pub struct NoStartGoal;
@@ -66,6 +66,64 @@ struct GameMapState {
     span: usize,
     wall: char,
     passage: char,
+}
+
+impl GameMapState {
+    fn map_dimensions(&self, grid: &Grid) -> Result<(usize, usize), MazeSaveError> {
+        validate_nonempty_grid(grid)?;
+
+        let span = self
+            .span
+            .checked_add(1)
+            .ok_or_else(|| MazeSaveError::reason("game-map span is too large"))?;
+        let map_rows = grid
+            .height()
+            .checked_mul(span)
+            .and_then(|value| value.checked_add(1))
+            .ok_or_else(|| MazeSaveError::reason("game-map height is too large"))?;
+        let map_cols = grid
+            .width()
+            .checked_mul(span)
+            .and_then(|value| value.checked_add(1))
+            .ok_or_else(|| MazeSaveError::reason("game-map width is too large"))?;
+
+        Ok((map_rows, map_cols))
+    }
+
+    fn build_map(&self, grid: &Grid) -> Result<(Vec<char>, usize, usize), MazeSaveError> {
+        let span = self
+            .span
+            .checked_add(1)
+            .ok_or_else(|| MazeSaveError::reason("game-map span is too large"))?;
+        let (map_rows, map_cols) = self.map_dimensions(grid)?;
+        let mut map = vec![self.wall; map_cols];
+
+        for y in 0..map_rows - 1 {
+            map.push(self.wall);
+            for x in 0..map_cols - 1 {
+                let cx = x / span;
+                let cy = y / span;
+                let is_last_row = (y + 1) % span == 0;
+                let is_last_col = (x + 1) % span == 0;
+                let character = match (is_last_row, is_last_col) {
+                    (false, false) => self.passage,
+                    (false, true) if grid.is_carved((cx, cy), Cell::EAST) => self.passage,
+                    (true, false) if grid.is_carved((cx, cy), Cell::SOUTH) => self.passage,
+                    (true, true)
+                        if grid.is_carved((cx, cy), Cell::EAST)
+                            && grid.is_carved((cx, cy), Cell::SOUTH)
+                            && bottom_right_neighbour_exists(cx, cy, grid) =>
+                    {
+                        self.passage
+                    }
+                    _ => self.wall,
+                };
+                map.push(character);
+            }
+        }
+
+        Ok((map, map_cols, map_rows))
+    }
 }
 
 /// An implementation of a formatter without predefined start and exit points
@@ -138,7 +196,7 @@ impl GameMap<WithStartGoal> {
         map: &[char],
         cols: usize,
         rows: usize,
-    ) -> (usize, usize) {
+    ) -> Result<(usize, usize), MazeSaveError> {
         let mut positions: Vec<Coords> = self
             .iter_possible_start_and_goal_positions(map, cols, rows)
             .collect();
@@ -146,17 +204,20 @@ impl GameMap<WithStartGoal> {
         // shuffle possible positions
         RandPositions::rand(&mut positions);
 
-        let (srow, scol) = positions[0];
+        let Some(&(srow, scol)) = positions.first() else {
+            return Err(MazeSaveError::reason("no valid start position exists"));
+        };
 
-        let (grow, gcol) = positions
+        let Some(&(grow, gcol)) = positions
             .iter()
-            .filter(|(nrow, ncol)| *ncol != scol && *nrow != srow)
-            .nth(0)
-            .unwrap(); // the smallest grid with a single cell formatted into a map has 3 available positions for a goal
+            .find(|(nrow, ncol)| *ncol != scol && *nrow != srow)
+        else {
+            return Err(MazeSaveError::reason("no valid goal position exists"));
+        };
 
-        let start_idx = srow * rows + scol;
-        let goal_idx = grow * rows + gcol;
-        (start_idx, goal_idx)
+        let start_idx = srow * cols + scol;
+        let goal_idx = grow * cols + gcol;
+        Ok((start_idx, goal_idx))
     }
 
     fn iter_possible_start_and_goal_positions(
@@ -178,7 +239,7 @@ impl GameMap<WithStartGoal> {
                 }
 
                 let adjacent_passages_count = iter_neighbors((row, col), cols, rows)
-                    .filter(move |(ny, nx)| map[ny * rows + nx] == self.state.passage)
+                    .filter(move |(ny, nx)| map[ny * cols + nx] == self.state.passage)
                     .count();
 
                 if adjacent_passages_count == 0 {
@@ -202,149 +263,35 @@ impl Default for GameMap<NoStartGoal> {
 /// An implementation of a formatter
 impl Formatter<StringWrapper> for GameMap<NoStartGoal> {
     /// Converts a given grid into the map characters and returns an [`StringWrapper`] over that image
-    fn format(&self, grid: &Grid) -> StringWrapper {
-        let mut map = vec![];
-
-        // Span (width of a passage) + 1 (place for a wall)
-        let span = self.state.span + 1;
-
-        let map_rows = grid.height() * span + 1;
-        let map_cols = grid.width() * span + 1;
-
-        // Add the north wall
-        for _ in 0..map_cols {
-            map.push(self.state.wall);
-        }
-
-        for y in 0..map_rows - 1 {
-            // Add the west wall
-            map.push(self.state.wall);
-
-            for x in 0..map_cols - 1 {
-                // X coordinate of a cell in the grid
-                let cx = (x as f64 / span as f64).floor() as usize;
-                // Y coordinate of a cell in the grid
-                let cy = (y as f64 / span as f64).floor() as usize;
-
-                // Indicates if a row is a last row of a grid cell
-                let is_last_row = (y as f64 + 1.0) / span as f64 == cy as f64 + 1.0;
-                // Indicates if a column is a last column of a grid cell
-                let is_last_col = (x as f64 + 1.0) / span as f64 == cx as f64 + 1.0;
-
-                match (is_last_row, is_last_col) {
-                    (false, false) => map.push(self.state.passage),
-                    (false, true) => {
-                        if grid.is_carved((cx, cy), Cell::EAST) {
-                            map.push(self.state.passage);
-                        } else {
-                            map.push(self.state.wall);
-                        }
-                    }
-                    (true, false) => {
-                        if grid.is_carved((cx, cy), Cell::SOUTH) {
-                            map.push(self.state.passage);
-                        } else {
-                            map.push(self.state.wall);
-                        }
-                    }
-                    (true, true) => {
-                        if grid.is_carved((cx, cy), Cell::EAST)
-                            && grid.is_carved((cx, cy), Cell::SOUTH)
-                            && bottom_right_neighbour_exists(cx, cy, grid)
-                        {
-                            map.push(self.state.passage);
-                        } else {
-                            map.push(self.state.wall);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Write map to string
+    fn format(&self, grid: &Grid) -> Result<StringWrapper, MazeSaveError> {
+        let (map, map_cols, _) = self.state.build_map(grid)?;
         let string_map = write_map(&map, map_cols);
 
-        StringWrapper(string_map)
+        Ok(StringWrapper(string_map))
     }
 }
 
 /// An implementation of a formatter
 impl Formatter<StringWrapper> for GameMap<WithStartGoal> {
     /// Converts a given grid into the map characters and returns an [`StringWrapper`] over that image
-    fn format(&self, grid: &Grid) -> StringWrapper {
-        let mut map = vec![];
-
-        // Span (width of a passage) + 1 (place for a wall)
-        let span = self.state.span + 1;
-
-        let map_rows = grid.height() * span + 1;
-        let map_cols = grid.width() * span + 1;
-
-        // Add the north wall
-        for _ in 0..map_cols {
-            map.push(self.state.wall);
-        }
-
-        for y in 0..map_rows - 1 {
-            // Add the west wall
-            map.push(self.state.wall);
-
-            for x in 0..map_cols - 1 {
-                // X coordinate of a cell in the grid
-                let cx = (x as f64 / span as f64).floor() as usize;
-                // Y coordinate of a cell in the grid
-                let cy = (y as f64 / span as f64).floor() as usize;
-
-                // Indicates if a row is a last row of a grid cell
-                let is_last_row = (y as f64 + 1.0) / span as f64 == cy as f64 + 1.0;
-                // Indicates if a column is a last column of a grid cell
-                let is_last_col = (x as f64 + 1.0) / span as f64 == cx as f64 + 1.0;
-
-                match (is_last_row, is_last_col) {
-                    (false, false) => map.push(self.state.passage),
-                    (false, true) => {
-                        if grid.is_carved((cx, cy), Cell::EAST) {
-                            map.push(self.state.passage);
-                        } else {
-                            map.push(self.state.wall);
-                        }
-                    }
-                    (true, false) => {
-                        if grid.is_carved((cx, cy), Cell::SOUTH) {
-                            map.push(self.state.passage);
-                        } else {
-                            map.push(self.state.wall);
-                        }
-                    }
-                    (true, true) => {
-                        if grid.is_carved((cx, cy), Cell::EAST)
-                            && grid.is_carved((cx, cy), Cell::SOUTH)
-                            && bottom_right_neighbour_exists(cx, cy, grid)
-                        {
-                            map.push(self.state.passage);
-                        } else {
-                            map.push(self.state.wall);
-                        }
-                    }
-                }
-            }
-        }
+    fn format(&self, grid: &Grid) -> Result<StringWrapper, MazeSaveError> {
+        let (mut map, map_cols, map_rows) = self.state.build_map(grid)?;
 
         // Get random start and goal points
         let (start_idx, goal_idx) =
-            self.get_random_start_and_goal_positions(&map, map_cols, map_rows);
+            self.get_random_start_and_goal_positions(&map, map_cols, map_rows)?;
         map[start_idx] = self.extra.start;
         map[goal_idx] = self.extra.goal;
 
         // Write map to string
         let string_map = write_map(&map, map_cols);
 
-        StringWrapper(string_map)
+        Ok(StringWrapper(string_map))
     }
 }
 
 fn bottom_right_neighbour_exists(cx: usize, cy: usize, grid: &Grid) -> bool {
-    if cy + 1 >= grid.width() || cx + 1 >= grid.height() {
+    if cx + 1 >= grid.width() || cy + 1 >= grid.height() {
         return false;
     }
 
@@ -354,9 +301,9 @@ fn bottom_right_neighbour_exists(cx: usize, cy: usize, grid: &Grid) -> bool {
 fn write_map(map: &[char], cols: usize) -> String {
     let mut ascii_map: String = String::new();
     for (i, ch) in map.iter().enumerate() {
-        write!(ascii_map, "{ch}").unwrap();
+        ascii_map.push(*ch);
         if (i + 1) % cols == 0 {
-            writeln!(ascii_map).unwrap();
+            ascii_map.push('\n');
         }
     }
     ascii_map
@@ -382,8 +329,36 @@ fn iter_neighbors((row, col): Coords, cols: usize, rows: usize) -> impl Iterator
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn rectangular_marker_overlay_preserves_base_layout() {
+        let mut grid = Grid::new(2, 3);
+        let _ = grid.carve_passage((0, 0), Cell::SOUTH);
+        let _ = grid.carve_passage((0, 1), Cell::SOUTH);
+        let _ = grid.carve_passage((0, 2), Cell::EAST);
+
+        let base = GameMap::new().span(1).format(&grid).unwrap().into_inner();
+        let marked = GameMap::new()
+            .span(1)
+            .with_start_goal()
+            .format(&grid)
+            .unwrap()
+            .into_inner();
+
+        assert_eq!(base.lines().count(), marked.lines().count());
+        assert_eq!(
+            base.lines().next().map(str::len),
+            marked.lines().next().map(str::len)
+        );
+        assert_eq!(marked.matches('S').count(), 1);
+        assert_eq!(marked.matches('G').count(), 1);
+        assert!(base.chars().zip(marked.chars()).all(|(base, marked)| {
+            base == marked || (base == '#' && matches!(marked, 'S' | 'G'))
+        }));
+    }
 
     #[test]
     fn new_call() {
@@ -484,6 +459,39 @@ mod tests {
     }
 
     #[test]
+    fn start_and_goal_indices_use_column_stride_for_tall_maps() {
+        let formatter = GameMap::new().with_start_goal();
+        let cols = 3;
+        let rows = 5;
+        let map = vec!['.'; cols * rows];
+
+        let Ok((start_idx, goal_idx)) =
+            formatter.get_random_start_and_goal_positions(&map, cols, rows)
+        else {
+            panic!("valid rectangular map should have start and goal positions");
+        };
+
+        assert_eq!((start_idx, goal_idx), (0, 5));
+    }
+
+    #[test]
+    fn rejects_overflowing_span() {
+        let formatter = GameMap::new().span(usize::MAX);
+        let grid = Grid::new(1, 1);
+
+        assert!(formatter.format(&grid).is_err());
+    }
+
+    #[test]
+    fn bottom_right_neighbour_exists_on_tall_grid() {
+        let mut grid = Grid::new(2, 3);
+        grid.carve_passage((0, 2), Cell::EAST).unwrap();
+        grid.carve_passage((1, 1), Cell::SOUTH).unwrap();
+
+        assert!(bottom_right_neighbour_exists(0, 1, &grid));
+    }
+
+    #[test]
     fn format_with_no_start_and_goal() {
         let mut expected = String::new();
         expected.push_str("#########\n");
@@ -498,7 +506,7 @@ mod tests {
 
         let formatter = GameMap::new().span(1);
         let grid = generate_maze();
-        let actual = formatter.format(&grid).0;
+        let actual = formatter.format(&grid).unwrap().0;
 
         assert_eq!(actual, expected);
     }
@@ -518,7 +526,7 @@ mod tests {
 
         let formatter = GameMap::new().span(1).with_start_goal();
         let grid = generate_maze();
-        let actual = formatter.format(&grid).0;
+        let actual = formatter.format(&grid).unwrap().0;
 
         assert_eq!(actual, expected);
     }

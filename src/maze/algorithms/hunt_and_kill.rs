@@ -134,6 +134,7 @@ fn get_start_coords(grid: &Grid, rng: &mut impl Rng) -> Coords {
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
 

@@ -43,7 +43,7 @@ impl HexMaze {
         F: Formatter<T>,
         T: Saveable,
     {
-        let data = formatter.format(&self.grid);
+        let data = formatter.format(&self.grid)?;
         Saveable::save(&data, path)
     }
 
@@ -57,7 +57,9 @@ impl HexMaze {
             .collect()
     }
 
-    pub fn format<F, T>(&self, formatter: F) -> T
+    /// # Errors
+    /// Returns [`MazeSaveError`] when the formatter cannot produce output.
+    pub fn format<F, T>(&self, formatter: F) -> Result<T, MazeSaveError>
     where
         F: Formatter<T>,
         T: Saveable,
@@ -68,9 +70,11 @@ impl HexMaze {
     /// Serializes the maze into a human readable text format.
     ///
     /// The output can be parsed back via [`Self::from_text`].
-    #[must_use]
-    pub fn to_text(&self) -> String {
-        self.format(super::formatters::HexText).into_inner()
+    ///
+    /// # Errors
+    /// Returns [`MazeSaveError`] if the maze cannot be formatted as hex text.
+    pub fn to_text(&self) -> Result<String, MazeSaveError> {
+        Ok(self.format(super::formatters::HexText)?.into_inner())
     }
 
     /// Deserializes a maze from [`Self::to_text`] output.
@@ -198,6 +202,7 @@ impl<'a> Iterator for HexMazeIterator<'a> {
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use crate::maze::HexMazeBuilder;
 
@@ -211,7 +216,7 @@ mod tests {
             .seed(42)
             .build()
             .unwrap();
-        let text = maze.to_text();
+        let text = maze.to_text().unwrap();
         let restored = HexMaze::from_text(&text).unwrap();
         let maze_cells: Vec<((usize, usize), u8)> = maze
             .iter()

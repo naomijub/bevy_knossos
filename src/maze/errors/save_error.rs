@@ -26,6 +26,7 @@ impl fmt::Display for MazeSaveError {
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
 

@@ -78,6 +78,7 @@ pub struct Start;
 pub struct Goal;
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
 

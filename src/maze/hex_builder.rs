@@ -7,7 +7,7 @@ use crate::maze::HexMaze;
 use crate::maze::algorithms::{Algorithm, RecursiveBacktracking};
 use crate::utils::types::Coords;
 
-use super::errors::BuildError;
+use super::{builder::validate_dimensions_and_start, errors::BuildError};
 
 /// A hex maze builder for constructing a maze step by step.
 pub struct HexMazeBuilder {
@@ -63,13 +63,10 @@ impl HexMazeBuilder {
     /// Builds Hexagonal Maze
     ///
     /// # Errors
-    /// - Fails if selected algorithm doesnt have a set `start_coords` or it doesnt support starting coords.
+    /// - Fails for invalid dimensions, out-of-bounds start coordinates, or an algorithm that
+    ///   does not support starting coordinates.
     pub fn build(mut self) -> Result<HexMaze, BuildError> {
-        if self.width == 0 || self.height == 0 {
-            return Err(BuildError::reason(
-                "hex maze dimensions must be greater than zero",
-            ));
-        }
+        validate_dimensions_and_start(self.width, self.height, self.start_coords)?;
         if !self
             .algorithm
             .supports_topology(crate::maze::grid::topology::Topology::HexOddR)
@@ -88,7 +85,10 @@ impl HexMazeBuilder {
             StdRng::seed_from_u64,
         );
         if self.start_coords.is_some() && !self.algorithm.has_start_coords() {
-            Err(BuildError::reason(self.algorithm.name()))
+            Err(BuildError::reason(format!(
+                "Algorithm `{}` doesn't support `start_coords`",
+                self.algorithm.name()
+            )))
         } else {
             self.algorithm
                 .generate(maze.get_grid_mut(), self.start_coords, &mut rng);
@@ -100,5 +100,51 @@ impl HexMazeBuilder {
 impl Default for HexMazeBuilder {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+#[allow(clippy::unwrap_used)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rejects_zero_dimensions() {
+        for (width, height) in [(0, 1), (1, 0)] {
+            assert!(
+                HexMazeBuilder::new()
+                    .width(width)
+                    .height(height)
+                    .build()
+                    .is_err()
+            );
+        }
+    }
+
+    #[test]
+    fn rejects_out_of_bounds_start_coordinates() {
+        for start_coords in [(2, 0), (0, 3)] {
+            assert!(
+                HexMazeBuilder::new()
+                    .width(2)
+                    .height(3)
+                    .start_coords(start_coords)
+                    .build()
+                    .is_err()
+            );
+        }
+    }
+
+    #[test]
+    fn accepts_boundary_start_coordinates() {
+        assert!(
+            HexMazeBuilder::new()
+                .width(2)
+                .height(3)
+                .start_coords((1, 2))
+                .build()
+                .unwrap()
+                .is_valid()
+        );
     }
 }
