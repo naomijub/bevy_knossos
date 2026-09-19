@@ -2996,9 +2996,9 @@ dependencies = [
 
 [[package]]
 name = "encase"
-version = "0.12.1"
+version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1acbc46b960480c4959213714511e22f9a2e0d361520693bcf5057b5924f53e"
+checksum = "65f68eb0b99ee6b831fc4d4ab662cb364cdd16dee21349beeeed2f9d62b4ca18"
 dependencies = [
  "const_panic",
  "encase_derive",
@@ -3007,22 +3007,22 @@ dependencies = [
 
 [[package]]
 name = "encase_derive"
-version = "0.12.1"
+version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e30d38c47336a0afbdfde297b442944041cf6dccbb1a79eceea16abfb27a92a"
+checksum = "94cc8c76cfe0a0fefd1522f79ae62946c159290fbe816b3a0a7662bcce187587"
 dependencies = [
  "encase_derive_impl",
 ]
 
 [[package]]
 name = "encase_derive_impl"
-version = "0.12.1"
+version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "495d24abe406f090f2ba8fc362ecaa8a001e192522aa75eae7b144163c3235ff"
+checksum = "642108852530056c9efda5198caad6f25d28ae731c9653e8d9144ba097a4fec9"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.119",
+ "syn 3.0.6",
 ]
 
 [[package]]
